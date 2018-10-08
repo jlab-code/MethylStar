@@ -9,5 +9,3 @@ ver. 1.3
   - folder for .RData file for genes/TEs/etc.(annotation files)
   - converted factors to numbers for joining "methimputemodifiedexport" function
   -
-
-test
