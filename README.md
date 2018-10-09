@@ -1,5 +1,3 @@
-#
-
 ---
 title: "MethylStar- Methylation analysis of WGBS data"
 output:
