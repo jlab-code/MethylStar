@@ -13,7 +13,7 @@ gen=$(ls -1v $tmp_bismap/*.bam > $tmp_qcbam/list-files.lst)
 
 if [ -f $tmp_qcbam/list-finished.lst ]
 	then
-		echo "Resuming process ..."
+		echo "Resuming process ..." >> $tmp_clog/qc-bam.log
 		a_proc= $(sort $tmp_qcbam/list-files.lst -o $tmp_qcbam/list-files.lst)
 		b_proc= $(sort $tmp_qcbam/list-finished.lst -o $tmp_qcbam/list-finished.lst)
 		c_proc= $(comm -23 $tmp_qcbam/list-files.lst $tmp_qcbam/list-finished.lst > $tmp_qcbam/tmp.lst)
@@ -24,6 +24,7 @@ if [ -f $tmp_qcbam/list-finished.lst ]
 				arr+=("$line")
 			done < $input;
 	else
+		echo "Starting QC-Bam-report ..." > $tmp_clog/qc-bam.log
 		input="$tmp_qcbam/list-files.lst"
 		while read line
 		do
@@ -33,38 +34,42 @@ fi
 # running main prog
 #--------------------------------------------------------
 
+#--------------------------------------------------------
 if $parallel_mode; then
 	#running in parallel mode
-		echo "Running in Parallel mode, number of jobs: $npar ."
-		start=$(date +%s)
-		doit() {
-			. "$1"
-			label=$(echo $(echo $2 |sed 's/.*\///') | sed -e 's/.fq.gz//g')
-			echo "Running fastQC report for $label ..."
-			fast=$($fastq_path --noextract -f bam $2 -o $tmp_qcbam)
-			echo $2 >> $tmp_qcbam/list-finished.lst;
-		}
-		export -f doit
-		par=$(echo $curr_dir/tmp.conf) 
-		cat  "$input"  | parallel -j $npar doit "$par"
-		end=$(date +%s)
-		runtime=$((($(date +%s)-$start)/60))
-		echo "QC report for $label finished in $runtime minutes."
+	echo "Running in Parallel mode, number of jobs: $npar ." >> $tmp_clog/qc-bam.log
+	start=$(date +%s)
+	doit() {
+		. "$1"
+		label=$(echo $(echo $2 |sed 's/.*\///') | sed -e 's/.fq.gz//g')
+		echo "Running fastQC report for $label ..." >> $tmp_clog/qc-bam.log
+		fast=$($fastq_path --noextract -f bam $2 -o $tmp_qcbam)
+		echo $2 >> $tmp_qcbam/list-finished.lst;
+	}
+	export -f doit
+	par=$(echo $curr_dir/tmp.conf) 
+	cat  "$input"  | parallel -j $npar doit "$par"
+	runtime=$((($(date +%s)-$start)/60))
+	echo "QC reports finished. Total time $runtime minutes." >> $tmp_clog/qc-bam.log
+	echo "You can find the result in $tmp_qcbam folder." >> $tmp_clog/qc-bam.log
 else
 #running in single mode
-	echo "running in single mode!"
-	start=$(date +%s)
+	echo "Running in single mode!"  >> $tmp_clog/qc-bam.log
+	totaltime=0
 	for fq in "${arr[@]}"
 		do
-			# get file name -extension
+			start=$(date +%s)
 			label=$(echo $(echo $fq |sed 's/.*\///') | sed -e 's/.fq.gz//g')
-			echo "Running fastQC report for $label ..."
+			echo "Running fastQC report for $label ..."  >> $tmp_clog/qc-bam.log
 			fast=$($fastq_path --noextract -f bam $fq -o $tmp_qcbam)
 			echo $fq >> $tmp_qcbam/list-finished.lst;
+			runtime=$((($(date +%s)-$start)/60))
+			echo "QC report for $label finished in $runtime minutes."  >> $tmp_clog/qc-bam.log
+			totaltime=$(($runtime + $totaltime))
 		done
-		end=$(date +%s)
-		runtime=$((($(date +%s)-$start)/60))
-		echo "QC report for $label finished in $runtime minutes."
+	echo "QC reports finished. Total time $totaltime minutes."  >> $tmp_clog/qc-bam.log
+	echo "You can find the result in $tmp_qcbam folder." >> $tmp_clog/qc-bam.log
+	
 fi
 
 
@@ -72,3 +77,4 @@ if [ -f $tmp_qcbam/tmp.lst ]
 then 
 	remove=$(rm $tmp_qcbam/tmp.lst)
 fi
+sed -i "s/st_fastqbam=.*/st_fastqbam=3/g" config/pipeline.conf

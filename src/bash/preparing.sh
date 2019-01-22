@@ -36,7 +36,7 @@ if [ ! -d $raw_dataset ]; then
 fi
 
 if [ ! -d $result_pipeline ]; then
-	mkdir $result_pipeline
+	mkdir  -p $result_pipeline
 	echo "creating result folder in $result_pipeline"
 	echo "All the results will save in $result_pipeline folder"
 
@@ -97,19 +97,21 @@ if [ ! -d $tmp_fit_out ]; then
 		mkdir $tmp_fit_out
 fi
 
-if [ ! -d $tmp_methal ]; then
-		mkdir $tmp_methal
-fi
-if [ ! -d $tmp_dmr ]; then
-		mkdir $tmp_dmr
-fi
 if [ ! -d $tmp_methyl_fmt ]; then
 		mkdir $tmp_methyl_fmt
 fi
 
+if [ ! -d $tmp_dmr ]; then
+		mkdir $tmp_dmr
+fi
 
+if [ ! -d $tmp_bed ]; then
+		mkdir $tmp_bed
+fi
 
-
+if [ ! -d $tmp_bigwig ]; then
+		mkdir $tmp_bigwig
+fi
 
 # reading all raw-files and creating a list, the script will be read this file and start to process the file. ("list-files")
 # the first script is "trimmomatic" so the file that we created above will be feed to this script.
