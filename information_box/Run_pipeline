@@ -1,0 +1,7 @@
+Data can be input as raws reads in FASTQ format or as aligned BAM files along with a reference genome in FASTA format.
+
+MethylStar can process both single-end and paired-end data.
+
+Read trimming is performed with Trimmomatic, quality control and removal of PCR duplicates is performed with deduplicate-bismark from Bismark software suite, read alignment and cytosine context extraction is carried out using Bismark software suite.
+
+MethyStar offers multithreading and multi-core processing support during trimming, aligning and Methylation Calling steps as well as greater flexibility to the user to adjust parameters, execute and re-execute individual steps in the pipeline.
