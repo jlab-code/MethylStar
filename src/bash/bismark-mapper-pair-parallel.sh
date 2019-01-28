@@ -3,10 +3,10 @@ curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf
 
-
 ## Bismark Mapper
 #-------------------------------------------------------------------------------
 gen=$(ls -1v $tmp_fq/*.gz > $tmp_bismap/list-files.lst)
+
 if [ -f $tmp_bismap/list-finished.lst ]
 	then
 		echo "Resuming process ..." >> $tmp_clog/bismark-mapper.log
@@ -14,21 +14,12 @@ if [ -f $tmp_bismap/list-finished.lst ]
 		proc_b= $(sort $tmp_bismap/list-finished.lst -o $tmp_bismap/list-finished.lst)
 		proc_c= $(comm -23 $tmp_bismap/list-files.lst $tmp_bismap/list-finished.lst > $tmp_bismap/tmp.lst)
 		input="$tmp_bismap/tmp.lst"
-		while read line
-			do
-				arr+=("$line")
-			done < $input;
 	else
-		echo "Starting Bismark mapper ..." > $tmp_clog/bismark-mapper.log
 		input="$tmp_bismap/list-files.lst"
-		gen=$(cp $tmp_bismap/list-files.lst  $tmp_bismap/tmp.lst)
-		while read line
-		do
-			arr+=("$line")
-		done < $input;
+		echo "Starting Trimmomatic ..." > $tmp_clog/trimmomatic.log
+
 	fi
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------	
+#------------------------------------------------------------------------------
 ## Creating reference genome folders FOR FIRST TIME
 if [ ! -d $genome_ref/Bisulfite_Genome ]; then
 	echo "Preparing reference genome ...." >> $tmp_clog/bismark-mapper.log
@@ -58,8 +49,11 @@ fi
 
 #-------------------------------------------------------------------------------
 #changing directory to write in folder path
-tmp_path=$tmp_bismap/
-cd "${tmp_path%/*}"
+
+#tmp_path=$tmp_bismap/
+#cd "${tmp_path%/*}"
+
+
 if $parallel_mode; then
 
 		if $run_pair_bismark; then 
@@ -89,19 +83,27 @@ if $parallel_mode; then
 				done
 				echo "Bismark Mapper done. Total running time $totaltime Minutes." >> $tmp_clog/bismark-mapper.log
 
-
 		else
 			# start to run bismark default -- 4 pairs --> pair_1,unpaired_1 & paired_2, unpaired_2
-			
-			totaltime=0
-			for fq in $(grep "_paired$first_pattern" $tmp_bismap/tmp.lst)
-				do 
-					start=$(date +%s)
-					label=$(echo $(echo $fq | sed 's/.*\///') | sed -e "s/_paired$first_pattern//g")
-					file1=$label"_paired$first_pattern"
-					file2=$label"_unpaired$first_pattern"
-					file3=$label"_paired$secnd_pattern"
-					file4=$label"_unpaired$secnd_pattern"
+		
+# parallel mode
+			echo "Running Bismark Mapper in Parallel mode, number of jobs that proccessing at same time: $npar ." >> $tmp_clog/bismark-mapper.log;
+			start=$(date +%s)
+			doit() {
+
+				. "$1"
+				
+				tmp_path=$tmp_bismap/
+				cd "${tmp_path%/*}"
+				
+				label=$(echo $(echo $2 | sed 's/.*\///') | sed -e "s/_paired$first_pattern//g")
+				path=$(echo $(echo $2 | sed -e 's:[^/]*$::'))
+				echo $label >> $tmp_clog/bismark-mapper.log
+				file1=$label"_paired$first_pattern"
+				file2=$label"_unpaired$first_pattern"
+				file3=$label"_paired$secnd_pattern"
+				file4=$label"_unpaired$secnd_pattern"
+				echo "$file1 , $file2 and $file3 , $file4" >> $tmp_clog/bismark-mapper.log
 					if $nucleotide; then
 						echo "Nucleotide coverage is enabled." >> $tmp_clog/bismark-mapper.log  
 						echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." >> $tmp_clog/bismark-mapper.log
@@ -115,15 +117,17 @@ if $parallel_mode; then
 					echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
 					echo $tmp_fq/$file3 >> $tmp_bismap/list-finished.lst;
 					echo $tmp_fq/$file4 >> $tmp_bismap/list-finished.lst;
-					echo "Bismark for $file1 , $file2 , $file3 , $file4 finished." >> $tmp_clog/bismark-mapper.log
-					runtime=$((($(date +%s)-$start)/60)) 
-					echo "Bismark for $file1 , $file2 , $file3 , $file4 finished. Duration time $runtime Minutes." >> $tmp_clog/bismark-mapper.log
-					totaltime=$(($runtime + $totaltime))
-				done
-				echo "Bismark Mapper finished. Duration $totaltime Minutes." >> $tmp_clog/bismark-mapper.log
+		
+					echo "Bismark for $file1 , $file2 , $file3 , $file4 finished. Duration time $((($(date +%s)-$start)/60)) Minutes." >> $tmp_clog/bismark-mapper.log
+										   
+				}
 
-		fi
-# parallel mode
+			export -f doit
+			par=$(echo $curr_dir/tmp.conf) 
+			grep "_paired$first_pattern" "$input"  | parallel -j $npar doit "$par"
+			runtime=$((($(date +%s)-$start)/60))
+			echo "Bismark Mapper finished. Duration $runtime Minutes." >> $tmp_clog/bismark-mapper.log	
+		fi		
 fi
 
 

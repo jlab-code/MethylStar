@@ -9,7 +9,7 @@ import ConfigParser
 import subprocess
 import re
 import time
-
+import textwrap
 
 
 class run_item(npyscreen.FixedText):
@@ -322,6 +322,34 @@ class OK_Button_RP_run_popup(npyscreen.ButtonPress):
 
 
 
+def formatted_info_box_str_RP(info_path):
+    with open(info_path, 'r') as myfile:
+        info = myfile.read()
+
+    infoList = info.split('\n\n')
+
+    numSplitLetters = 120
+    infoList_new = []
+    for elem in infoList:
+        if len(elem) > numSplitLetters:
+            # [elem[i:i+3] for i in range(0, len(elem), 3)]
+            infoList_new.append("\n\n")
+            while elem:
+                infoList_new.append(elem[:numSplitLetters])
+                elem = elem[numSplitLetters:]
+
+        else:
+            infoList_new.append(elem)
+    # for a in infoList:
+    #     infoList_new.append(textwrap.fill(a, 10))
+
+    # infoSTR = []
+    # for elem in infoList_new:
+    #     infoSTR.append(elem)
+    #     infoSTR.append("\n\n")
+
+    return infoList_new
+
 class Run_popup(npyscreen.Popup):
     DEFAULT_LINES = 46
     DEFAULT_COLUMNS = 150
@@ -499,8 +527,8 @@ class Run_popup(npyscreen.Popup):
                     with open(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log") as f:
                         content = f.readlines()
                     content = [x.strip() for x in content]
-                    #runBox_output.extend(content)
                     self.RunBox.values = content
+                    #self.RunBox.values = formatted_info_box_str_RP(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log")
                     self.RunBox.display()
 
                     self.parallel_mode.editable= False
@@ -522,6 +550,7 @@ class Run_popup(npyscreen.Popup):
                 with open(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log") as f:
                     content = f.readlines()
                 content = [x.strip() for x in content]
+                #content = formatted_info_box_str_RP(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log")
                 finished_process = []
                 if int(read_config("STATUS", "st_trim")) == 3:
                     finished_process = ["finished trimmomatic"]
@@ -1025,7 +1054,7 @@ def Trimmomatic_info():
         if len(check_empty_dir("trimmomatic-files", "*.gz")) > 0:
             s += "\nIt seems you have results for Trimmomatic part."
             s += "You can re-run this part, but we recommend move the files to another folder and run again. \n"
-            s += "WARNING: The directory is not empty, re-running this part might end up loosing the existing data!"
+            s += "WARNING: The directory is not empty, re-running this part might end up with loss of the existing data!"
         pass
 
     if pairs_mode == "true" and read_config("Trimmomatic", "end_mode") == "SE":
@@ -1033,7 +1062,7 @@ def Trimmomatic_info():
 
     res_loc=read_config("GENERAL", "result_pipeline")
     if not checkDirectoryExists(res_loc+"/trimmomatic-files/"):
-        s += "directory does not exist - please configure it correctly"
+        s += "\nWARNING: Directory does not exist - please configure it correctly."
 
     return s
 

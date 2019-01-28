@@ -1269,12 +1269,30 @@ class ConfigurationPopup_Bismark_parameters(npyscreen.ActionPopup):
     def create(self):
         y, x = self.useable_space()
 
+        bismark_nucleotide_value = 0
+        try:
+            if read_config("Bismark", "nucleotide") == "true":
+                bismark_nucleotide_value = 0
+            elif read_config("Bismark", "nucleotide") == "false":
+                bismark_nucleotide_value = 1
+        except IndexError:    
+            pass
+
+        bismark_run_pair_value = 0
+        try:
+            if read_config("Bismark", "run_pair_bismark") == "true":
+                bismark_run_pair_value = 0
+            elif read_config("Bismark", "run_pair_bismark") == "false":
+                bismark_run_pair_value = 1
+        except IndexError:    
+            pass
+
         self.add(npyscreen.FixedText, value= "", editable=False)
         self.bismark_path = self.add(TitleFilenameCombo_custom, name = "Bismark Path", value = read_config("Bismark", "bismark_path"), rely = 2)
         self.bismark_parallel = self.add(bismark_parallel_select, value = "Bismark multi-processes")
         self.bismark_buffer_size = self.add(bismark_buffer_size_select, value = "Bismark buffer_size")
-        self.bismark_nucleotide_option = self.add(TitleSelectOne_custom, name = "Bismark nucleotide coverage report", max_height=4, value = [strtobool(str(not read_config("Bismark", "nucleotide"))),], values = ["True","False"], scroll_exit=True)
-        self.bismark_run_pair_option = self.add(TitleSelectOne_custom, name = "Bismark run paired-end", max_height=4, value = [strtobool(str(not read_config("Bismark", "run_pair_bismark"))),], values = ["True","False"], scroll_exit=True)
+        self.bismark_nucleotide_option = self.add(TitleSelectOne_custom, name = "Bismark nucleotide coverage report", max_height=4, value = [bismark_nucleotide_value,], values = ["True","False"], scroll_exit=True)
+        self.bismark_run_pair_option = self.add(TitleSelectOne_custom, name = "Bismark run paired-end", max_height=4, value = [bismark_run_pair_value,], values = ["True","False"], scroll_exit=True)
 
         new_handlers = {
             #Set ctrl+Q to exit
@@ -1553,6 +1571,15 @@ class ConfigurationPopup_result_files(npyscreen.Popup):
     def afterEditing(self):
         if os.path.isdir(self.result_files_location.value):
             replace_config("GENERAL", "result_pipeline", self.result_files_location.value)
+
+        status = int(read_config("STATUS", "st_prep"))
+        if status:
+            # list all *.gz files inside the directory and sub folders
+            subprocess.call(['./src/bash/preparing.sh'])
+            replace_config("STATUS", "st_prep", "1")
+        else:
+            pass
+
         self.parentApp.setNextForm("Configuration")
 
 
