@@ -53,11 +53,53 @@ fi
 #tmp_path=$tmp_bismap/
 #cd "${tmp_path%/*}"
 
-
 if $parallel_mode; then
 
 		if $run_pair_bismark; then 
 
+			# start to run bismark default -- 4 pairs --> pair_1,unpaired_1 & paired_2, unpaired_2
+			# parallel mode
+			echo "Running Bismark Mapper in Parallel mode, number of jobs that proccessing at same time: $npar ." >> $tmp_clog/bismark-mapper.log;
+			start=$(date +%s)
+			doit() {
+
+				. "$1"
+				
+				tmp_path=$tmp_bismap/
+				cd "${tmp_path%/*}"
+
+				label=$(echo $(echo $2 | sed 's/.*\///') | sed -e "s/_paired$first_pattern//g")
+				path=$(echo $(echo $2 | sed -e 's:[^/]*$::'))
+				echo $label >> $tmp_clog/bismark-mapper.log
+				file1=$label"_paired$first_pattern"
+				file2=$label"_unpaired$first_pattern"
+				file3=$label"_paired$secnd_pattern"
+				file4=$label"_unpaired$secnd_pattern"
+				echo "$file1 , $file2 and $file3 , $file4" >> $tmp_clog/bismark-mapper.log
+					if $nucleotide; then
+						echo "Nucleotide coverage is enabled." >> $tmp_clog/bismark-mapper.log  
+						echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." >> $tmp_clog/bismark-mapper.log
+						result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
+					else
+						echo "Nucleotide coverage is disabled." >> $tmp_clog/bismark-mapper.log
+						echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." >> $tmp_clog/bismark-mapper.log
+						result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+					fi	
+					echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
+					echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
+					echo $tmp_fq/$file3 >> $tmp_bismap/list-finished.lst;
+					echo $tmp_fq/$file4 >> $tmp_bismap/list-finished.lst;
+					echo "Bismark for $file1 , $file2 , $file3 , $file4 finished. Duration time $((($(date +%s)-$start)/60)) Minutes." >> $tmp_clog/bismark-mapper.log
+					   
+				}
+
+			export -f doit
+			par=$(echo $curr_dir/tmp.conf) 
+			grep "_paired$first_pattern" "$input"  | parallel -j $npar doit "$par"
+			runtime=$((($(date +%s)-$start)/60))
+			echo "Bismark Mapper finished. Duration $runtime Minutes." >> $tmp_clog/bismark-mapper.log	
+		
+		else
 			# start to run bismark mapper JUST FOR TWO PAIR
 			totaltime=0
 			for fq in $(grep "_paired$first_pattern" $tmp_bismap/tmp.lst)
@@ -83,50 +125,7 @@ if $parallel_mode; then
 				done
 				echo "Bismark Mapper done. Total running time $totaltime Minutes." >> $tmp_clog/bismark-mapper.log
 
-		else
-			# start to run bismark default -- 4 pairs --> pair_1,unpaired_1 & paired_2, unpaired_2
-		
-# parallel mode
-			echo "Running Bismark Mapper in Parallel mode, number of jobs that proccessing at same time: $npar ." >> $tmp_clog/bismark-mapper.log;
-			start=$(date +%s)
-			doit() {
 
-				. "$1"
-				
-				tmp_path=$tmp_bismap/
-				cd "${tmp_path%/*}"
-				
-				label=$(echo $(echo $2 | sed 's/.*\///') | sed -e "s/_paired$first_pattern//g")
-				path=$(echo $(echo $2 | sed -e 's:[^/]*$::'))
-				echo $label >> $tmp_clog/bismark-mapper.log
-				file1=$label"_paired$first_pattern"
-				file2=$label"_unpaired$first_pattern"
-				file3=$label"_paired$secnd_pattern"
-				file4=$label"_unpaired$secnd_pattern"
-				echo "$file1 , $file2 and $file3 , $file4" >> $tmp_clog/bismark-mapper.log
-					if $nucleotide; then
-						echo "Nucleotide coverage is enabled." >> $tmp_clog/bismark-mapper.log  
-						echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." >> $tmp_clog/bismark-mapper.log
-						result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
-					else
-						echo "Nucleotide coverage is disabled." >> $tmp_clog/bismark-mapper.log
-						echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." >> $tmp_clog/bismark-mapper.log
-						result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
-					fi	
-					echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
-					echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
-					echo $tmp_fq/$file3 >> $tmp_bismap/list-finished.lst;
-					echo $tmp_fq/$file4 >> $tmp_bismap/list-finished.lst;
-		
-					echo "Bismark for $file1 , $file2 , $file3 , $file4 finished. Duration time $((($(date +%s)-$start)/60)) Minutes." >> $tmp_clog/bismark-mapper.log
-										   
-				}
-
-			export -f doit
-			par=$(echo $curr_dir/tmp.conf) 
-			grep "_paired$first_pattern" "$input"  | parallel -j $npar doit "$par"
-			runtime=$((($(date +%s)-$start)/60))
-			echo "Bismark Mapper finished. Duration $runtime Minutes." >> $tmp_clog/bismark-mapper.log	
 		fi		
 fi
 

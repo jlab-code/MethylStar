@@ -63,35 +63,7 @@ cd "${tmp_path%/*}"
 
 if $run_pair_bismark; then 
 
-	# start to run bismark mapper JUST FOR TWO PAIR
-	totaltime=0
-	for fq in $(grep "_paired$first_pattern" $tmp_bismap/tmp.lst)
-		do 
-			start=$(date +%s)
-			label=$(echo $(echo $fq | sed 's/.*\///') | sed -e "s/$first_pattern//g")
-			file1=$label"$first_pattern"
-			file2=$label"$secnd_pattern"
-			if $nucleotide; then
-				echo "Nucleotide coverage is enabled." >> $tmp_clog/bismark-mapper.log 
-				echo "Running bismark for $file1 and $file2 ..." >> $tmp_clog/bismark-mapper.log
-				result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
-			else
-				echo "Nucleotide coverage is disabled." >> $tmp_clog/bismark-mapper.log
-				echo "Running bismark for $file1 and $file2 ..." >> $tmp_clog/bismark-mapper.log
-				result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
-			fi
-			echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
-			echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
-			runtime=$((($(date +%s)-$start)/60))
-			echo "Bismark for $file1 and $file2 finished. Duration time $runtime Minutes." >> $tmp_clog/bismark-mapper.log
-			totaltime=$(($runtime + $totaltime))
-		done
-		echo "Bismark Mapper done. Total running time $totaltime Minutes." >> $tmp_clog/bismark-mapper.log
-
-
-else
 	# start to run bismark default -- 4 pairs --> pair_1,unpaired_1 & paired_2, unpaired_2
-	
 	totaltime=0
 	for fq in $(grep "_paired$first_pattern" $tmp_bismap/tmp.lst)
 		do 
@@ -120,6 +92,34 @@ else
 			totaltime=$(($runtime + $totaltime))
 		done
 		echo "Bismark Mapper finished. Duration $totaltime Minutes." >> $tmp_clog/bismark-mapper.log
+		
+else
+	# start to run bismark mapper JUST FOR TWO PAIR
+	totaltime=0
+	for fq in $(grep "_paired$first_pattern" $tmp_bismap/tmp.lst)
+		do 
+			start=$(date +%s)
+			label=$(echo $(echo $fq | sed 's/.*\///') | sed -e "s/$first_pattern//g")
+			file1=$label"$first_pattern"
+			file2=$label"$secnd_pattern"
+			if $nucleotide; then
+				echo "Nucleotide coverage is enabled." >> $tmp_clog/bismark-mapper.log 
+				echo "Running bismark for $file1 and $file2 ..." >> $tmp_clog/bismark-mapper.log
+				result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
+			else
+				echo "Nucleotide coverage is disabled." >> $tmp_clog/bismark-mapper.log
+				echo "Running bismark for $file1 and $file2 ..." >> $tmp_clog/bismark-mapper.log
+				result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+			fi
+			echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
+			echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
+			runtime=$((($(date +%s)-$start)/60))
+			echo "Bismark for $file1 and $file2 finished. Duration time $runtime Minutes." >> $tmp_clog/bismark-mapper.log
+			totaltime=$(($runtime + $totaltime))
+		done
+		echo "Bismark Mapper done. Total running time $totaltime Minutes." >> $tmp_clog/bismark-mapper.log
+
+	
 fi
 
 if [ -f $tmp_bismap/tmp.lst ]

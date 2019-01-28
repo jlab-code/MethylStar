@@ -638,7 +638,7 @@ class Run_popup(npyscreen.Popup):
 
                     ToNULL = open(os.devnull, 'w')
                     if pairs_mode == 'true':
-                        subprocess.Popen(["nohup", './src/bash/bismark-mapper-pair.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
+                        subprocess.Popen(["nohup", './src/bash/bismark-mapper-pair-parallel.sh'])
                         replace_config("STATUS", "st_bismark", "2")
                     else:
                         subprocess.Popen(["nohup", './src/bash/bismark-mapper.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
