@@ -43,15 +43,19 @@ modifiedexportMethylome <- function( model, filename, original_file) {
   # converting to M,I,U to save in size
   # converting chachter to M,U,I
   print("Decreasing data-set size...")
-  final_dataset <- data.frame(lapply(final_dataset, function(x) {
-    gsub("Methylated", "M", x)
-  }),stringsAsFactors=F)
-  final_dataset <- data.frame(lapply(final_dataset, function(x) {
-    gsub("Intermediate", "I", x)  
-  }),stringsAsFactors=F)
-  final_dataset <- data.frame(lapply(final_dataset, function(x) {
-  gsub("Unmethylated", "U", x)
-  }),stringsAsFactors=F)
+  final_dataset$status<-str_replace_all(final_dataset$status, pattern = "Unmethylated", replacement = "U") # all
+  final_dataset$status<-str_replace_all(final_dataset$status, pattern = "Intermediate", replacement = "I") # all
+  final_dataset$status<-str_replace_all(final_dataset$status, pattern = "Methylated", replacement = "M") # all
+
+  # final_dataset <- data.frame(lapply(final_dataset, function(x) {
+  #   gsub("Methylated", "M", x)
+  # }),stringsAsFactors=F)
+  # final_dataset <- data.frame(lapply(final_dataset, function(x) {
+  #   gsub("Intermediate", "I", x)  
+  # }),stringsAsFactors=F)
+  # final_dataset <- data.frame(lapply(final_dataset, function(x) {
+  # gsub("Unmethylated", "U", x)
+  # }),stringsAsFactors=F)
   #-------------------------------------------------------------
   # take 4 digit of decimal value posteriorMax column 
   floor_dec <- function(x, level=1) round(x - 5*10^(-level-1), level)

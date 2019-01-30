@@ -22,7 +22,7 @@ def main_run():
 
     try:
         if not found:
-            main(['install', "npyscreen"])
+            main(['install','--user','npyscreen'])
             restart_program()
     except Exception as e:
         logging.error(traceback.format_exc())

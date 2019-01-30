@@ -8,7 +8,22 @@ library(DMRcaller)
 
 args <- commandArgs(trailingOnly = TRUE)
 wd = args[1] 
-#setwd(paste0(wd,"/","dmrcaller-format"))
+setwd(paste0(wd,"/","dmrcaller-format"))
+
+#------------------------------------------------------------
+# creating a list
+
+files_to_go <-NULL
+file_processed<-"list-files.lst"
+if (file.exists(file_processed)){
+  print("Found the list of files ...")
+} else {
+  try(system("ls -1v ../methimpute-out/*.txt > list-files.lst" ,intern = TRUE))
+  print("creating list of methimpute-out files... ")
+}
+list_files <-fread("list-files.lst",skip = 0,header = FALSE)
+# if len(files_to_go)==0 --> nothing to do its done for all files before
+print(paste0("Found: ",length(list_files$V1)," Files."))
 
 #------------------------------------------------------------
 # reading Methimpute output instead of cx-report
@@ -38,11 +53,12 @@ readMethimpute <- function(filename) {
   return(df)
 }
 
-filenames <-list.files(paste0(wd,"/methimpute-out"), pattern='\\.txt$', full.names = TRUE)
+#filenames <- list_files #list.files(paste0(wd,"/methimpute-out"), pattern='\\.txt$', full.names = TRUE)
 DataList <- vector(mode="list", length=0)
-for (i in seq_along(filenames)){
-  name <- gsub(pattern = "\\.txt", "", basename(filenames[i]))
-  DataList[[name]] <- readMethimpute(filenames[i])
+for (i in seq_along(list_files$V1)){
+  input_file <- list_files$V1[i:i]
+  name <- gsub(pattern = "\\.txt", "", basename(input_file))
+  DataList[[name]] <- readMethimpute(input_file)
 }
 cat("Finished reading all Methimpute files!", "\n")
 current<-format(Sys.time(), "%Y_%m_%d_%H_%M")

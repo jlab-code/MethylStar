@@ -77,6 +77,18 @@ class java_path_select(npyscreen.TitleText):
         self.label_widget.update()
         self.entry_widget.update()
 
+class genome_type_select(npyscreen.TitleText):
+    def update(self, clear = True):
+        if clear: self.clear()
+        if self.hidden: return False
+        if self.editing: 
+            self.label_widget.show_bold = True
+            self.label_widget.color = 'LABELBOLD'
+        else: 
+            self.label_widget.show_bold = False
+            self.label_widget.color = 'CURSOR'
+        self.label_widget.update()
+        self.entry_widget.update()
 
 class bismark_buffer_size_select(npyscreen.FixedText):
     def update(self, clear=True,):
@@ -716,13 +728,27 @@ def bismark_parameters_info():
     if os.path.isdir(read_config("Bismark", "bismark_path")):
         bismark_path_dir = read_config("Bismark", "bismark_path")
 
+    samtools_path_dir_file = "This is not configured properly."
+    if os.path.isdir(read_config("Bismark", "samtools_path")) or os.path.isfile(read_config("Bismark", "samtools_path")):
+        samtools_path_dir_file = read_config("Bismark", "samtools_path")
+
     s = "Bismark path: " + bismark_path_dir + "\n" \
     "Bismark multi-processing: " + read_config("Bismark", "bis_parallel") + "\n" \
     "Bismark buffer size: " + read_config("Bismark", "buf_size") + "\n" \
     "Bismark nucleotide coverage report: " + read_config("Bismark", "nucleotide") + "\n" \
-    "Bismark paired-end: " + read_config("Bismark", "run_pair_bismark") + "\n"
+    "Bismark paired-end: " + read_config("Bismark", "run_pair_bismark") + "\n\n" \
+    "Samtools path: " + samtools_path_dir_file
     return s
 
+
+def methimpute_info():
+    s = "Methimpute Intermediate: " + read_config("Methimpute", "intermediate")  + "\n" \
+    "Methimpute Genome Type: " + read_config("Methimpute", "genome_type")  + "\n" \
+    "Methimpute Fit Output: " + read_config("Methimpute", "fit_output")  + "\n" \
+    "Methimpute Enrichment Plot: " + read_config("Methimpute", "enrichment_plot")  + "\n" \
+    "Methimpute TES Report: " + read_config("Methimpute", "TES_report")  + "\n" \
+    "Methimpute Genes Report: " + read_config("Methimpute", "genes_report")
+    return s
 
 def fastq_path_info():
     fastq_path_dir = "This is not configured properly"
@@ -895,12 +921,6 @@ def show_config():
     "     -- Buffer size: " + str(read_config("Bismark", "buf_size"))+" Gigabyte. \n" + \
     "- Parallel mode is: " + str(read_config("GENERAL", "parallel_mode"))  + "\n" + \
     "     -- Parallel jobs configured: " + str(read_config("GENERAL", "npar"))
-
-    return s
-
-
-def methimpute_info():
-    "Methimpute intermediate: " + read_config("Bismark", "nucleotide") + "\n" \
 
     return s
 
@@ -1183,6 +1203,7 @@ class ConfigurationPopup_Methimpute(npyscreen.ActionPopup):
         else:
             replace_config("Methimpute", "genes_report", "false")
 
+        replace_config("Methimpute", "genome_type", self.genome_type_select.value)
 
     def create(self):
         y, x = self.useable_space()
@@ -1239,6 +1260,8 @@ class ConfigurationPopup_Methimpute(npyscreen.ActionPopup):
         self.enrichment_plot_select = self.add(TitleSelectOne_custom, name = "Enrichment plot", max_height=4, value = [enrichment_plot_value,], values = ["True","False"], scroll_exit=True)
         self.TES_report_select = self.add(TitleSelectOne_custom, name = "TES report", max_height=4, value = [TES_report_value,], values = ["True","False"], scroll_exit=True)
         self.genes_report_select = self.add(TitleSelectOne_custom, name = "Genes report", max_height=4, value = [genes_report_value,], values = ["True","False"], scroll_exit=True)
+        self.genome_type_select = self.add(genome_type_select, name = "Genome Type", value=read_config("Methimpute", "genome_type"))
+
 
         new_handlers = {
             #Set ctrl+Q to exit
@@ -1293,6 +1316,7 @@ class ConfigurationPopup_Bismark_parameters(npyscreen.ActionPopup):
         self.bismark_buffer_size = self.add(bismark_buffer_size_select, value = "Bismark buffer_size")
         self.bismark_nucleotide_option = self.add(TitleSelectOne_custom, name = "Bismark nucleotide coverage report", max_height=4, value = [bismark_nucleotide_value,], values = ["True","False"], scroll_exit=True)
         self.bismark_run_pair_option = self.add(TitleSelectOne_custom, name = "Bismark run paired-end", max_height=4, value = [bismark_run_pair_value,], values = ["True","False"], scroll_exit=True)
+        self.samtools_path = self.add(TitleFilenameCombo_custom, name = "Samtools Path (leave blank for auto-detection)", value = read_config("Bismark", "samtools_path"))
 
         new_handlers = {
             #Set ctrl+Q to exit
@@ -1316,6 +1340,17 @@ class ConfigurationPopup_Bismark_parameters(npyscreen.ActionPopup):
             replace_config("Bismark", "nucleotide", "true")
         else:
             replace_config("Bismark", "nucleotide", "false")
+
+        detected_samtools_path = ""
+        try:
+            detected_samtools_path = subprocess.check_output(['which', 'samtools']).strip()
+        except subprocess.CalledProcessError, e:
+            pass
+
+        if self.samtools_path.value != None and (os.path.isdir(self.samtools_path.value) or os.path.isfile(self.samtools_path.value)):
+            replace_config("Bismark", "samtools_path", self.samtools_path.value)
+        else:
+            replace_config("Bismark", "samtools_path", detected_samtools_path)
 
         self.parentApp.setNextForm("Configuration")
 
@@ -1688,7 +1723,7 @@ class Configuration(npyscreen.FormBaseNew):
         self.display()
   
     def event_value_editedC7(self, event):
-        self.InputBoxInfoConfig.value = "Methimpute"
+        self.InputBoxInfoConfig.value = methimpute_info()
         self.InputBoxInfoConfig.display()
         self.display()
 

@@ -321,34 +321,19 @@ class OK_Button_RP_run_popup(npyscreen.ButtonPress):
         self.parent.parentApp.queue_event(npyscreen.Event("OK_Button_RP_run_popup_pressed"))
 
 
+def formatted_run_box_RP(log_path):
+    with open(log_path, 'r') as myfile:
+        log_raw = myfile.readlines()
 
-def formatted_info_box_str_RP(info_path):
-    with open(info_path, 'r') as myfile:
-        info = myfile.read()
+    log_new = ""
+    for a in log_raw:
+        log_new += (textwrap.fill(a, 140))
+        log_new += "\n\n"
 
-    infoList = info.split('\n\n')
+    return log_new.splitlines()
 
-    numSplitLetters = 120
-    infoList_new = []
-    for elem in infoList:
-        if len(elem) > numSplitLetters:
-            # [elem[i:i+3] for i in range(0, len(elem), 3)]
-            infoList_new.append("\n\n")
-            while elem:
-                infoList_new.append(elem[:numSplitLetters])
-                elem = elem[numSplitLetters:]
 
-        else:
-            infoList_new.append(elem)
-    # for a in infoList:
-    #     infoList_new.append(textwrap.fill(a, 10))
 
-    # infoSTR = []
-    # for elem in infoList_new:
-    #     infoSTR.append(elem)
-    #     infoSTR.append("\n\n")
-
-    return infoList_new
 
 class Run_popup(npyscreen.Popup):
     DEFAULT_LINES = 46
@@ -524,11 +509,11 @@ class Run_popup(npyscreen.Popup):
 
                 time.sleep(1)
                 if success:
-                    with open(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log") as f:
-                        content = f.readlines()
-                    content = [x.strip() for x in content]
-                    self.RunBox.values = content
-                    #self.RunBox.values = formatted_info_box_str_RP(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log")
+                    # with open(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log") as f:
+                    #     content = f.readlines()
+                    # content = [x.strip() for x in content]
+                    # self.RunBox.values = content
+                    self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log")
                     self.RunBox.display()
 
                     self.parallel_mode.editable= False
@@ -547,10 +532,10 @@ class Run_popup(npyscreen.Popup):
                 self.parentApp.subprocess_handling_count = 2
 
             elif self.parentApp.subprocess_handling_count == 2:
-                with open(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log") as f:
-                    content = f.readlines()
-                content = [x.strip() for x in content]
-                #content = formatted_info_box_str_RP(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log")
+                # with open(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log") as f:
+                #     content = f.readlines()
+                # content = [x.strip() for x in content]
+                content = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log")
                 finished_process = []
                 if int(read_config("STATUS", "st_trim")) == 3:
                     finished_process = ["finished trimmomatic"]
@@ -587,11 +572,11 @@ class Run_popup(npyscreen.Popup):
                 time.sleep(1)
                 if success:
 
-                    with open(read_config("GENERAL", "result_pipeline")+"/logs/qc-fastq.log") as f:
-                        content = f.readlines()
-                    content = [x.strip() for x in content]
+                    # with open(read_config("GENERAL", "result_pipeline")+"/logs/qc-fastq.log") as f:
+                    #     content = f.readlines()
+                    # content = [x.strip() for x in content]
                     #runBox_output.extend(content)
-                    self.RunBox.values = content
+                    self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/qc-fastq.log")
                     self.RunBox.display()
 
                     self.parallel_mode.editable= False
@@ -610,9 +595,10 @@ class Run_popup(npyscreen.Popup):
                 self.parentApp.subprocess_handling_count = 2
 
             elif self.parentApp.subprocess_handling_count == 2:
-                with open(read_config("GENERAL", "result_pipeline")+"/logs/qc-fastq.log") as f:
-                    content = f.readlines()
-                content = [x.strip() for x in content]
+                # with open(read_config("GENERAL", "result_pipeline")+"/logs/qc-fastq.log") as f:
+                #     content = f.readlines()
+                # content = [x.strip() for x in content]
+                content = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/qc-fastq.log")
                 finished_process = []
                 if int(read_config("STATUS", "st_fastq")) == 3:
                     finished_process = ["finished qcfastqreport"]
@@ -637,8 +623,11 @@ class Run_popup(npyscreen.Popup):
                     pairs_mode = read_config("GENERAL", "pairs_mode")
 
                     ToNULL = open(os.devnull, 'w')
-                    if pairs_mode == 'true':
-                        subprocess.Popen(["nohup", './src/bash/bismark-mapper-pair-parallel.sh'])
+                    if pairs_mode == 'true' and read_config("GENERAL", "parallel_mode") == "true":
+                        subprocess.Popen(["nohup", './src/bash/bismark-mapper-pair-parallel.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
+                        replace_config("STATUS", "st_bismark", "2")
+                    elif pairs_mode == 'true' and read_config("GENERAL", "parallel_mode") == "false":
+                        subprocess.Popen(["nohup", './src/bash/bismark-mapper-pair.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
                         replace_config("STATUS", "st_bismark", "2")
                     else:
                         subprocess.Popen(["nohup", './src/bash/bismark-mapper.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
@@ -651,11 +640,11 @@ class Run_popup(npyscreen.Popup):
 
                 time.sleep(1)
                 if success:
-                    with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-mapper.log") as f:
-                        content = f.readlines()
-                    content = [x.strip() for x in content]
+                    # with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-mapper.log") as f:
+                    #     content = f.readlines()
+                    # content = [x.strip() for x in content]
                     #runBox_output.extend(content)
-                    self.RunBox.values = content
+                    self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/bismark-mapper.log")
                     self.RunBox.display()
 
                     self.parallel_mode.editable= False
@@ -674,9 +663,10 @@ class Run_popup(npyscreen.Popup):
                 self.parentApp.subprocess_handling_count = 2
 
             elif self.parentApp.subprocess_handling_count == 2:
-                with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-mapper.log") as f:
-                    content = f.readlines()
-                content = [x.strip() for x in content]
+                # with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-mapper.log") as f:
+                #     content = f.readlines()
+                # content = [x.strip() for x in content]
+                content = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/bismark-mapper.log")
                 finished_process = []
                 if int(read_config("STATUS", "st_bismark")) == 3:
                     finished_process = ["finished Bismark Mapper"]
@@ -708,11 +698,11 @@ class Run_popup(npyscreen.Popup):
 
                 time.sleep(1)
                 if success:
-                    with open(read_config("GENERAL", "result_pipeline")+"/logs/qc-bam.log") as f:
-                        content = f.readlines()
-                    content = [x.strip() for x in content]
+                    # with open(read_config("GENERAL", "result_pipeline")+"/logs/qc-bam.log") as f:
+                    #     content = f.readlines()
+                    # content = [x.strip() for x in content]
                     #runBox_output.extend(content)
-                    self.RunBox.values = content
+                    self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/qc-bam.log")
                     self.RunBox.display()
 
                     self.parallel_mode.editable= False
@@ -731,9 +721,10 @@ class Run_popup(npyscreen.Popup):
                 self.parentApp.subprocess_handling_count = 2
 
             elif self.parentApp.subprocess_handling_count == 2:
-                with open(read_config("GENERAL", "result_pipeline")+"/logs/qc-bam.log") as f:
-                    content = f.readlines()
-                content = [x.strip() for x in content]
+                # with open(read_config("GENERAL", "result_pipeline")+"/logs/qc-bam.log") as f:
+                #     content = f.readlines()
+                # content = [x.strip() for x in content]
+                content = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/qc-bam.log")
                 finished_process = []
                 if int(read_config("STATUS", "st_fastqbam")) == 3:
                     finished_process = ["finished QC-Bam report"]
@@ -772,11 +763,11 @@ class Run_popup(npyscreen.Popup):
 
                 time.sleep(1)
                 if success:
-                    with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-deduplicate.log") as f:
-                        content = f.readlines()
-                    content = [x.strip() for x in content]
+                    # with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-deduplicate.log") as f:
+                    #     content = f.readlines()
+                    # content = [x.strip() for x in content]
                     #runBox_output.extend(content)
-                    self.RunBox.values = content
+                    self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/bismark-deduplicate.log")
                     self.RunBox.display()
 
                     self.parallel_mode.editable= False
@@ -795,9 +786,10 @@ class Run_popup(npyscreen.Popup):
                 self.parentApp.subprocess_handling_count = 2
 
             elif self.parentApp.subprocess_handling_count == 2:
-                with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-deduplicate.log") as f:
-                    content = f.readlines()
-                content = [x.strip() for x in content]
+                # with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-deduplicate.log") as f:
+                #     content = f.readlines()
+                # content = [x.strip() for x in content]
+                content = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/bismark-deduplicate.log")
                 finished_process = []
                 if int(read_config("STATUS", "st_bisdedup")) == 3:
                     finished_process = ["finished Bismark-deduplicate"]
@@ -840,11 +832,11 @@ class Run_popup(npyscreen.Popup):
 
                 time.sleep(1)
                 if success:
-                    with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-meth-extract.log") as f:
-                        content = f.readlines()
-                    content = [x.strip() for x in content]
+                    # with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-meth-extract.log") as f:
+                    #     content = f.readlines()
+                    # content = [x.strip() for x in content]
                     #runBox_output.extend(content)
-                    self.RunBox.values = content
+                    self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/bismark-meth-extract.log")
                     self.RunBox.display()
 
                     self.parallel_mode.editable= False
@@ -863,9 +855,10 @@ class Run_popup(npyscreen.Popup):
                 self.parentApp.subprocess_handling_count = 2
 
             elif self.parentApp.subprocess_handling_count == 2:
-                with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-meth-extract.log") as f:
-                    content = f.readlines()
-                content = [x.strip() for x in content]
+                # with open(read_config("GENERAL", "result_pipeline")+"/logs/bismark-meth-extract.log") as f:
+                #     content = f.readlines()
+                # content = [x.strip() for x in content]
+                content = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/bismark-meth-extract.log")
                 finished_process = []
                 if int(read_config("STATUS", "st_bismeth")) == 3:
                     finished_process = ["finished Bismark-methextractor"]
@@ -901,11 +894,11 @@ class Run_popup(npyscreen.Popup):
 
                 time.sleep(1)
                 if success:
-                    with open(read_config("GENERAL", "result_pipeline")+"/logs/cx-report.log") as f:
-                        content = f.readlines()
-                    content = [x.strip() for x in content]
+                    # with open(read_config("GENERAL", "result_pipeline")+"/logs/cx-report.log") as f:
+                    #     content = f.readlines()
+                    # content = [x.strip() for x in content]
                     #runBox_output.extend(content)
-                    self.RunBox.values = content
+                    self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/cx-report.log")
                     self.RunBox.display()
 
                     self.parallel_mode.editable= False
@@ -924,9 +917,10 @@ class Run_popup(npyscreen.Popup):
                 self.parentApp.subprocess_handling_count = 2
 
             elif self.parentApp.subprocess_handling_count == 2:
-                with open(read_config("GENERAL", "result_pipeline")+"/logs/cx-report.log") as f:
-                    content = f.readlines()
-                content = [x.strip() for x in content]
+                # with open(read_config("GENERAL", "result_pipeline")+"/logs/cx-report.log") as f:
+                #     content = f.readlines()
+                # content = [x.strip() for x in content]
+                content = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/cx-report.log")
                 finished_process = []
                 if int(read_config("STATUS", "st_cx")) == 3:
                     finished_process = ["finished CX reports"]
@@ -961,11 +955,11 @@ class Run_popup(npyscreen.Popup):
 
                 time.sleep(1)
                 if success:
-                    with open(read_config("GENERAL", "result_pipeline")+"/logs/methimpute.log") as f:
-                        content = f.readlines()
-                    content = [x.strip() for x in content]
+                    # with open(read_config("GENERAL", "result_pipeline")+"/logs/methimpute.log") as f:
+                    #     content = f.readlines()
+                    # content = [x.strip() for x in content]
                     #runBox_output.extend(content)
-                    self.RunBox.values = content
+                    self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/methimpute.log")
                     self.RunBox.display()
 
                     self.parallel_mode.editable= False
@@ -984,9 +978,10 @@ class Run_popup(npyscreen.Popup):
                 self.parentApp.subprocess_handling_count = 2
 
             elif self.parentApp.subprocess_handling_count == 2:
-                with open(read_config("GENERAL", "result_pipeline")+"/logs/methimpute.log") as f:
-                    content = f.readlines()
-                content = [x.strip() for x in content]
+                # with open(read_config("GENERAL", "result_pipeline")+"/logs/methimpute.log") as f:
+                #     content = f.readlines()
+                # content = [x.strip() for x in content]
+                content = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/methimpute.log")
                 finished_process = []
                 if int(read_config("STATUS", "st_methimpute")) == 3:
                     finished_process = ["finished Methimpute"]

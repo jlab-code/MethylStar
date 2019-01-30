@@ -2,47 +2,91 @@ import npyscreen
 import curses
 import ConfigParser
 import os, os.path
+import ConfigParser
+
+class GrumpyConfigParser(ConfigParser.ConfigParser):
+  """Virtually identical to the original method, but delimit keys and values with '=' instead of ' = '"""
+  def write(self, fp):
+    if self._defaults:
+      fp.write("[%s]\n" % DEFAULTSECT)
+      for (key, value) in self._defaults.items():
+        fp.write("%s = %s\n" % (key, str(value).replace('\n', '\n\t')))
+      fp.write("\n")
+    for section in self._sections:
+      fp.write("[%s]\n" % section)
+      for (key, value) in self._sections[section].items():
+        if key == "__name__":
+          continue
+        if (value is not None) or (self._optcre == self.OPTCRE):
+          # This is the important departure from ConfigParser for what you are looking for
+          key = "=".join((key, str(value).replace('\n', '\n\t')))
+
+        fp.write("%s\n" % (key))
+      fp.write("\n")
+
+def replace_config(section, old_string, new_string):
+
+    config = GrumpyConfigParser()
+    config.optionxform = str
+    config.read('config/pipeline.conf')
+    config.set(section, old_string, new_string)
+    with open('config/pipeline.conf', 'wb') as config_file:
+        config.write(config_file)
 
 def del_files_in_dir(cleanDirName):
+    statusToZero = ""
+
     if cleanDirName == "Clean Trimommatic":
         folders = [read_config("GENERAL", "result_pipeline")+"/trimmomatic-files", 
                   read_config("GENERAL", "result_pipeline")+"/trimmomatic-logs"]
-    
+        statusToZero = "st_trim"
+        
     if cleanDirName == "Clean QC-Fastq-report":
         folders = [read_config("GENERAL", "result_pipeline")+"/qc-fastq-reports"]
+        statusToZero = "st_fastq"
 
     if cleanDirName == "Clean Bismark Mapper":
         folders = [read_config("GENERAL", "result_pipeline")+"/bismark-mappers"]
+        statusToZero = "st_bismark"
 
     if cleanDirName == "Clean QC-Bam report":
         folders = [read_config("GENERAL", "result_pipeline")+"/qc-bam-reports"]
+        statusToZero = "st_fastqbam"
 
     if cleanDirName == "Clean Bismark-deduplicate":
         folders = [read_config("GENERAL", "result_pipeline")+"/bismark-deduplicate"]
+        statusToZero = "st_bisdedup"
 
     if cleanDirName == "Clean Bismark Meth. Extractor":
         folders = [read_config("GENERAL", "result_pipeline")+"/bismark-meth-extractor"]
+        statusToZero = "st_bismeth"
 
     if cleanDirName == "Clean CX reports":
         folders = [read_config("GENERAL", "result_pipeline")+"/cx-reports"]
+        statusToZero = "st_cx"
 
     if cleanDirName == "Clean Methimpute":
         folders = [read_config("GENERAL", "result_pipeline")+"/methimpute-out", 
                   read_config("GENERAL", "result_pipeline")+"/tes-reports",
                   read_config("GENERAL", "result_pipeline")+"/gen-reports",
                   read_config("GENERAL", "result_pipeline")+"/fit-reports"]
+        statusToZero = "st_methimpute"
 
     if cleanDirName == "Clean DMR":
         folders = [read_config("GENERAL", "result_pipeline")+"/dmrcaller-format"]
+        statusToZero = "st_dmrcaller"
 
     if cleanDirName == "Clean Meth-bedgraph":
         folders = [read_config("GENERAL", "result_pipeline")+"/bedgraph-fromat"]
+        statusToZero = "st_bedgraph"
 
     if cleanDirName == "Clean methylkit":
         folders = [read_config("GENERAL", "result_pipeline")+"/methylkit-format"]
+        statusToZero = "st_methykit"
 
     if cleanDirName == "Clean bigwig":
         folders = [read_config("GENERAL", "result_pipeline")+"/bigwig-fromat"]
+        statusToZero = "st_bigwig"
 
     #print folders
     try:
@@ -53,6 +97,7 @@ def del_files_in_dir(cleanDirName):
                 
                 if os.path.isfile(file_path):
                     os.unlink(file_path)
+        replace_config("STATUS", statusToZero, "0")
     except Exception as e:
         pass
 
