@@ -1,7 +1,17 @@
 #!/usr/bin/env Rscript
 
-source("./src/bash/r-lib.R")
-library(doParallel)
+list.of.packages = c("DMRcaller","data.table","dplyr")
+new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) BiocInstaller::biocLite(new.packages)
+# libraries source file 
+req_pkg<-function(packages){
+  new.pkg <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  if(length(new.pkg)) 
+    install.packages(new.pkg)
+  sapply(list.of.packages, require, character.only = TRUE)
+}
+req_pkg(list.of.packages)
+
 library(data.table)
 library(dplyr)
 library(DMRcaller)

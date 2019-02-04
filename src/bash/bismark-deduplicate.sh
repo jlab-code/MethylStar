@@ -82,6 +82,21 @@ if [ -f $tmp_dide/tmp.lst ]
 then 
 	remove=$(rm $tmp_dide/tmp.lst)
 fi
+
+#------------------------------------ Renaming
+for file in $(ls -1v $tmp_dide/*.bam)
+	do
+		label=$(echo $(echo $file | sed 's/.*\///') | sed -e "s/.deduplicated.bam//g")
+		mv $file $tmp_dide/$label.bam
+	done
+# rename logs to fq
+for file in $(ls -1v $tmp_dide/*.txt)
+	do
+		label=$(echo $(echo $file | sed 's/.*\///') | sed -e "s/.deduplication_report.txt//g")
+		mv $file $tmp_dide/$label.txt
+	done
+#--------------------------------------
+
 : '
 for file in $(ls -1v $tmp_dide/*.bam.log)
 	do
