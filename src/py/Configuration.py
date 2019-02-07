@@ -851,14 +851,32 @@ def raw_dataset_info():
     firstPairText = read_config("GENERAL", "first_pattern")
     secondPairText = read_config("GENERAL", "secnd_pattern")
 
-    if not bool(strtobool(read_config("GENERAL", "pairs_mode"))):
-        first_secd_pairs_joined = "These are only relevent in pairs mode and the above patterns must be correct."
-        firstPairText = "Only relevant in pairs mode (when paired-end is enabled)."
-        secondPairText = "Only relevant in pairs mode (when paired-end is enabled)."
+    try:
+        if not bool(strtobool(read_config("GENERAL", "pairs_mode"))):
+            first_secd_pairs_joined = "These are only relevent in pairs mode and the above patterns must be correct."
+            firstPairText = "Only relevant in pairs mode (when paired-end is enabled)."
+            secondPairText = "Only relevant in pairs mode (when paired-end is enabled)."
+    except ValueError:
+            first_secd_pairs_joined = "These are only relevent in pairs mode and the above patterns must be correct."
+            firstPairText = "Only relevant in pairs mode (when paired-end is enabled)."
+            secondPairText = "Only relevant in pairs mode (when paired-end is enabled)."
+
+    pairs_mode = "unset"
+    try:
+        if str(bool(strtobool(read_config("GENERAL", "pairs_mode")))):
+            pairs_mode = str(bool(strtobool(read_config("GENERAL", "pairs_mode"))))
+    except ValueError:
+        pass
+    single_mode = "unset"
+    try:
+        if str(not bool(strtobool(read_config("GENERAL", "pairs_mode")))):
+            single_mode = str(not bool(strtobool(read_config("GENERAL", "pairs_mode"))))
+    except ValueError:
+        pass
 
     s = "Current raw files location: " + raw_files_loc + "\n" + \
-    "Paired-end: " + str(bool(strtobool(read_config("GENERAL", "pairs_mode")))) + "\n" + \
-    "Single-end: " + str(not bool(strtobool(read_config("GENERAL", "pairs_mode")))) + "\n" + \
+    "Paired-end: " + pairs_mode + "\n" + \
+    "Single-end: " + single_mode + "\n" + \
     "pattern for First pair: " + firstPairText + "\n" + \
     "pattern for second pair: " + secondPairText + "\n\n" + \
     "Number of relevant files in directory: " + str(len(list_dataset)) + "\n" + \
@@ -893,18 +911,24 @@ def result_dataset_info():
     "Free space for Bismark-Meth-Extractor:" + str(round(per_file * number_of_dataset * 6)) + " Gig.\n" + \
     "Free space for Methimpute: " + str(round(per_file * number_of_dataset * 1.4)) + " Gig.\n" + \
     "Free space for Other reports: " + str(round(per_file * number_of_dataset * 100)) + " MB.\n" + \
-    "Note: We recommended at least " \
-          + str(number_of_dataset * 10) + " Gigabyte free space."
+    "Note: We recommended at least " + str(number_of_dataset * 10) + " Gigabyte free space."
 
     return s
 
 def show_config():
+
+    paired_single_end = "Paired"
+    if str(read_config("GENERAL", "pairs_mode")) == "false":
+        paired_single_end = "Single"
+
+
     s = "- RAW files location: " + str(read_config("GENERAL", "raw_dataset")) + "\n" + \
+    "     -- RAW files Paired / Single end: " + paired_single_end + "\n" + \
     "- Number and Size of the data-set: " + str(read_config("GENERAL", "number_of_dataset"))\
           + " files and Total size: " + str(read_config("GENERAL", "dataset_size"))+" Gigabyte \n" + \
     "- The directory of results: " + str(read_config("GENERAL", "result_pipeline")) + "\n" + \
-    "- Genome folder location: " + str(read_config("GENERAL", "genome_ref")) + "\n" + \
-    "     -- Genome Reference name: " + str(read_config("GENERAL", "genome_name")) + "\n" + \
+    "- Reference Genome: " + str(read_config("GENERAL", "genome_ref")) + "/" + \
+    str(read_config("GENERAL", "genome_name")) + "\n" + \
     "- Trimmomatic location: "+ str(read_config("Trimmomatic", "trim_path")) + "\n" + \
     "     -- JAVA path: " + str(read_config("Trimmomatic", "java_path")) + "\n" + \
     "     -- ILLUMINACLIP: " + str(read_config("Trimmomatic", "name_adap"))\
@@ -914,14 +938,23 @@ def show_config():
     "     -- SLIDINGWINDOW: " + str(read_config("Trimmomatic", "SLIDINGWINDOW")) + "\n" + \
     "     -- MINLEN: " + str(read_config("Trimmomatic", "MINLEN")) + "\n" + \
     "     -- Number of Threads: " + str(read_config("Trimmomatic", "n_th")) + "\n" + \
+    "     -- Run Mode / End Mode: " + str(read_config("Trimmomatic", "end_mode")) + "\n" + \
     "- QC-Fastq path: "+ str(read_config("GENERAL", "fastq_path")) + "\n" + \
     "- Bismark parameters: "+ str(read_config("Bismark", "bismark_path")) + "\n" + \
     "     -- Nucleotide status: " + str(read_config("Bismark", "nucleotide")) + "\n" + \
     "     -- Number of Parallel: " + str(read_config("Bismark", "bis_parallel"))+" Threads. \n" + \
     "     -- Buffer size: " + str(read_config("Bismark", "buf_size"))+" Gigabyte. \n" + \
+    "     -- Bismark run paired-end: " + str(read_config("Bismark", "run_pair_bismark")) + "\n" + \
+    "     -- Samtools path: " + str(read_config("Bismark", "samtools_path")) + "\n" + \
+    "- Methimpute genome type: "+ str(read_config("Methimpute", "genome_type")) + "\n" + \
+    "     -- Methimpute intermediate: " + str(read_config("Methimpute", "intermediate")) + "\n" + \
+    "     -- Methimpute fit_output: " + str(read_config("Methimpute", "fit_output")) + "\n" + \
+    "     -- Methimpute enrichment_plot: " + str(read_config("Methimpute", "enrichment_plot")) + "\n" + \
+    "     -- Methimpute TES_report: " + str(read_config("Methimpute", "TES_report")) + "\n" + \
+    "     -- Methimpute genes_report: " + str(read_config("Methimpute", "genes_report")) + "\n" + \
     "- Parallel mode is: " + str(read_config("GENERAL", "parallel_mode"))  + "\n" + \
     "     -- Parallel jobs configured: " + str(read_config("GENERAL", "npar"))
-
+    
     return s
 
 class Illum_Parameter_Selection(npyscreen.TitleText):

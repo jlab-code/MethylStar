@@ -3,6 +3,7 @@ import curses
 import ConfigParser
 import os, os.path
 import ConfigParser
+import os.path
 
 class GrumpyConfigParser(ConfigParser.ConfigParser):
   """Virtually identical to the original method, but delimit keys and values with '=' instead of ' = '"""
@@ -35,35 +36,43 @@ def replace_config(section, old_string, new_string):
 
 def del_files_in_dir(cleanDirName):
     statusToZero = ""
+    logToDel = ""
 
     if cleanDirName == "Clean Trimommatic":
         folders = [read_config("GENERAL", "result_pipeline")+"/trimmomatic-files", 
                   read_config("GENERAL", "result_pipeline")+"/trimmomatic-logs"]
         statusToZero = "st_trim"
+        logToDel = "trimmomatic.log"
         
     if cleanDirName == "Clean QC-Fastq-report":
         folders = [read_config("GENERAL", "result_pipeline")+"/qc-fastq-reports"]
         statusToZero = "st_fastq"
+        logToDel = "qc-fastq.log"
 
     if cleanDirName == "Clean Bismark Mapper":
         folders = [read_config("GENERAL", "result_pipeline")+"/bismark-mappers"]
         statusToZero = "st_bismark"
+        logToDel = "bismark-mapper.log"
 
     if cleanDirName == "Clean QC-Bam report":
         folders = [read_config("GENERAL", "result_pipeline")+"/qc-bam-reports"]
         statusToZero = "st_fastqbam"
+        logToDel = "qc-bam.log"
 
     if cleanDirName == "Clean Bismark-deduplicate":
         folders = [read_config("GENERAL", "result_pipeline")+"/bismark-deduplicate"]
         statusToZero = "st_bisdedup"
+        logToDel = "bismark-deduplicate.log"
 
     if cleanDirName == "Clean Bismark Meth. Extractor":
         folders = [read_config("GENERAL", "result_pipeline")+"/bismark-meth-extractor"]
         statusToZero = "st_bismeth"
+        logToDel = "bismark-meth-extract.log"
 
     if cleanDirName == "Clean CX reports":
         folders = [read_config("GENERAL", "result_pipeline")+"/cx-reports"]
         statusToZero = "st_cx"
+        logToDel = "cx-report.log"
 
     if cleanDirName == "Clean Methimpute":
         folders = [read_config("GENERAL", "result_pipeline")+"/methimpute-out", 
@@ -71,22 +80,27 @@ def del_files_in_dir(cleanDirName):
                   read_config("GENERAL", "result_pipeline")+"/gen-reports",
                   read_config("GENERAL", "result_pipeline")+"/fit-reports"]
         statusToZero = "st_methimpute"
+        logToDel = "methimpute.log"
 
     if cleanDirName == "Clean DMR":
         folders = [read_config("GENERAL", "result_pipeline")+"/dmrcaller-format"]
         statusToZero = "st_dmrcaller"
+        logToDel = "dmr.log"
 
     if cleanDirName == "Clean Meth-bedgraph":
         folders = [read_config("GENERAL", "result_pipeline")+"/bedgraph-fromat"]
         statusToZero = "st_bedgraph"
+        logToDel = "meth-bedgraph.log"
 
     if cleanDirName == "Clean methylkit":
         folders = [read_config("GENERAL", "result_pipeline")+"/methylkit-format"]
         statusToZero = "st_methykit"
+        logToDel = "methylkit.log"
 
     if cleanDirName == "Clean bigwig":
         folders = [read_config("GENERAL", "result_pipeline")+"/bigwig-fromat"]
         statusToZero = "st_bigwig"
+        logToDel = "bigwig.log"
 
     #print folders
     try:
@@ -98,6 +112,7 @@ def del_files_in_dir(cleanDirName):
                 if os.path.isfile(file_path):
                     os.unlink(file_path)
         replace_config("STATUS", statusToZero, "0")
+        os.remove(read_config("GENERAL", "result_pipeline")+"/logs/" + logToDel)
     except Exception as e:
         pass
 
@@ -373,7 +388,7 @@ class noButton(npyscreen.FixedText):
 
 class Clean_popup(npyscreen.FormBaseNew):
     DEFAULT_LINES      = 13
-    DEFAULT_COLUMNS    = 60
+    DEFAULT_COLUMNS    = 99
     SHOW_ATX           = 10
     SHOW_ATY           = 2
 
@@ -402,7 +417,7 @@ class Clean_popup(npyscreen.FormBaseNew):
 
 
     def event_value_edited_CL_popup(self, event):
-        userQuestion = "Are you sure you want to " + str(self.parentApp.CL) +"?"
+        userQuestion = "Are you sure you want to " + str(self.parentApp.CL) +" and delete the corresponding log file?"
         self.InputBoxInfoCL_popup.value = userQuestion
         self.InputBoxInfoCL_popup.display()
 
@@ -468,18 +483,18 @@ class CleanFiles(npyscreen.FormBaseNew):
         self.add_event_hander("event_value_edited_ok_clean_directories_pressed", self.event_value_edited_ok_clean_directories_pressed)
 
         self.FixedText0_CL = self.add(FixedText0_CL, value= "", editable= True, rely=1)
-        self.add(FixedText1_CL, value = "Clean Trimmomatic Directory")
-        self.add(FixedText2_CL, value = "Clean Qc-fasq-report Directory")
-        self.add(FixedText3_CL, value = "Clean bismark mapper Directory")
-        self.add(FixedText4_CL, value = "Clean qc-bam report Directory")
-        self.add(FixedText5_CL, value = "Clean Bsmark deduplicate Directory")
-        self.add(FixedText6_CL, value = "Clean Bismark Meth. Extractor Directory")
-        self.add(FixedText7_CL, value = "Clean Cx reports Directory")
-        self.add(FixedText8_CL, value = "Clean Methimpute Directory")
-        self.add(FixedText9_CL, value = "Clean DMR Directory")
-        self.add(FixedText10_CL, value = "Clean meth-bedgraph Directory")
-        self.add(FixedText11_CL, value = "Clean methylkit Directory")
-        self.add(FixedText12_CL, value = "Clean bigwig Directory")
+        self.add(FixedText1_CL, value = "Clean Trimmomatic Directory and delete Trimmomatic log file")
+        self.add(FixedText2_CL, value = "Clean Qc-fasq-report Directory and delete Qc-fasq-report log file")
+        self.add(FixedText3_CL, value = "Clean bismark mapper Directory and delete bismark mapper log file")
+        self.add(FixedText4_CL, value = "Clean qc-bam report Directory and delete qc-bam report log file")
+        self.add(FixedText5_CL, value = "Clean Bismark deduplicate Directory and delete Bismark deduplicate log file")
+        self.add(FixedText6_CL, value = "Clean Bismark Meth. Extractor Directory and delete Bismark Meth. Extractor log file")
+        self.add(FixedText7_CL, value = "Clean Cx reports Directory and delete Cx reports log file")
+        self.add(FixedText8_CL, value = "Clean Methimpute Directory and delete Methimpute log file")
+        self.add(FixedText9_CL, value = "Clean DMR Directory and delete DMR log file")
+        self.add(FixedText10_CL, value = "Clean meth-bedgraph Directory and delete meth-bedgraph log file")
+        self.add(FixedText11_CL, value = "Clean methylkit Directory and delete methylkit log file")
+        self.add(FixedText12_CL, value = "Clean bigwig Directory and delete bigwig log file")
 
         y, x = self.useable_space()
                                                 
@@ -515,7 +530,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             total_trim_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in Trimommatic Directories (2 directories in total): " + str(total_trim_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "trimmomatic.log"):
+            logFileExists = True
+
+        s = "Number of files in Trimommatic Directories (2 directories in total): " + str(total_trim_files) + "\n" \
+            "Trimmomatic log file exists: " + str(logFileExists)
+        
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
         self.FixedText0_CL.editable = False
@@ -527,7 +549,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             Qc_fasq_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in Qc_fasq Directory: " + str(Qc_fasq_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "qc-fastq.log"):
+            logFileExists = True
+
+        s = "Number of files in Qc_fastq Directory: " + str(Qc_fasq_files) + "\n" \
+            "Qc_fastq log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -538,7 +567,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             bismark_mapper_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in bismark_mapper Directory: " + str(bismark_mapper_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "bismark-mapper.log"):
+            logFileExists = True
+
+        s = "Number of files in bismark_mapper Directory: " + str(bismark_mapper_files) + "\n" \
+            "Bismark Mapper log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -549,7 +585,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             qc_bam_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in qc_bam Directory: " + str(qc_bam_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "qc-bam.log"):
+            logFileExists = True
+
+        s = "Number of files in qc_bam Directory: " + str(qc_bam_files) + "\n" \
+            "QC Bam log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -560,7 +603,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             bismark_deduplicate_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in bismark_deduplicate Directory: " + str(bismark_deduplicate_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "bismark-deduplicate.log"):
+            logFileExists = True
+
+        s = "Number of files in bismark_deduplicate Directory: " + str(bismark_deduplicate_files) + "\n" \
+            "Bismark Deduplicate log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -571,7 +621,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             bismark_meth_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in bismark_meth Directory: " + str(bismark_meth_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "bismark-meth-extract.log"):
+            logFileExists = True
+
+        s = "Number of files in bismark_meth Directory: " + str(bismark_meth_files) + "\n" \
+            "Bismark Meth. log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -582,7 +639,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             cx_reports_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in cx_reports Directory: " + str(cx_reports_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "cx-report.log"):
+            logFileExists = True
+
+        s = "Number of files in cx_reports Directory: " + str(cx_reports_files) + "\n" \
+            "CX Reports log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -602,8 +666,17 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             total_methimpute_files = 0
 
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "methimpute.log"):
+            logFileExists = True
+
         total_methimpute_files = methimpute_files1 + methimpute_files2 + methimpute_files3 + methimpute_files4
-        self.InputBoxInfoCL.value = "Number of files in Methimpute Directories (4 directories in total): " + str(total_methimpute_files)
+
+        s = "Number of files in Methimpute Directories (4 directories in total): " + str(total_methimpute_files) + "\n" \
+            "Methimpute log file exists: " + str(logFileExists)
+
+        
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -615,7 +688,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             dmr_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in DMR Directory: " + str(dmr_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "dmr.log"):
+            logFileExists = True
+
+        s = "Number of files in DMR Directory: " + str(dmr_files) + "\n" \
+            "DMR log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -628,7 +708,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             meth_bedgraph_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in meth_bedgraph Directory: " + str(meth_bedgraph_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "meth-bedgraph.log"):
+            logFileExists = True
+
+        s = "Number of files in meth_bedgraph Directory: " + str(meth_bedgraph_files) + "\n" \
+            "Meth Bedgraph log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -640,7 +727,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             methylkit_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in methylkit Directory: " + str(methylkit_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "methylkit.log"):
+            logFileExists = True
+
+        s = "Number of files in methylkit Directory: " + str(methylkit_files) + "\n" \
+            "Methylkit log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 
@@ -652,7 +746,14 @@ class CleanFiles(npyscreen.FormBaseNew):
         except OSError as e:
             bigwig_files = 0
 
-        self.InputBoxInfoCL.value = "Number of files in bigwig Directory: " + str(bigwig_files)
+        logFileExists = False
+        if os.path.isfile(read_config("GENERAL", "result_pipeline")+"/logs/" + "bigwig.log"):
+            logFileExists = True
+
+        s = "Number of files in bigwig Directory: " + str(bigwig_files) + "\n" \
+            "Bigwig log file exists: " + str(logFileExists)
+
+        self.InputBoxInfoCL.value = s
         self.InputBoxInfoCL.display()
         self.display()
 

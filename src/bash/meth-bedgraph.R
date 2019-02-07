@@ -1,9 +1,19 @@
 #!/usr/bin/env Rscript
 
-source("./src/bash/r-lib.R")
-library(doParallel)
-library(data.table)
-library(dplyr)
+# installing libraries
+if(!any(installed.packages()[,"Package"]=="BiocInstaller") | !any(installed.packages()[,"Package"]=="BiocParallel"))
+  source("https://bioconductor.org/biocLite.R")
+list.of.packages = c("doParallel","data.table","dplyr")
+new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) BiocInstaller::biocLite(new.packages)
+# libraries source file 
+req_pkg<-function(packages){
+  new.pkg <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  if(length(new.pkg)) 
+    install.packages(new.pkg)
+  sapply(list.of.packages, require, character.only = TRUE)
+}
+req_pkg(list.of.packages)
 #-------------------------------------------------------------
 # test if arguments are supplied
 #-------------------------------------------------------------

@@ -11,18 +11,12 @@ req_pkg<-function(packages){
   sapply(list.of.packages, require, character.only = TRUE)
 }
 req_pkg(list.of.packages)
-
-library(data.table)
-library(dplyr)
-library(DMRcaller)
-
+#------------------------------------------------------------
 args <- commandArgs(trailingOnly = TRUE)
 wd = args[1] 
 setwd(paste0(wd,"/","dmrcaller-format"))
-
 #------------------------------------------------------------
 # creating a list
-
 files_to_go <-NULL
 file_processed<-"list-files.lst"
 if (file.exists(file_processed)){

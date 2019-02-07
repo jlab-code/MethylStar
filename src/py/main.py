@@ -19,6 +19,7 @@ class App(npyscreen.StandardApp):
     subprocess_handling_count_OP = 0
     numLinesPager = 28
     configurationPopup_patterns_event_handling = False
+    RP_on_run_popup = 0
 
     def onStart(self):
         # Set the theme. DefaultTheme is used by default
