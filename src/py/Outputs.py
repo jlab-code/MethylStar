@@ -188,7 +188,7 @@ class Outputs_popup(npyscreen.Popup):
 
         self.add(npyscreen.FixedText, value= "", editable=False)
         self.parallel_mode_OP = self.add(parallel_mode_OP, name="Parallel mode",
-                values = ["True","False"], scroll_exit=True, max_height=4, rely=2)
+                values = ["Enabled","Disabled"], scroll_exit=True, max_height=4, rely=2)
         # self.qsub_select = self.add(qsub_select, name="qsub",
         #         values = ["True","False"], scroll_exit=True, max_height=4)
 
@@ -519,25 +519,42 @@ def formatted_info_box_str(info_path):
 
     return infoSTR
 
-class Outputs(npyscreen.ActionFormV2):
+class FixedText0_Outputs(npyscreen.FixedText):
+    def update(self, clear=True,):
+        super(FixedText0_Outputs, self).update(clear=clear)
+        self.show_bold = True
+        self.color = 'CURSOR'
+    def display(self):
+        self.parent.parentApp.queue_event(npyscreen.Event("event_value_editedO0"))
+
+class OK_Button_outputs(npyscreen.ButtonPress):
+    def display(self):
+        self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_ok_outputs"))
+    def whenPressed(self):
+        self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_ok_outputs_pressed"))
+
+class Outputs(npyscreen.FormBaseNew):
     # def afterEditing(self):
     #     self.parentApp.setNextForm(None)
 
-    def create_control_buttons(self):
-        self._add_button('ok_button', 
-                        self.__class__.OKBUTTON_TYPE, 
-                        self.__class__.OK_BUTTON_TEXT,
-                        0 - self.__class__.OK_BUTTON_BR_OFFSET[0],
-                        0 - self.__class__.OK_BUTTON_BR_OFFSET[1] - len(self.__class__.OK_BUTTON_TEXT),
-                        None
-                        )
+    # def create_control_buttons(self):
+    #     self._add_button('ok_button', 
+    #                     self.__class__.OKBUTTON_TYPE, 
+    #                     self.__class__.OK_BUTTON_TEXT,
+    #                     0 - self.__class__.OK_BUTTON_BR_OFFSET[0],
+    #                     0 - self.__class__.OK_BUTTON_BR_OFFSET[1] - len(self.__class__.OK_BUTTON_TEXT),
+    #                     None
+    #                     )
 
     def create(self):
+        self.add_event_hander("event_value_editedO0", self.event_value_editedO0)
         self.add_event_hander("event_value_editedO1", self.event_value_editedO1)
         self.add_event_hander("event_value_editedO2", self.event_value_editedO2)
         self.add_event_hander("event_value_editedO3", self.event_value_editedO3)
         self.add_event_hander("event_value_editedO4", self.event_value_editedO4)
-
+        self.add_event_hander("event_value_edited_ok_outputs", self.event_value_edited_ok_outputs)
+        self.add_event_hander("event_value_edited_ok_outputs_pressed", self.event_value_edited_ok_outputs_pressed)
+        
         new_handlers = {
             # Set ctrl+Q to exit
             "^Q": self.exit_func,
@@ -546,7 +563,7 @@ class Outputs(npyscreen.ActionFormV2):
 
         y, x = self.useable_space()
 
-        self.add(npyscreen.FixedText, value= "", editable=False)
+        self.FixedText0_Outputs = self.add(FixedText0_Outputs, value= "", editable= True, rely=1)
         self.add(FixedText1_outputs, value = "1. Convert to DMR Format", rely=2)
         self.add(FixedText2_outputs, value = "2. Convert to Methylkit Format")
         self.add(FixedText3_outputs, value = "3. Convert to bedGraph format (output)")
@@ -554,6 +571,11 @@ class Outputs(npyscreen.ActionFormV2):
 
         self.InputBoxInfoOutputs = self.add(InputBoxInfoOutputs, name="Information", editable=False, max_height=y // 2, rely=16)
 
+        self.OK_Button_outputs = self.add(OK_Button_outputs, name="OK", relx=-12, rely=-3)
+
+    def event_value_editedO0(self, event):
+        self.FixedText0_Outputs.editing = 0
+        self.FixedText0_Outputs.how_exited = True
 
     def event_value_editedO1(self, event):
         infoSTR = formatted_info_box_str('information_box/DMR')
@@ -576,8 +598,17 @@ class Outputs(npyscreen.ActionFormV2):
         self.InputBoxInfoOutputs.display()
         self.display()
 
-    def on_ok(self):
-        self.parentApp.setNextForm("MAIN")
+    # def on_ok(self):
+    #     self.parentApp.setNextForm("MAIN")
+
+    def event_value_edited_ok_outputs(self, event):
+        self.InputBoxInfoOutputs.value = "Proceed back to the main form."
+        self.InputBoxInfoOutputs.display()
+        self.display()
+
+    def event_value_edited_ok_outputs_pressed(self, event):
+        self.parentApp.switchForm("MAIN")
+        self.editw = 0
 
     def exit_func(self, _input):
         exit(0)

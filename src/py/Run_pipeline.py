@@ -270,45 +270,6 @@ def formatted_run_box_RP(log_path):
     return log_new.splitlines()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class run_item(npyscreen.FixedText):
     def update(self, clear=True,):
         super(run_item, self).update(clear=clear)
@@ -378,7 +339,7 @@ class Run_popup(npyscreen.Popup):
 
     def create(self):
         self.add_event_hander("event_value_edited_RP_popup", self.event_value_edited_RP_popup)
-        self.add_event_hander("OK_Button_RP_run_popup_pressed", self.OK_Button_RP_run_popup_pressed)
+        #self.add_event_hander("OK_Button_RP_run_popup_pressed", self.OK_Button_RP_run_popup_pressed)
         self.add_event_hander("event_value_edited_RP_del_inter_file", self.event_value_edited_RP_del_inter_file)
         self.add_event_hander("event_value_edited_RP_popup", self.event_value_edited_RP_popup)
         self.add_event_hander("event_value_edited_RP_run_item", self.event_value_edited_RP_run_item)
@@ -387,7 +348,7 @@ class Run_popup(npyscreen.Popup):
 
         self.add(npyscreen.FixedText, value= "", editable=False)
 
-        self.del_inter_file_select = self.add(del_inter_file_select, max_height=4, name = "del_inter_file", scroll_exit=True, values = ["True","False"],editable = False, hidden=True)
+        self.del_inter_file_select = self.add(del_inter_file_select, max_height=4, name = "del_inter_file", scroll_exit=True, values = ["Enabled","Disabled"],editable = False, hidden=True)
         self.run_item = self.add(run_item, value="RUN...")
         
         self.RunBox = self.add(RunBox, max_height=self.parentApp.numLinesPager,scroll_exit = True, select_exit=True)
@@ -401,16 +362,16 @@ class Run_popup(npyscreen.Popup):
         
         self.display()
 
-    def OK_Button_RP_run_popup_pressed(self, event):
-        self.RunBox.values = []
-        self.del_inter_file_select.editable= True
-        self.run_item.editable= True
-        self.parentApp.RP == "Unset"
-        self.parentApp.subprocess_handling_count = 0
-        self.parentApp.switchForm("Run_pipeline")
-        self.parentApp.RP_on_run_popup = 0
-        self.del_inter_file_select.hidden = True
-        self.del_inter_file_select.editable = False
+    # def OK_Button_RP_run_popup_pressed(self, event):
+    #     self.RunBox.values = []
+    #     self.del_inter_file_select.editable= True
+    #     self.run_item.editable= True
+    #     self.parentApp.RP == "Unset"
+    #     self.parentApp.subprocess_handling_count = 0
+    #     self.parentApp.switchForm("Run_pipeline")
+    #     self.parentApp.RP_on_run_popup = 0
+    #     self.del_inter_file_select.hidden = True
+    #     self.del_inter_file_select.editable = False
 
     def event_value_edited_RP_del_inter_file(self, event):
         try:
@@ -472,7 +433,6 @@ class Run_popup(npyscreen.Popup):
             self.del_inter_file_select.editable = True
             self.run_item.editing = False
             self.run_item.how_exited = -1
-            #self.del_inter_file_select.edit()
 
         self.display()
 

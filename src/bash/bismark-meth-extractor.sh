@@ -36,7 +36,7 @@ if [ -f $tmp_dme/list-finished.lst ]
 		 done < $input;
 	else
 		echo "Starting Bismark methylation extractor ..." > $tmp_clog/bismark-meth-extract.log
-		input="$tmp_dme/list-files.lst"
+		input="$tmp_dme/list-files.lst"								  
 		 while read line
 		 do
 		 	arr+=("$line")
@@ -45,7 +45,7 @@ fi
 #-------------------------------------------------------------------------------
 
 if $parallel_mode; then 
-	echo "Running Bismark Mapper in Parallel mode, number of jobs that proccessing at same time: $npar ." >> $tmp_clog/bismark-mapper.log;
+	echo "Running Bismark Mapper in Parallel mode, number of jobs that proccessing at same time: $npar ." >> $tmp_clog/bismark-meth-extract.log;
 	start=$(date +%s)
 	doit() {
 			. "$1"
