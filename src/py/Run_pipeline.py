@@ -19,21 +19,6 @@ import textwrap
 class runTaskName(npyscreen.FixedText):
     _contained_widget = npyscreen.FixedText
 
-# class parallel_mode(npyscreen.TitleSelectOne):
-#     def update(self, clear = True):
-#         if clear: self.clear()
-#         if self.hidden: return False
-#         if self.editing: 
-#             self.label_widget.show_bold = True
-#             self.label_widget.color = 'LABELBOLD'
-#         else: 
-#             self.label_widget.show_bold = False
-#             self.label_widget.color = 'CURSOR'
-#         self.label_widget.update()
-#         self.entry_widget.update()
-#     def display(self):
-#         self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_RP_parallel_mode"))
-
 class CustomMultiLineEdit_RP(npyscreen.MultiLineEdit):
     def update(self, clear=True,):
         super(CustomMultiLineEdit_RP, self).update(clear=clear)
@@ -478,8 +463,6 @@ class Run_popup(npyscreen.Popup):
                     self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/trimmomatic.log")
                     self.RunBox.display()
 
-                    self.parallel_mode.editable= False
-                    #self.qsub_select.editable= False
                     self.del_inter_file_select.editable= False
                     self.run_item.editable= False
 
@@ -530,8 +513,6 @@ class Run_popup(npyscreen.Popup):
                     self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/qc-fastq.log")
                     self.RunBox.display()
 
-                    self.parallel_mode.editable= False
-                    #self.qsub_select.editable= False
                     self.del_inter_file_select.editable= False
                     self.run_item.editable= False
 
@@ -567,10 +548,11 @@ class Run_popup(npyscreen.Popup):
  
                 # running preparing files
                 try:
+                    ToNULL = open(os.devnull, 'w')
                     subprocess.Popen(["nohup", './src/bash/path-export.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
                     pairs_mode = read_config("GENERAL", "pairs_mode")
 
-                    ToNULL = open(os.devnull, 'w')
+                    
                     if pairs_mode == 'true' and read_config("GENERAL", "parallel_mode") == "true":
                         subprocess.Popen(["nohup", './src/bash/bismark-mapper-pair-parallel.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
                         replace_config("STATUS", "st_bismark", "2")
@@ -591,8 +573,6 @@ class Run_popup(npyscreen.Popup):
                     self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/bismark-mapper.log")
                     self.RunBox.display()
 
-                    self.parallel_mode.editable= False
-                    #self.qsub_select.editable= False
                     self.del_inter_file_select.editable= False
                     self.run_item.editable= False
 
@@ -641,8 +621,6 @@ class Run_popup(npyscreen.Popup):
                     self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/qc-bam.log")
                     self.RunBox.display()
 
-                    self.parallel_mode.editable= False
-                    #self.qsub_select.editable= False
                     self.del_inter_file_select.editable= False
                     self.run_item.editable= False
 
@@ -676,6 +654,7 @@ class Run_popup(npyscreen.Popup):
                 success = None
  
                 try:
+                    ToNULL = open(os.devnull, 'w')
                     subprocess.Popen(["nohup", './src/bash/path-export.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
         
                     # if pair then set to -p
@@ -684,7 +663,7 @@ class Run_popup(npyscreen.Popup):
                     else:
                         replace_config("Bismark", "deduplicate", "-s")
 
-                    ToNULL = open(os.devnull, 'w')
+                    
                     subprocess.Popen(["nohup", './src/bash/bismark-deduplicate.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
                     replace_config("STATUS", "st_bisdedup", "2")
                     success = True
@@ -699,8 +678,6 @@ class Run_popup(npyscreen.Popup):
                     self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/bismark-deduplicate.log")
                     self.RunBox.display()
 
-                    self.parallel_mode.editable= False
-                    #self.qsub_select.editable= False
                     self.del_inter_file_select.editable= False
                     self.run_item.editable= False
 
@@ -735,6 +712,7 @@ class Run_popup(npyscreen.Popup):
                 success = None
  
                 try:
+                    ToNULL = open(os.devnull, 'w')
                     subprocess.Popen(["nohup", './src/bash/path-export.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
 
                     if read_config("GENERAL", "pairs_mode") == 'true':
@@ -742,7 +720,7 @@ class Run_popup(npyscreen.Popup):
                     else:
                         replace_config("Bismark", "methextractor", "-s")
 
-                    ToNULL = open(os.devnull, 'w')
+                    
                     subprocess.Popen(["nohup", './src/bash/bismark-meth-extractor.sh', " > /dev/null 2>&1"], stdout=ToNULL, stderr=subprocess.STDOUT)
 
                     
@@ -762,7 +740,7 @@ class Run_popup(npyscreen.Popup):
                 if success:
                     self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/bismark-meth-extract.log")
                     self.RunBox.display()
-                    self.parallel_mode.editable= False
+
                     self.del_inter_file_select.editable= False
                     self.run_item.editable= False
 
@@ -813,7 +791,7 @@ class Run_popup(npyscreen.Popup):
                 if success:
                     self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/cx-report.log")
                     self.RunBox.display()
-                    self.parallel_mode.editable= False
+
                     self.del_inter_file_select.editable= False
                     self.run_item.editable= False
                 else:
@@ -864,8 +842,6 @@ class Run_popup(npyscreen.Popup):
                     self.RunBox.values = formatted_run_box_RP(read_config("GENERAL", "result_pipeline")+"/logs/methimpute.log")
                     self.RunBox.display()
 
-                    self.parallel_mode.editable= False
-                    #self.qsub_select.editable= False
                     self.del_inter_file_select.editable= False
                     self.run_item.editable= False
 
