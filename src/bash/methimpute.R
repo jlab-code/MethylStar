@@ -111,21 +111,34 @@ startCompute <- function(files_to_go) {
     model$data$category[model$data$counts[,'total']==0] <- 'missing'
     df.list <- NULL
       if (fit_output==TRUE){
+      	print(paste0("Generating fit plot...", name))
         pdf(paste0(wd, "/fit-reports/fit_", name, ".pdf", sep = ""))
         print(fit)
         dev.off()
       }
       if (enrichment_plot==TRUE){
+      	
+      	print(paste0("Generating enrichment plot for TEs...", name))
         A1 <- plotEnrichment(model$data, annotation=TEs, range = 2000, category.column='category', plot = TRUE, df.list = NULL)
+        pdf(paste0(wd, "/tes-reports/TEs_", name, ".pdf", sep = "")) 
+    	print(A1)
+    	dev.off()
+
+    	print(paste0("Generating enrichment plot for genes...", name))
         B1 <- plotEnrichment(model$data, annotation=genes, range = 2000, category.column='category', plot = TRUE, df.list = NULL)
+    	pdf(paste0(wd, "/gen-reports/gene_", name, ".pdf", sep = "")) 
+    	print(B1)
+    	dev.off()
       }
       if (TES_report==TRUE){
+      	print(paste0("Generating TEs reports...", name))
         A2 <- plotEnrichment(model$data, annotation=TEs, range = 2000, category.column='category', plot = FALSE)  
         write.table(A2, paste0(wd,"/tes-reports/TEs_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
       }
       if(genes_report==TRUE){
-      B2 <- plotEnrichment(model$data, annotation=genes, range = 2000, category.column='category', plot = FALSE)
-      write.table(B2, paste0(wd,"/gen-reports/genes_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
+      	print(paste0("Generating genes reports...", name))
+      	B2 <- plotEnrichment(model$data, annotation=genes, range = 2000, category.column='category', plot = FALSE)
+      	write.table(B2, paste0(wd,"/gen-reports/genes_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
       }
     #---------------------------------------------------------------------------
     fileConn<-"file-processed.lst"

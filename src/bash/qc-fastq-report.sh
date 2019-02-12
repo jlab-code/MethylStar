@@ -75,4 +75,10 @@ if [ -f $tmp_qcfast/tmp.lst ]
 then 
 	remove=$(rm $tmp_qcfast/tmp.lst)
 fi
+
 sed -i "s/st_fastq=.*/st_fastq=3/g" config/pipeline.conf
+
+if [ -f $tmp_qcfast/list-finished.lst ]
+then 
+	remove=$(rm $tmp_qcfast/list-finished.lst)
+fi

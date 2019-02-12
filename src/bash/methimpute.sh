@@ -21,3 +21,7 @@ fi
 #R CMD BATCH $result_pipeline $genome_name --save output.log
 Rscript ./src/bash/methimpute.R $result_pipeline $genome_ref $genome_name $tmp_rdata $intermediate $fit_output $enrichment_plot $TES_report $genes_report --no-save --no-restore --verbose > $tmp_clog/methimpute.log
 sed -i "s/st_methimpute=.*/st_methimpute=3/g" config/pipeline.conf
+if [ -f $tmp_meth_out/file-processed.lst ]
+then 
+	remove=$(rm $tmp_meth_out/file-processed.lst)
+fi

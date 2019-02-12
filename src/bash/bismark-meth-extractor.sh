@@ -101,3 +101,9 @@ then
 fi
 
 sed -i "s/st_bismeth=.*/st_bismeth=3/g" config/pipeline.conf
+
+if [ -f $tmp_dme/list-finished.lst ]
+then 
+	remove=$(rm $tmp_dme/list-finished.lst)
+fi
+

@@ -73,9 +73,17 @@ else
 
 fi
 
-
+#-------------------------------------------------------------
+# cleaning the folders and list
 if [ -f $tmp_bigwig/tmp.lst ]
 then 
 	remove=$(rm $tmp_bigwig/tmp.lst)
 fi
+
 sed -i "s/st_bigwig=.*/st_bigwig=3/g" config/pipeline.conf
+
+if [ -f $tmp_bigwig/list-finished.lst ]
+then 
+	remove=$(rm $tmp_bigwig/list-finished.lst)
+fi
+#-------------------------------------------------------------

@@ -77,4 +77,10 @@ if [ -f $tmp_qcbam/tmp.lst ]
 then 
 	remove=$(rm $tmp_qcbam/tmp.lst)
 fi
+
 sed -i "s/st_fastqbam=.*/st_fastqbam=3/g" config/pipeline.conf
+
+if [ -f $tmp_qcbam/list-finished.lst ]
+then 
+	remove=$(rm $tmp_qcbam/list-finished.lst)
+fi

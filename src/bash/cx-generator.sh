@@ -78,3 +78,7 @@ then
 	remove=$(rm $tmp_cx_report/tmp.lst)
 fi
 sed -i "s/st_cx=.*/st_cx=3/g" config/pipeline.conf
+if [ -f $tmp_cx_report/list-finished.lst ]
+then 
+	remove=$(rm $tmp_cx_report/list-finished.lst)
+fi

@@ -107,3 +107,8 @@ for file in $(ls -1v $tmp_dide/*.bam.log)
 
 '
 sed -i "s/st_bisdedup=.*/st_bisdedup=3/g" config/pipeline.conf
+
+if [ -f $tmp_dide/list-finished.lst ]
+then 
+	remove=$(rm $tmp_dide/list-finished.lst)
+fi

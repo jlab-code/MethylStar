@@ -105,4 +105,7 @@ for file in $(ls -1v $tmp_bismap/*.txt)
 cd -
 sed -i "s/st_bismark=.*/st_bismark=3/g" config/pipeline.conf
 
-
+if [ -f $tmp_bismap/list-finished.lst ]
+then 
+	remove=$(rm $tmp_bismap/list-finished.lst)
+fi

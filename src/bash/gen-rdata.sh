@@ -20,8 +20,6 @@ if [ ! -f $tmp_rdata/Ref_Chr.RData ]
 		b_proc= $(cut -f1,2 $tmp_rdata/*.fai > $tmp_rdata/$label.txt )
 		# creating R-data files.
 		Rscript ./src/bash/gen-rdata.R $result_pipeline --no-save --no-restore --verbose > $tmp_clog/gen-rdata.log
-		# copy Gens, Tes to rdata folder
-		copy=$(cp ./bindata/*.RData $tmp_rdata)
 		if [ -f $tmp_rdata/Ref_Chr.RData ]		
 			then
 				del=$(rm $tmp_rdata/*.fa)
@@ -31,4 +29,14 @@ if [ ! -f $tmp_rdata/Ref_Chr.RData ]
 	else
 	echo "There is a reference chromosome!"
 
+fi
+
+if [ ! -f $tmp_rdata/TEs.RData ]		
+	then
+		cop=$(cp ./bindata/TEs.RData $tmp_rdata/)
+fi
+
+if [ ! -f $tmp_rdata/genes.RData ]		
+	then
+		cop=$(cp ./bindata/genes.RData $tmp_rdata/)
 fi

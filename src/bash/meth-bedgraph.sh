@@ -6,6 +6,10 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 echo "Converting to bedgraphFormat ..." >> $tmp_clog/meth-bedgraph.log;
 Rscript ./src/bash/meth-bedgraph.R $result_pipeline --no-save --no-restore --verbose 
 sed -i "s/st_bedgraph=.*/st_bedgraph=3/g" config/pipeline.conf
+if [ -f $tmp_bed/file-processed.lst ]
+then 
+	remove=$(rm $tmp_bed/file-processed.lst)
+fi
 
 #download http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/
 

@@ -80,3 +80,8 @@ then
 fi
 
 sed -i "s/st_trim=.*/st_trim=3/g" config/pipeline.conf
+
+if [ -f $tmp_fq/list-finished.lst ]
+then 
+	remove=$(rm $tmp_fq/list-finished.lst)
+fi
