@@ -59,7 +59,7 @@ if $parallel_mode; then
 			comm=$(mv $tmp_dme/*.CX_report.txt $tmp_cx_report/)
 			if $del_inter_file; then
 				echo "Removing intermediate files... " >> $tmp_clog/bismark-meth-extract.log
-				remove_intermediate=$(rm $tmp_dme/*$label*.deduplicated.*txt)
+				remove_intermediate=$(rm $tmp_dme/*$label*.txt)
 			fi	
 
 	}
@@ -84,7 +84,7 @@ else
 			comm=$(mv $tmp_dme/*.CX_report.txt $tmp_cx_report/)
 			if $del_inter_file; then
 				echo "Removing intermediate files... " >> $tmp_clog/bismark-meth-extract.log
-				remove_intermediate=$(rm $tmp_dme/*$label*.deduplicated.*txt)
+				remove_intermediate=$(rm $tmp_dme/*$label*.txt)
 			fi
 			runtime=$((($(date +%s)-$start)/60))
 			echo "Bismark meth extractor for $label finished in $runtime minutes." >> $tmp_clog/bismark-meth-extract.log
