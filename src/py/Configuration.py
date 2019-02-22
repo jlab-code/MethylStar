@@ -451,7 +451,7 @@ class Trimmomatic_threading_popup(npyscreen.ActionPopup):
 
     def on_ok(self):
         if self.Trimmomatic_threading.value.isdigit():
-            if int(self.Trimmomatic_threading.value) < 100:
+            if int(self.Trimmomatic_threading.value) > 1 and int(self.Trimmomatic_threading.value) < 17:
                 replace_config("Trimmomatic", "n_th", self.Trimmomatic_threading.value)
         self.parentApp.switchForm("ConfigurationPopup_trimmomatic")
 
@@ -463,7 +463,7 @@ class Trimmomatic_threading_popup(npyscreen.ActionPopup):
 
     def event_value_edited_Trimmomatic_threading_popup(self, event):
         self.InputBoxInfo_Trimmomatic_threading_popup.value = "Threading_parameters: "+ read_config("Trimmomatic", "n_th") + "\n"\
-        "only digits 0 to 99 are accepted"
+        "only digits 1 to 16 are accepted"
         self.InputBoxInfo_Trimmomatic_threading_popup.display()
         self.display()
 
@@ -710,20 +710,17 @@ def find_file_pattern(path, pattern):
 
 
 def parallel_mode_info():
-
-
     detected_parallel_location = "Parallel PATH not detected - please install parallel and export to PATH."
     try:
         detected_parallel_location = subprocess.check_output(['which', 'parallel'])
     except subprocess.CalledProcessError:
         pass
     s = "Auto detected PATH to Parallel: " + detected_parallel_location +  "\n" \
-    "Parallel mode (can only be selected true if the PATH to Parallel is auto-detected): " + read_config("GENERAL", "parallel_mode") + "\n" \
+    "Parallel mode (can only be selected true if the PATH to Parallel is auto-detected): " + true_false_fields_config(read_config("GENERAL", "parallel_mode"),False) + "\n" \
     "Number of parallel jobs: " + read_config("GENERAL", "npar")
     return s
 
 def bismark_parameters_info():
-
     bismark_path_dir = "This is not configured properly."
     if os.path.isdir(read_config("Bismark", "bismark_path")):
         bismark_path_dir = read_config("Bismark", "bismark_path")
@@ -735,19 +732,19 @@ def bismark_parameters_info():
     s = "Bismark path: " + bismark_path_dir + "\n" \
     "Bismark multi-processing: " + read_config("Bismark", "bis_parallel") + "\n" \
     "Bismark buffer size: " + read_config("Bismark", "buf_size") + "\n" \
-    "Bismark nucleotide coverage report: " + read_config("Bismark", "nucleotide") + "\n" \
-    "Bismark paired-end: " + read_config("Bismark", "run_pair_bismark") + "\n\n" \
+    "Bismark nucleotide coverage report: " + true_false_fields_config(read_config("Bismark", "nucleotide"), False) + "\n" \
+    "Bismark paired-end: " + true_false_fields_config(read_config("Bismark", "run_pair_bismark"), False) + "\n\n" \
     "Samtools path: " + samtools_path_dir_file
     return s
 
 
 def methimpute_info():
-    s = "Methimpute Intermediate: " + read_config("Methimpute", "intermediate")  + "\n" \
+    s = "Methimpute Intermediate: " + true_false_fields_config(read_config("Methimpute", "intermediate"), False)  + "\n" \
     "Methimpute Genome Type: " + read_config("Methimpute", "genome_type")  + "\n" \
-    "Methimpute Fit Output: " + read_config("Methimpute", "fit_output")  + "\n" \
-    "Methimpute Enrichment Plot: " + read_config("Methimpute", "enrichment_plot")  + "\n" \
-    "Methimpute TES Report: " + read_config("Methimpute", "TES_report")  + "\n" \
-    "Methimpute Genes Report: " + read_config("Methimpute", "genes_report")
+    "Methimpute Fit Output: " + true_false_fields_config(read_config("Methimpute", "fit_output"), False)  + "\n" \
+    "Methimpute Enrichment Plot: " + true_false_fields_config(read_config("Methimpute", "enrichment_plot"), False)  + "\n" \
+    "Methimpute TES Report: " + true_false_fields_config(read_config("Methimpute", "TES_report"), False)  + "\n" \
+    "Methimpute Genes Report: " + true_false_fields_config(read_config("Methimpute", "genes_report"), False)
     return s
 
 def fastq_path_info():
@@ -822,8 +819,24 @@ def Genome_info():
     "All files in current directory: " + str(onlyfiles)
     return s
 
-def raw_dataset_info():
 
+def true_false_fields_config(read_config_str, negated_bool):
+    val_true_false = "unset"
+    try:
+        if str(bool(strtobool(read_config_str))):
+            if negated_bool:
+                val_true_false = str(not bool(strtobool(read_config_str)))
+            else:
+                val_true_false = str(bool(strtobool(read_config_str)))
+    except ValueError:
+        pass
+    if val_true_false == "True":
+        val_true_false = "Enabled"
+    elif val_true_false == "False":
+        val_true_false = "Disabled"
+    return val_true_false
+
+def raw_dataset_info():
     list_dataset = find_file_pattern(str(read_config("GENERAL", "raw_dataset")), "*.gz")
     raw_size = ""
     if os.path.isdir(str(read_config("GENERAL", "raw_dataset"))):
@@ -861,22 +874,9 @@ def raw_dataset_info():
             firstPairText = "Only relevant in pairs mode (when paired-end is enabled)."
             secondPairText = "Only relevant in pairs mode (when paired-end is enabled)."
 
-    pairs_mode = "unset"
-    try:
-        if str(bool(strtobool(read_config("GENERAL", "pairs_mode")))):
-            pairs_mode = str(bool(strtobool(read_config("GENERAL", "pairs_mode"))))
-    except ValueError:
-        pass
-    single_mode = "unset"
-    try:
-        if str(not bool(strtobool(read_config("GENERAL", "pairs_mode")))):
-            single_mode = str(not bool(strtobool(read_config("GENERAL", "pairs_mode"))))
-    except ValueError:
-        pass
-
     s = "Current raw files location: " + raw_files_loc + "\n" + \
-    "Paired-end: " + pairs_mode + "\n" + \
-    "Single-end: " + single_mode + "\n" + \
+    "Paired-end: " + true_false_fields_config(read_config("GENERAL", "pairs_mode"), False) + "\n" + \
+    "Single-end: " + true_false_fields_config(read_config("GENERAL", "pairs_mode"), True) + "\n" + \
     "pattern for First pair: " + firstPairText + "\n" + \
     "pattern for second pair: " + secondPairText + "\n\n" + \
     "Number of relevant files in directory: " + str(len(list_dataset)) + "\n" + \
@@ -885,6 +885,7 @@ def raw_dataset_info():
     first_secd_pairs_joined
 
     return s
+
 
 def result_dataset_info():
     size = ["N/A"]
@@ -941,18 +942,18 @@ def show_config():
     "     -- Run Mode / End Mode: " + str(read_config("Trimmomatic", "end_mode")) + "\n" + \
     "- QC-Fastq path: "+ str(read_config("GENERAL", "fastq_path")) + "\n" + \
     "- Bismark parameters: "+ str(read_config("Bismark", "bismark_path")) + "\n" + \
-    "     -- Nucleotide status: " + str(read_config("Bismark", "nucleotide")) + "\n" + \
+    "     -- Nucleotide status: " + true_false_fields_config(read_config("Bismark", "nucleotide"), False) + "\n" + \
     "     -- Number of Parallel: " + str(read_config("Bismark", "bis_parallel"))+" Threads. \n" + \
     "     -- Buffer size: " + str(read_config("Bismark", "buf_size"))+" Gigabyte. \n" + \
-    "     -- Bismark run paired-end: " + str(read_config("Bismark", "run_pair_bismark")) + "\n" + \
+    "     -- Bismark run paired-end: " + true_false_fields_config(read_config("Bismark", "run_pair_bismark"), False) + "\n" + \
     "     -- Samtools path: " + str(read_config("Bismark", "samtools_path")) + "\n" + \
     "- Methimpute genome type: "+ str(read_config("Methimpute", "genome_type")) + "\n" + \
-    "     -- Methimpute intermediate: " + str(read_config("Methimpute", "intermediate")) + "\n" + \
-    "     -- Methimpute fit_output: " + str(read_config("Methimpute", "fit_output")) + "\n" + \
-    "     -- Methimpute enrichment_plot: " + str(read_config("Methimpute", "enrichment_plot")) + "\n" + \
-    "     -- Methimpute TES_report: " + str(read_config("Methimpute", "TES_report")) + "\n" + \
-    "     -- Methimpute genes_report: " + str(read_config("Methimpute", "genes_report")) + "\n" + \
-    "- Parallel mode is: " + str(read_config("GENERAL", "parallel_mode"))  + "\n" + \
+    "     -- Methimpute intermediate: " + true_false_fields_config(read_config("Methimpute", "intermediate"), False) + "\n" + \
+    "     -- Methimpute fit output: " + true_false_fields_config(read_config("Methimpute", "fit_output"), False) + "\n" + \
+    "     -- Methimpute enrichment plot: " + true_false_fields_config(read_config("Methimpute", "enrichment_plot"), False) + "\n" + \
+    "     -- Methimpute TES report: " + true_false_fields_config(read_config("Methimpute", "TES_report"), False) + "\n" + \
+    "     -- Methimpute genes report: " + true_false_fields_config(read_config("Methimpute", "genes_report"), False) + "\n" + \
+    "- Parallel mode is: " + true_false_fields_config(read_config("GENERAL", "parallel_mode"), False)  + "\n" + \
     "     -- Parallel jobs configured: " + str(read_config("GENERAL", "npar"))
     
     return s
@@ -1114,7 +1115,7 @@ class Parallel_jobs_popup(npyscreen.ActionPopup):
 
     def on_ok(self):
         if self.parallel_jobs_value.value.isdigit():
-            if int(self.parallel_jobs_value.value) < 51 and int(self.parallel_jobs_value.value) > 1:
+            if int(self.parallel_jobs_value.value) < 100 and int(self.parallel_jobs_value.value) > 1:
                 replace_config("GENERAL", "npar", self.parallel_jobs_value.value)
         self.parentApp.switchForm("ConfigurationPopup_Parallel_mode")
 
@@ -1126,7 +1127,7 @@ class Parallel_jobs_popup(npyscreen.ActionPopup):
 
     def event_value_edited_Parallel_jobs_popup(self, event):
         self.InputBoxInfo_Parallel_jobs_popup.value = "Parallel jobs value: "+ read_config("GENERAL", "npar")  + "\n"\
-        "only digits 2 to 50 are accepted"
+        "only digits 2 to 99 are accepted"
         self.InputBoxInfo_Parallel_jobs_popup.display()
         self.display()
 
@@ -1180,7 +1181,7 @@ class ConfigurationPopup_Parallel_mode(npyscreen.ActionPopup):
             parallel_mode_option_toSet = 1
 
         self.add(npyscreen.FixedText, value= "", editable=False)
-        self.parallel_mode_option = self.add(TitleSelectOne_custom, name = "Parallel mode option", max_height=4, value = [parallel_mode_option_toSet,], values = ["True","False"], scroll_exit=True, rely = 2)
+        self.parallel_mode_option = self.add(TitleSelectOne_custom, name = "Parallel mode option", max_height=4, value = [parallel_mode_option_toSet,], values = ["Enabled","Disabled"], scroll_exit=True, rely = 2)
         self.parallel_jobs = self.add(parallel_jobs_select, value = "Parallel jobs")
 
         new_handlers = {
@@ -1288,11 +1289,11 @@ class ConfigurationPopup_Methimpute(npyscreen.ActionPopup):
             pass
 
         self.add(npyscreen.FixedText, value= "", editable=False)
-        self.intermediate_select = self.add(TitleSelectOne_custom, name = "Intermediate", max_height=4, value = [intermediate_value,], values = ["True","False"], scroll_exit=True, rely = 2)
-        self.fit_output_select = self.add(TitleSelectOne_custom, name = "Fit output", max_height=4, value = [fit_output_value,], values = ["True","False"], scroll_exit=True)
-        self.enrichment_plot_select = self.add(TitleSelectOne_custom, name = "Enrichment plot", max_height=4, value = [enrichment_plot_value,], values = ["True","False"], scroll_exit=True)
-        self.TES_report_select = self.add(TitleSelectOne_custom, name = "TES report", max_height=4, value = [TES_report_value,], values = ["True","False"], scroll_exit=True)
-        self.genes_report_select = self.add(TitleSelectOne_custom, name = "Genes report", max_height=4, value = [genes_report_value,], values = ["True","False"], scroll_exit=True)
+        self.intermediate_select = self.add(TitleSelectOne_custom, name = "Intermediate", max_height=4, value = [intermediate_value,], values = ["Enabled","Disabled"], scroll_exit=True, rely = 2)
+        self.fit_output_select = self.add(TitleSelectOne_custom, name = "Fit output", max_height=4, value = [fit_output_value,], values = ["Enabled","Disabled"], scroll_exit=True)
+        self.enrichment_plot_select = self.add(TitleSelectOne_custom, name = "Enrichment plot", max_height=4, value = [enrichment_plot_value,], values = ["Enabled","Disabled"], scroll_exit=True)
+        self.TES_report_select = self.add(TitleSelectOne_custom, name = "TES report", max_height=4, value = [TES_report_value,], values = ["Enabled","Disabled"], scroll_exit=True)
+        self.genes_report_select = self.add(TitleSelectOne_custom, name = "Genes report", max_height=4, value = [genes_report_value,], values = ["Enabled","Disabled"], scroll_exit=True)
         self.genome_type_select = self.add(genome_type_select, name = "Genome Type", value=read_config("Methimpute", "genome_type"))
 
 
@@ -1347,8 +1348,8 @@ class ConfigurationPopup_Bismark_parameters(npyscreen.ActionPopup):
         self.bismark_path = self.add(TitleFilenameCombo_custom, name = "Bismark Path", value = read_config("Bismark", "bismark_path"), rely = 2)
         self.bismark_parallel = self.add(bismark_parallel_select, value = "Bismark multi-processes")
         self.bismark_buffer_size = self.add(bismark_buffer_size_select, value = "Bismark buffer_size")
-        self.bismark_nucleotide_option = self.add(TitleSelectOne_custom, name = "Bismark nucleotide coverage report", max_height=4, value = [bismark_nucleotide_value,], values = ["True","False"], scroll_exit=True)
-        self.bismark_run_pair_option = self.add(TitleSelectOne_custom, name = "Bismark run paired-end", max_height=4, value = [bismark_run_pair_value,], values = ["True","False"], scroll_exit=True)
+        self.bismark_nucleotide_option = self.add(TitleSelectOne_custom, name = "Bismark nucleotide coverage report", max_height=4, value = [bismark_nucleotide_value,], values = ["Enabled","Disabled"], scroll_exit=True)
+        self.bismark_run_pair_option = self.add(TitleSelectOne_custom, name = "Bismark run paired-end", max_height=4, value = [bismark_run_pair_value,], values = ["Enabled","Disabled"], scroll_exit=True)
         self.samtools_path = self.add(TitleFilenameCombo_custom, name = "Samtools Path (leave blank for auto-detection)", value = read_config("Bismark", "samtools_path"))
 
         new_handlers = {
@@ -1700,6 +1701,9 @@ class Configuration(npyscreen.FormBaseNew):
         new_handlers = {
             # Set ctrl+Q to exit
             "^Q": self.exit_func,
+
+            #Set ctrl+B to go back to the main form
+            "^B": self.back_to_main_form
         }
         self.add_handlers(new_handlers)
 
@@ -1781,3 +1785,6 @@ class Configuration(npyscreen.FormBaseNew):
 
     def exit_func(self, _input):
         exit(0)
+
+    def back_to_main_form(self, _input):
+        self.parentApp.switchForm("MAIN")

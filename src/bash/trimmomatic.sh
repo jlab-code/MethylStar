@@ -1,12 +1,11 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-. $curr_dir/tmp.conf
-
+. $curr_dir/detect.sh trimm;
+. $curr_dir/tmp.conf;
 
 #---------------------------------------------------------------
 # check point
-
 if [ -f $tmp_fq/list-finished.lst ]
 	then
 		echo "Resuming process ..." >> $tmp_clog/trimmomatic.log
@@ -26,8 +25,6 @@ if [ -f $tmp_fq/list-finished.lst ]
 			arr+=("$line")
 		done < $input;
 	fi
-#---------------------------------------------------------------
-
 #---------------------------------------------------------------
 # running main prog
 if $parallel_mode; then

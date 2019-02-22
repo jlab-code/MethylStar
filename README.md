@@ -1,3 +1,8 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
 <img src="MethylStar_logo.png" alt="drawing" width="250"/>
 
 ### An efficient and flexible pipeline for population-level analysis of Whole Genome Bisulfite Sequencing (WGBS) data
@@ -32,21 +37,33 @@ We provide a visual (TUI) interface which is created with Python using the Npysc
     - Package required for Python2: Npyscreen - https://pypi.org/project/npyscreen/
 <br />
 <br />
+
 - FastQC - https://github.com/s-andrews/FastQC
+<br />
+<br />
 
 - Trimmomatic - http://www.usadellab.org/cms/?page=trimmomatic
+    - Java JDK - https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+<br />
+<br />
 
 - Bismark - https://github.com/FelixKrueger/Bismark
+    - Samtools - http://www.htslib.org/
+    - Bowtie - http://bowtie-bio.sourceforge.net/index.shtml
+<br />
+<br />
 
 - METHimpute - https://github.com/ataudt/methimpute
+
 <br />
-<br />
+
 (2) Configuration
 <br />
 <br />
 (3) Running
 <br />
 <br />
+
 **Acknowlegdements**
 
 http://www.johanneslab.org/

@@ -1,9 +1,8 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-. $curr_dir/tmp.conf
-
-
+. $curr_dir/detect.sh trimm;
+. $curr_dir/tmp.conf;
 
 #-------------------------------------------------------------------------------
 # check point
@@ -18,11 +17,8 @@ if [ -f $tmp_fq/list-finished.lst ]
 	else
 		input="$tmp_fq/list-files.lst"
 		echo "Starting Trimmomatic ..." > $tmp_clog/trimmomatic.log
-
 	fi
 #-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-
 if $parallel_mode; then
 
 	echo "Running in Parallel mode, number of jobs that proccessing at same time: $npar ." >> $tmp_clog/trimmomatic.log;
@@ -35,6 +31,7 @@ if $parallel_mode; then
 		path=$(echo $(echo $2 | sed -e 's:[^/]*$::'))
 		first_file=$label"$first_pattern"
 		second_file=$label"$secnd_pattern"
+		echo  "number of thread $n_th..." >> $tmp_clog/trimmomatic.log;
 		echo  "Running ... "$first_file " and " $second_file >> $tmp_clog/trimmomatic.log;
 
 		run=$($java_path -jar $trim_jar $end_mode -threads $n_th -phred33  $path$first_file $path$second_file $tmp_fq/$label"_paired"$first_pattern $tmp_fq/$label"_unpaired"$first_pattern $tmp_fq/$label"_paired"$secnd_pattern $tmp_fq/$label"_unpaired"$secnd_pattern ILLUMINACLIP:$name_adap:$ill_clip LEADING:$LEADING TRAILING:$TRAILING SLIDINGWINDOW:$SLIDINGWINDOW MINLEN:$MINLEN 2>&1 | tee $tmp_log/trimmomatic-log-$label.log )
@@ -49,7 +46,7 @@ if $parallel_mode; then
 
 	export -f doit
 	par=$(echo $curr_dir/tmp.conf) 
-	grep "$first_pattern" "$input"  | parallel -j $npar doit "$par"
+	grep "$first_pattern" "$input"  | parallel -j $npar doit "$par" 
 	runtime=$((($(date +%s)-$start)/60))
 	echo "Trimmomatic finished. Duration $runtime Minutes." >> $tmp_clog/trimmomatic.log;
 	

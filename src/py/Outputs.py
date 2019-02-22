@@ -558,6 +558,9 @@ class Outputs(npyscreen.FormBaseNew):
         new_handlers = {
             # Set ctrl+Q to exit
             "^Q": self.exit_func,
+
+            #Set ctrl+B to go back to the main form
+            "^B": self.back_to_main_form
         }
         self.add_handlers(new_handlers)
 
@@ -598,9 +601,6 @@ class Outputs(npyscreen.FormBaseNew):
         self.InputBoxInfoOutputs.display()
         self.display()
 
-    # def on_ok(self):
-    #     self.parentApp.setNextForm("MAIN")
-
     def event_value_edited_ok_outputs(self, event):
         self.InputBoxInfoOutputs.value = "Proceed back to the main form."
         self.InputBoxInfoOutputs.display()
@@ -612,3 +612,6 @@ class Outputs(npyscreen.FormBaseNew):
 
     def exit_func(self, _input):
         exit(0)
+
+    def back_to_main_form(self, _input):
+        self.parentApp.switchForm("MAIN")

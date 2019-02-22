@@ -10,11 +10,7 @@ import subprocess
 import re
 import time
 import textwrap
-
-
-
-
-
+from distutils.util import strtobool
 
 class runTaskName(npyscreen.FixedText):
     _contained_widget = npyscreen.FixedText
@@ -29,7 +25,6 @@ class InputBoxInfoRP(npyscreen.BoxTitle):
     def update(self, clear=True,):
         super(InputBoxInfoRP, self).update(clear=clear)
         self.color = 'CURSOR'
-
 
 class GrumpyConfigParser(ConfigParser.ConfigParser):
   def write(self, fp):
@@ -50,7 +45,6 @@ class GrumpyConfigParser(ConfigParser.ConfigParser):
         fp.write("%s\n" % (key))
       fp.write("\n")
 
-
 def replace_config(section, old_string, new_string):
     config = GrumpyConfigParser()
     config.optionxform = str
@@ -65,7 +59,6 @@ def read_config(section, get_string):
     config.read('config/pipeline.conf')
     val_str = config.get(section, get_string)
     return val_str
-
 
 def find_file_pattern(path, pattern):
     listOfFiles = list()
@@ -215,33 +208,15 @@ class FixedText8_RP(npyscreen.FixedText):
         self.parent.parentApp.RP = "Run Methimpute"
         self.parent.parentApp.switchForm('Run_popup')
 
-
-
 def checkDirectoryExists(dirpath_to_check):
     if os.path.isdir(dirpath_to_check):
         return True
     else:
         return False
 
-# class intermediate_select(npyscreen.TitleSelectOne):
-#     def update(self, clear = True):
-#         if clear: self.clear()
-#         if self.hidden: return False
-#         if self.editing: 
-#             self.label_widget.show_bold = True
-#             self.label_widget.color = 'LABELBOLD'
-#         else: 
-#             self.label_widget.show_bold = False
-#             self.label_widget.color = 'CURSOR'
-#         self.label_widget.update()
-#         self.entry_widget.update()
-#     def display(self):
-#         self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_RP_intermediate_select"))
-
 class OK_Button_RP_run_popup(npyscreen.ButtonPress):
     def whenPressed(self):
         self.parent.parentApp.queue_event(npyscreen.Event("OK_Button_RP_run_popup_pressed"))
-
 
 def formatted_run_box_RP(log_path):
     with open(log_path, 'r') as myfile:
@@ -253,27 +228,6 @@ def formatted_run_box_RP(log_path):
         log_new += "\n\n"
 
     return log_new.splitlines()
-
-
-class run_item(npyscreen.FixedText):
-    def update(self, clear=True,):
-        super(run_item, self).update(clear=clear)
-        self.show_bold = True
-        self.color = 'CURSOR'
-        
-    def set_up_handlers(self):
-        super(run_item, self).set_up_handlers()
-        self.handlers.update({
-                           curses.ascii.NL: self.run_shell
-                           })
-
-    def run_shell(self, _input):
-        self.editing = False
-        self.how_exited = 1
-        self.parent.parentApp.subprocess_handling_count = 1
-        self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_RP_popup"))
-    def display(self):
-        self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_RP_run_item"))
 
 class Pager_custom(npyscreen.Pager):
     def h_scroll_line_down(self, input):
@@ -287,7 +241,6 @@ class RunBox(npyscreen.BoxTitle):
     _contained_widget = Pager_custom
     def display(self):
         self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_RP_popup"))
-
 
 class del_inter_file_select(npyscreen.TitleSelectOne):
     def update(self, clear = True):
@@ -304,7 +257,39 @@ class del_inter_file_select(npyscreen.TitleSelectOne):
     def display(self):
         self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_RP_del_inter_file"))
 
+class run_item(npyscreen.FixedText):
+    def update(self, clear=True,):
+        super(run_item, self).update(clear=clear)
+        self.show_bold = True
+        self.color = 'CURSOR'
+        
+    def set_up_handlers(self):
+        super(run_item, self).set_up_handlers()
+        self.handlers.update({
+                           curses.ascii.NL: self.run_shell
+                           })
 
+    def run_shell(self, _input):
+        self.parent.parentApp.subprocess_handling_count = 1
+        self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_RP_popup"))
+    def display(self):
+        self.parent.parentApp.queue_event(npyscreen.Event("event_value_edited_RP_run_item"))
+
+def true_false_fields_config(read_config_str, negated_bool):
+    val_true_false = "unset"
+    try:
+        if str(bool(strtobool(read_config_str))):
+            if negated_bool:
+                val_true_false = str(not bool(strtobool(read_config_str)))
+            else:
+                val_true_false = str(bool(strtobool(read_config_str)))
+    except ValueError:
+        pass
+    if val_true_false == "True":
+        val_true_false = "Enabled"
+    elif val_true_false == "False":
+        val_true_false = "Disabled"
+    return val_true_false
 
 class Run_popup(npyscreen.Popup):
     DEFAULT_LINES = 46
@@ -321,10 +306,10 @@ class Run_popup(npyscreen.Popup):
         self.parentApp.RP_on_run_popup = 0
         self.del_inter_file_select.hidden = True
         self.del_inter_file_select.editable = False
+        self.RunBox.editable = False
 
     def create(self):
         self.add_event_hander("event_value_edited_RP_popup", self.event_value_edited_RP_popup)
-        #self.add_event_hander("OK_Button_RP_run_popup_pressed", self.OK_Button_RP_run_popup_pressed)
         self.add_event_hander("event_value_edited_RP_del_inter_file", self.event_value_edited_RP_del_inter_file)
         self.add_event_hander("event_value_edited_RP_popup", self.event_value_edited_RP_popup)
         self.add_event_hander("event_value_edited_RP_run_item", self.event_value_edited_RP_run_item)
@@ -333,11 +318,11 @@ class Run_popup(npyscreen.Popup):
 
         self.add(npyscreen.FixedText, value= "", editable=False)
 
-        self.del_inter_file_select = self.add(del_inter_file_select, max_height=4, name = "del_inter_file", scroll_exit=True, values = ["Enabled","Disabled"],editable = False, hidden=True)
-        self.run_item = self.add(run_item, value="RUN...")
+        self.del_inter_file_select = self.add(del_inter_file_select, max_height=4, name = "Delete intermediate file", scroll_exit=True, values = ["Yes","No"],editable = False, hidden=True)
         
-        self.RunBox = self.add(RunBox, max_height=self.parentApp.numLinesPager,scroll_exit = True, select_exit=True)
+        self.RunBox = self.add(RunBox, max_height=self.parentApp.numLinesPager,scroll_exit = True, select_exit=True,editable = False)
 
+        self.run_item = self.add(run_item, value="RUN...")
 
         new_handlers = {
             #Set ctrl+Q to exit
@@ -347,16 +332,6 @@ class Run_popup(npyscreen.Popup):
         
         self.display()
 
-    # def OK_Button_RP_run_popup_pressed(self, event):
-    #     self.RunBox.values = []
-    #     self.del_inter_file_select.editable= True
-    #     self.run_item.editable= True
-    #     self.parentApp.RP == "Unset"
-    #     self.parentApp.subprocess_handling_count = 0
-    #     self.parentApp.switchForm("Run_pipeline")
-    #     self.parentApp.RP_on_run_popup = 0
-    #     self.del_inter_file_select.hidden = True
-    #     self.del_inter_file_select.editable = False
 
     def event_value_edited_RP_del_inter_file(self, event):
         try:
@@ -389,6 +364,16 @@ class Run_popup(npyscreen.Popup):
 
         self.display()
 
+
+    def initiate_run(self):
+        self.RunBox.editable = True
+        self.RunBox.display()
+        self.display()
+        self.run_item.editing = False
+        self.run_item.how_exited = -1
+        self.RunBox.editing = True
+        self.RunBox.display()
+        self.display()
 
     def event_value_edited_RP_run_item(self, event):
         try:
@@ -424,6 +409,8 @@ class Run_popup(npyscreen.Popup):
 
 
     def event_value_edited_RP_popup(self, event):
+
+
         if self.parentApp.subprocess_handling_count == 0 or self.parentApp.subprocess_handling_count == 3:
             self.display()
 
@@ -432,6 +419,8 @@ class Run_popup(npyscreen.Popup):
         if self.parentApp.RP == "Run Trimommatic":
             #subprocess has not begun
             if self.parentApp.subprocess_handling_count == 1:
+                self.initiate_run()
+
                 success = None
 
                 pairs_mode = read_config("GENERAL", "pairs_mode")
@@ -495,6 +484,8 @@ class Run_popup(npyscreen.Popup):
 
             #subprocess has not begun
             if self.parentApp.subprocess_handling_count == 1:
+                self.initiate_run()
+
                 success = None
 
                 ToNULL = open(os.devnull, 'w')
@@ -544,6 +535,7 @@ class Run_popup(npyscreen.Popup):
         if self.parentApp.RP == "Run Bismark Mapper":
             #subprocess has not begun
             if self.parentApp.subprocess_handling_count == 1:
+                self.initiate_run()
                 success = None
  
                 # running preparing files
@@ -603,6 +595,7 @@ class Run_popup(npyscreen.Popup):
         #QC-Bam report
         if self.parentApp.RP == "Run QC-Bam report":
             if self.parentApp.subprocess_handling_count == 1:
+                self.initiate_run()
                 success = None
  
                 try:
@@ -651,6 +644,7 @@ class Run_popup(npyscreen.Popup):
         if self.parentApp.RP == "Run Bismark-deduplicate":
 
             if self.parentApp.subprocess_handling_count == 1:
+                self.initiate_run()
                 success = None
  
                 try:
@@ -709,6 +703,7 @@ class Run_popup(npyscreen.Popup):
         #Bismark Meth. Extractor
         if self.parentApp.RP == "Run Bismark Meth. Extractor":
             if self.parentApp.subprocess_handling_count == 1:
+                self.initiate_run()
                 success = None
  
                 try:
@@ -770,6 +765,7 @@ class Run_popup(npyscreen.Popup):
         #CX reports
         if self.parentApp.RP == "Generate CX reports":
             if self.parentApp.subprocess_handling_count == 1:
+                self.initiate_run()
                 success = None
  
                 # running preparing files
@@ -821,6 +817,7 @@ class Run_popup(npyscreen.Popup):
         #Methimpute
         if self.parentApp.RP == "Run Methimpute":
             if self.parentApp.subprocess_handling_count == 1:
+                self.initiate_run()
                 success = None
  
                 try:
@@ -869,8 +866,6 @@ class Run_popup(npyscreen.Popup):
                 self.RunBox.display()
 
 
-
-
     def on_cancel(self, _input):
         self.parentApp.setNextForm("Run_pipeline")
 
@@ -879,7 +874,6 @@ class Run_popup(npyscreen.Popup):
 
     def exit_func(self, _input):
         exit(0)
-
 
 
 def check_empty_dir(path, pattern):
@@ -898,9 +892,7 @@ def check_empty_dir(path, pattern):
         message(2, "something is going wrong... please run again. ")
 
 
-
 def Trimmomatic_info():
-
     s = "If you need to change the following Trimmomatic settings then please go back to configuration. \n\n" \
     "Configured Java location: " + read_config("Trimmomatic", "java_path") + "\n" \
     "Trimmomatic path: " + read_config("Trimmomatic", "trim_path") + "\n" \
@@ -912,7 +904,7 @@ def Trimmomatic_info():
     "Trimmomatic SLIDINGWINDOW: " + read_config("Trimmomatic", "SLIDINGWINDOW") + "\n" \
     "Trimmomatic MINLEN: " + read_config("Trimmomatic", "MINLEN") + "\n" \
     "Trimmomatic Threading: " + read_config("Trimmomatic", "n_th") + "\n" \
-    "Parallel mode is: " + read_config("GENERAL", "parallel_mode") + "\n\n" \
+    "Parallel mode is: " + true_false_fields_config(read_config("GENERAL", "parallel_mode"), False) + "\n\n" \
 
     status = int(read_config("STATUS", "st_trim"))
     pairs_mode = read_config("GENERAL", "pairs_mode")
@@ -938,7 +930,7 @@ def Trimmomatic_info():
 def QC_FastQ_report_info():
     s = "If you need to change please back to the configuration part. \n\n" \
     "- Fastq Path: " + read_config("GENERAL", "fastq_path") + " \n" \
-    "- Parallel mode is:" + read_config("GENERAL", "parallel_mode") + "  \n\n" \
+    "- Parallel mode is: " + true_false_fields_config(read_config("GENERAL", "parallel_mode"), False) + "  \n\n" \
     "You can access to the quality control reports under menu, 'Reports' part."
 
     status = int(read_config("STATUS", "st_fastq"))
@@ -954,13 +946,13 @@ def QC_FastQ_report_info():
 
 def Bismark_mapper_info():
     s = "If you need to change please back to the configuration part. \n\n" \
-    "- bismark location: " + read_config("Bismark", "bismark_path") + "\n" \
-    "   -- Nucleotide Enabled: " + read_config("Bismark", "nucleotide") + "\n" \
+    "- Bismark location: " + read_config("Bismark", "bismark_path") + "\n" \
+    "   -- Nucleotide: " + true_false_fields_config(read_config("Bismark", "nucleotide"), False) + "\n" \
     "   -- Buffer size: " +  read_config("Bismark", "buf_size") + "\n" \
     "   -- Number of Parallel: " + read_config("Bismark", "bis_parallel") + " \n" \
     "- Reference Genome is: " + read_config("GENERAL", "genome_ref") + "/" + read_config("GENERAL", "genome_name") + "\n" \
-    "- Parallel mode is:" + read_config("GENERAL", "parallel_mode")  + "\n" \
-    "- Bismark run pair: " + read_config("Bismark", "run_pair_bismark") +"\n" \
+    "- Parallel mode: " + true_false_fields_config(read_config("GENERAL", "parallel_mode"), False)  + "\n" \
+    "- Bismark run pair: " + true_false_fields_config(read_config("Bismark", "run_pair_bismark"), False) +"\n" \
 
     status = int(read_config("STATUS", "st_bismark"))
 
@@ -975,9 +967,9 @@ def Bismark_mapper_info():
     return s
 
 def QC_BAM_report_info():
-    s = "If you need to change please back to the configuration part. \n\n " \
-    "- Fastq Path: " + read_config("GENERAL", "fastq_path") + " \n " \
-    "- Parallel mode is: " +  read_config("GENERAL", "parallel_mode") + " \n\n " \
+    s = "If you need to change please back to the configuration part.\n\n" \
+    "- Fastq Path: " + read_config("GENERAL", "fastq_path") + "\n" \
+    "- Parallel mode: " +  true_false_fields_config(read_config("GENERAL", "parallel_mode"), False) + " \n\n" \
     "You can access to the quality control reports under menu, 'Reports' part. \n "
 
     status = int(read_config("STATUS", "st_fastqbam"))
@@ -994,10 +986,10 @@ def QC_BAM_report_info():
     return s
 
 def Bismark_deduplication_info():
-    s = "If you need to change please back to the configuration part. \n\n " \
-    "- bismark location: " + read_config("Bismark", "bismark_path") + "  \n" \
-    "- Parallel mode is: " + read_config("GENERAL", "parallel_mode") + " \n " \
-    "-- Number of Jobs: " + read_config("GENERAL", "npar") + "\n" 
+    s = "If you need to change please back to the configuration part. \n\n" \
+    "- Bismark location: " + read_config("Bismark", "bismark_path") + "  \n" \
+    "- Parallel mode: " + true_false_fields_config(read_config("GENERAL", "parallel_mode"), False) + " \n " \
+    "     -- Number of Parallel Jobs: " + read_config("GENERAL", "npar") + "\n" 
 
     status = int(read_config("STATUS", "st_bisdedup"))
 
@@ -1009,14 +1001,13 @@ def Bismark_deduplication_info():
             s +=  "\nIt seems you have results for quality control for Bismark-aligned bam files."
             s += "You can re-run this part, but we recommend move the files to another folder and run again. \n"
             s += "WARNING: The directory is not empty,re-running this part might loosing the existing data!"
-        else:
-            s +=  "Running Bismark deduplicate ... "
 
     return s
 
+
 def Bismark_meth_extractor_info():
-    s = "If you need to change please back to the configuration part. \n\n " \
-    "- bismark location: " + read_config("Bismark", "bismark_path") + "\n" \
+    s = "If you need to change please back to the configuration part. \n\n" \
+    "- Bismark location: " + read_config("Bismark", "bismark_path") + "\n" \
 
     status = int(read_config("STATUS", "st_bismeth"))
 
@@ -1035,7 +1026,7 @@ def Bismark_meth_extractor_info():
 
 def Generate_CX_reports_info():
     s = "CpG (CX) context report. \n\n"
-    s += "Note: by default we're generating CX-report,So, you can skip the 'Generate CX reports' from the run Menu. \n"
+    s += "Note: by default we're generating CX-reports, so you can skip the 'Generate CX reports' from the run Menu. \n"
     status = int(read_config("STATUS", "st_cx"))
 
     if status == 1:
@@ -1049,13 +1040,13 @@ def Generate_CX_reports_info():
     return s
 
 def Methimpute_info():
-    s = "Run Methimpute \n\n"
+    s = "Run Methimpute. \n\n"
 
     # cheking Rdata in folder
     if len(check_empty_dir("rdata", "*.RData")) > 0:
-        s += "founded RData files."
+        s += "found RData files."
     else:
-        s += "There is no '.RData' files inside the r-data folder, please copy the files."
+        s += "There are no '.RData' files inside the r-data folder, please copy the files."
 
     status = int(read_config("STATUS", "st_methimpute"))
 
@@ -1117,7 +1108,10 @@ class Run_pipeline(npyscreen.FormBaseNew):
 
         new_handlers = {
             #Set ctrl+Q to exit
-            "^Q": self.exit_func
+            "^Q": self.exit_func,
+
+            #Set ctrl+B to go back to the main form
+            "^B": self.back_to_main_form
         }
         self.add_handlers(new_handlers)
 
@@ -1183,4 +1177,6 @@ class Run_pipeline(npyscreen.FormBaseNew):
     def exit_func(self, _input):
         exit(0)
 
+    def back_to_main_form(self, _input):
+        self.parentApp.switchForm("MAIN")
 
