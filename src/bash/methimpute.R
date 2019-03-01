@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-
+rm(list=ls())
 source("./src/bash/r-lib.R")
 
 # reading base directory from config.cfg

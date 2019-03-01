@@ -88,7 +88,7 @@ for fq in "${arr[@]}"
 #------------------------------------ Renaming
 for file in $(ls -1v $tmp_bismap/*.bam)
 	do
-		label=$(echo $(echo $file | sed 's/.*\///') | sed -e "s/_bismark_bt2_pe.bam//g")
+		label=$(echo $(echo $file | sed 's/.*\///') | sed -e "s/_bismark_bt2.bam//g")
 		##tmp=$(echo $label | sed "s/_paired_.//g")
 		#tmp=$(echo $file | sed 's/.*\///')
 		#fname=$(echo ${tmp%%.*})

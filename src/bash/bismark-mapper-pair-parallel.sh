@@ -1,7 +1,8 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-. $curr_dir/tmp.conf
+. $curr_dir/detect.sh Bismark-mapper;
+. $curr_dir/tmp.conf;
 
 ## Bismark Mapper
 #-------------------------------------------------------------------------------
@@ -46,13 +47,6 @@ else
 fi
 
 #-------------------------------------------------------------------------------
-# Detecting number of cores 
-npar=$(cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l)
-var=$(expr $npar / 22)
-npar=$(echo $var|awk '{print int($1+0.5)}')
-if [ $npar -eq 0 ]; then
-        npar=1;
-fi
 #-------------------------------------------------------------------------------
 #changing directory to write in folder path
 
@@ -73,6 +67,7 @@ if $run_pair_bismark; then
 		label=$(echo $(echo $2 | sed 's/.*\///') | sed -e "s/_paired$first_pattern//g")
 		path=$(echo $(echo $2 | sed -e 's:[^/]*$::'))
 		echo $label >> $tmp_clog/bismark-mapper.log
+		instart=$(date +%s)
 		file1=$label"_paired$first_pattern"
 		file2=$label"_unpaired$first_pattern"
 		file3=$label"_paired$secnd_pattern"
@@ -91,7 +86,7 @@ if $run_pair_bismark; then
 			echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
 			echo $tmp_fq/$file3 >> $tmp_bismap/list-finished.lst;
 			echo $tmp_fq/$file4 >> $tmp_bismap/list-finished.lst;
-			echo "Bismark for $file1 , $file2 , $file3 , $file4 finished. Duration time $((($(date +%s)-$start)/60)) Minutes." >> $tmp_clog/bismark-mapper.log
+			echo "Bismark for $file1 , $file2 , $file3 , $file4 finished. Duration time $((($(date +%s)-$instart)/60)) Minutes." >> $tmp_clog/bismark-mapper.log
 			   
 		}
 

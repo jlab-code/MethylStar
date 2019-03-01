@@ -39,7 +39,7 @@ if $parallel_mode; then
 		echo  "Running ..." $label >> $tmp_clog/trimmomatic.log;
 		run=$($java_path -jar $trim_jar $end_mode -threads $n_th -phred33  $2 $tmp_fq/$label.fq.gz ILLUMINACLIP:$name_adap:$ill_clip LEADING:$LEADING TRAILING:$TRAILING SLIDINGWINDOW:$SLIDINGWINDOW MINLEN:$MINLEN 2>&1 | tee  $tmp_log/trimmomatic-log-$label.log)
 		
-		getinfo=$(echo $(sed -n -e 5p $tmp_log/trimmomatic-log-$label.log))
+		getinfo=$(echo $(sed -n -e 6p $tmp_log/trimmomatic-log-$label.log))
 		echo $label ":" $getinfo >> $tmp_clog/trimmomatic.log;
 		echo $2 >> $tmp_fq/list-finished.lst;
 								   
@@ -60,7 +60,7 @@ else
 			tmp=$(echo $file| sed 's/.*\///')
 			label=$(echo ${tmp%%.*})
 			run=$($java_path -jar $trim_jar $end_mode -threads $n_th -phred33  $file $tmp_fq/$label.fq.gz ILLUMINACLIP:$name_adap:$ill_clip LEADING:$LEADING TRAILING:$TRAILING SLIDINGWINDOW:$SLIDINGWINDOW MINLEN:$MINLEN 2>&1 | tee $tmp_log/trimmomatic-log-$label.log)
-			getinfo=$(echo $(sed -n -e 5p $tmp_log/trimmomatic-log-$label.log))
+			getinfo=$(echo $(sed -n -e 6p $tmp_log/trimmomatic-log-$label.log))
 			echo $label ":" $getinfo >> $tmp_clog/trimmomatic.log;
 			echo $file >> $tmp_fq/list-finished.lst;
 			runtime=$((($(date +%s)-$start)/60))

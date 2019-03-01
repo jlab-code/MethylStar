@@ -6,7 +6,6 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 
 #-------------------------------------------------------------------------------
 # check point
-
 if [ -f $tmp_fq/list-finished.lst ]
 	then
 		echo "Resuming process ..."  >> $tmp_clog/trimmomatic.log

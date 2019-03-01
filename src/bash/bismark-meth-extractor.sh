@@ -1,7 +1,8 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-. $curr_dir/tmp.conf
+. $curr_dir/detect.sh bismeth;
+. $curr_dir/tmp.conf;
 
 
 : '
@@ -49,6 +50,7 @@ if $parallel_mode; then
 	start=$(date +%s)
 	doit() {
 			. "$1"
+			instart=$(date +%s)
 			echo "Running Bismark meth extractor for $2" >> $tmp_clog/bismark-meth-extract.log
 			tmp=$(echo $2 | sed 's/.*\///')
 			label=$(echo ${tmp%%.*})
@@ -60,14 +62,16 @@ if $parallel_mode; then
 			if $del_inter_file; then
 				echo "Removing intermediate files... " >> $tmp_clog/bismark-meth-extract.log
 				remove_intermediate=$(rm $tmp_dme/*$label*.txt)
-			fi	
+			fi
+			inruntime=$((($(date +%s)-$instart)/60))
+			echo "Bismark meth extractor for $label finished. Duration time $inruntime Minutes." >> $tmp_clog/bismark-meth-extract.log
 
 	}
 	export -f doit
 	par=$(echo $curr_dir/tmp.conf)
 	cat  "$input"  | parallel -j $npar doit "$par"
 	runtime=$((($(date +%s)-$start)/60))
-	echo "Bismark meth extractor finished. Duration time $runtime Minutes." >> $tmp_clog/bismark-meth-extract.log
+	echo "Bismark meth extractor finished. Total time $runtime Minutes." >> $tmp_clog/bismark-meth-extract.log
 
 else
 	totaltime=0
