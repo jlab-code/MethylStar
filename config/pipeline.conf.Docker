@@ -1,10 +1,10 @@
 [GENERAL]
-raw_dataset=/home/shared/datasets
+raw_dataset=/home/shared/rawfiles
 result_pipeline=/home/shared/results
-genome_ref=/home/shared/datasets/reference_genome
+genome_ref=/home/shared/reference_genome
 genome_name=TAIR10_chr_all.fa
 parallel_mode=false
-npar=2
+npar=3
 fastq_path=/home/software/FastQC/fastqc
 number_of_dataset=8
 dataset_size=8.7
