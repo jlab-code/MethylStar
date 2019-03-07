@@ -34,7 +34,7 @@ fi
 
 if [ "$1" = "bismeth" ]; 
 then
-	bis_parallel=8
+	bis_parallel=6
 	if [ $npar -gt 88 ]; then npar=5; bis_parallel=16;
 		elif [ $npar -gt 64 -a $npar -le 88 ]; then npar=4; bis_parallel=16;
 		elif [ $npar -gt 32 -a $npar -le 64 ]; then npar=3; bis_parallel=16;

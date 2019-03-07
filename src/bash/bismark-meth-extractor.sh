@@ -12,20 +12,13 @@ run bismark_methylation_extractor: atypical command to extract context-dependent
 '
 
 #-------------------------------------------------------------------------------
-# Detecting number of cores 
-npar=$(cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l)
-var=$(expr $npar / 22)
-npar=$(echo $var|awk '{print int($1+0.5)}')
-if [ $npar -eq 0 ]; then
-        npar=1;
-fi
-#-------------------------------------------------------------------------------
 #generating up-to-date list of files
-gen=$(ls -1v $tmp_dide/*.bam > $tmp_dme/list-files.lst)
+
 
 if [ -f $tmp_dme/list-finished.lst ]
 	then
 		echo "Resuming process ..." >> $tmp_clog/bismark-meth-extract.log
+		gen=$(ls -1v $tmp_dide/*.bam > $tmp_dme/list-files.lst)
 		a_proc= $(sort $tmp_dme/list-files.lst -o $tmp_dme/list-files.lst)
 		b_proc= $(sort $tmp_dme/list-finished.lst -o $tmp_dme/list-finished.lst)
 		c_proc= $(comm -23 $tmp_dme/list-files.lst $tmp_dme/list-finished.lst > $tmp_dme/tmp.lst)
@@ -37,6 +30,7 @@ if [ -f $tmp_dme/list-finished.lst ]
 		 done < $input;
 	else
 		echo "Starting Bismark methylation extractor ..." > $tmp_clog/bismark-meth-extract.log
+		gen=$(ls -1v $tmp_dide/*.bam > $tmp_dme/list-files.lst)
 		input="$tmp_dme/list-files.lst"								  
 		 while read line
 		 do
