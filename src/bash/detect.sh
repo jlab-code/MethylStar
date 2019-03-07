@@ -19,7 +19,7 @@ fi
 #---------------------
 # Bismark mapper 
 #---------------------
-if [ "$1" = "Bismark-mapper" ]; 
+if [ "$1" = "bismap" ]; 
 then
 	bis_parallel=8
 	if [ $npar -gt 88 ]; then npar=5; bis_parallel=16;

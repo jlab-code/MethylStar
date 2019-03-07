@@ -17,8 +17,8 @@ java_path=/usr/bin/java
 trim_path=/home/software/Trimmomatic-0.38
 trim_jar=/home/software/Trimmomatic-0.38/trimmomatic-0.38.jar
 dir_adap=$trim_path/adapters
-name_adap=/home/software/Trimmomatic-0.38/adapters/TruSeq3-SE.fa
-end_mode=SE
+name_adap=/home/software/Trimmomatic-0.38/adapters/TruSeq3-PE.fa
+end_mode=PE
 ill_clip=1:30:9
 LEADING=20
 TRAILING=20
@@ -34,9 +34,9 @@ bis_parallel=4
 buf_size=40
 nucleotide=true
 intermediate_files=true
-run_pair_bismark=false
-deduplicate=-s
-methextractor=-s
+run_pair_bismark=true
+deduplicate=-p
+methextractor=-p
 del_inter_file=true
 
 [STATUS]

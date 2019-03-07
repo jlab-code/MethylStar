@@ -1,7 +1,7 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-. $curr_dir/detect.sh Bismark-mapper;
+. $curr_dir/detect.sh bismap;
 . $curr_dir/tmp.conf;
 
 ## Bismark Mapper
@@ -104,7 +104,7 @@ else
 		tmp_path=$tmp_bismap/
 		cd "${tmp_path%/*}"
 
-		label=$(echo $(echo $fq | sed 's/.*\///') | sed -e "s/$first_pattern//g")
+		label=$(echo $(echo $2 | sed 's/.*\///') | sed -e "s/$first_pattern//g")
 		file1=$label"$first_pattern"
 		file2=$label"$secnd_pattern"
 		if $nucleotide; then
