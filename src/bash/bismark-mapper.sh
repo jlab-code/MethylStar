@@ -71,11 +71,11 @@ for fq in "${arr[@]}"
 		if $nucleotide; then
 			echo "Nucleotide coverage is enabled." >> $tmp_clog/bismark-mapper.log 
 			echo "Running bismark for $label ..." >> $tmp_clog/bismark-mapper.log
-			result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
+			result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
 		else
 			echo "Nucleotide coverage is disabled." >> $tmp_clog/bismark-mapper.log
 			echo "Running bismark for $label ..." >> $tmp_clog/bismark-mapper.log
-			result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+			result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 		fi
 		#---------------------------------------------------------------------------
 		echo $fq >> $tmp_bismap/list-finished.lst;
