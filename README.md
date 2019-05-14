@@ -1,13 +1,7 @@
----
-output: html_document
----
-```{r figurename, echo=FALSE, out.width = '40%'}
-knitr::include_graphics("docs/MethylStar_logo.png")
-```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+# ![shahryary/MethylStar](docs/MethylStar_logo.png)
+
+
 
 ### An efficient and flexible pipeline for population-level analysis of WGBS data
 
@@ -37,8 +31,8 @@ Here our pipeline comprises of custom bash scripts together with pre-installed s
 
 ### Documentation
 
-1. [Installation and Configuration](installation.html)
-2. [Running The Pipeline](runPipeline.html)
+1. [Installation and Configuration](docs/installation.html)
+2. [Running The Pipeline](docs/runPipeline.html)
 3. [Interpret Outputs/Results](docs/directory.md)
 5. [FAQs](docs/faq.md)
 
