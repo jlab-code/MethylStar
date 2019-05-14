@@ -94,8 +94,8 @@ Here you can download the image file and run by docker:
 
 ``` bash
 $ wget http://jlabdata.org/methylstar.tar.gz
-#file size:
-#md5sum:
+file size: 1.1 Gb
+md5sum: 9cb62d289f30963bf47705c32a71fc8c
 ```
 **Step 4** — Import the image file into docker:
 
@@ -156,4 +156,4 @@ After running the docker file you will be in the main directory of pipeline, at 
 $ python2 run.py
 ```
 
-[For more information about how to use the pipline Please follow this documentation.](docs/main_docs.md)
+[For more information about how to use the pipline Please follow this documentation.](docs/runPipeline.md)
