@@ -1,19 +1,8 @@
 #!/usr/bin/env Rscript
 
-# installing libraries
-if(!any(installed.packages()[,"Package"]=="BiocInstaller") | !any(installed.packages()[,"Package"]=="BiocParallel"))
-  source("https://bioconductor.org/biocLite.R")
-list.of.packages = c("devtools","annotatr","GenomicFeatures","methylKit","data.table","dplyr","doParallel")
-new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) BiocInstaller::biocLite(new.packages)
-# libraries source file 
-req_pkg<-function(packages){
-  new.pkg <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-  if(length(new.pkg)) 
-    install.packages(new.pkg)
-  sapply(list.of.packages, require, character.only = TRUE)
-}
-req_pkg(list.of.packages)
+rm(list=ls())
+options(warn=-1)
+source("./src/bash/r-lib.R")
 #-------------------------------------------------------------
 # test if arguments are supplied
 #-------------------------------------------------------------
@@ -48,7 +37,7 @@ readMethimputeForMethylkit <- function(filename) {
          sep="\t", quote=FALSE, row.names=FALSE, col.names=TRUE)
   print(paste0("Processing",name, " Finished."))
   fileConn<-"file-processed.lst"
-  print(filename, file = fileConn, append = TRUE, sep = "\n" )
+  cat(filename, file = fileConn, append = TRUE, sep = "\n" )
 }
 #-------------------------------------------------------------
 # converts methimpute files to methylkit format if donot exist

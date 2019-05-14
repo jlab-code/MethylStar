@@ -12,7 +12,7 @@ gen=$(ls -1v $tmp_fq/*.gz > $tmp_qcfast/list-files.lst)
 
 if [ -f $tmp_qcfast/list-finished.lst ]
 	then
-		echo "Resuming process ..." >> $tmp_clog/qc-fastq.log
+		echo "Resuming process ..." 
 		a_proc= $(sort $tmp_qcfast/list-files.lst -o $tmp_qcfast/list-files.lst)
 		b_proc= $(sort $tmp_qcfast/list-finished.lst -o $tmp_qcfast/list-finished.lst)
 		c_proc= $(comm -23 $tmp_qcfast/list-files.lst $tmp_qcfast/list-finished.lst > $tmp_qcfast/tmp.lst)
@@ -23,7 +23,7 @@ if [ -f $tmp_qcfast/list-finished.lst ]
 				arr+=("$line")
 			done < $input;
 	else
-		echo "Starting Fasqc-report ..." > $tmp_clog/qc-fastq.log
+		echo "Starting Fasqc-report ..." 
 		input="$tmp_qcfast/list-files.lst"
 		while read line
 		do
@@ -35,12 +35,12 @@ fi
 if $parallel_mode; then
 	#running in parallel mode
 	start=$(date +%s)
-	echo "Running in Parallel mode, number of jobs: $npar ." >> $tmp_clog/qc-fastq.log
+	echo "Running in Parallel mode, number of jobs: $npar " 2>&1 | tee -a $tmp_clog/qc-fastq.log
 	doit() {
 
 		. "$1"
 		label=$(echo $(echo $2 |sed 's/.*\///') | sed -e 's/.fq.gz//g')
-		echo "Running fastQC report for $label ..." >> $tmp_clog/qc-fastq.log
+		echo "Running fastQC report for $label ..." 
 		fast=$($fastq_path --noextract -f fastq $2 -o $tmp_qcfast)
 		echo $2 >> $tmp_qcfast/list-finished.lst;
 	}
@@ -49,24 +49,25 @@ if $parallel_mode; then
 	cat  "$input"  | parallel -j $npar doit "$par"
 	end=$(date +%s)
 	runtime=$((($(date +%s)-$start)/60))
-	echo "FastqC report finished. Duration $runtime Minutes." >> $tmp_clog/qc-fastq.log;
-	
+	echo "FastqC report finished. Duration $runtime Minutes." 2>&1 | tee -a $tmp_clog/qc-fastq.log;
+	echo "You can find the results in $tmp_qcfast folder."
+
 else
 #running in single mode
-	echo "running in single mode!" >> $tmp_clog/qc-fastq.log
+	echo "Running in single mode. (parallel mode disabled.)"
 	start=$(date +%s)
 	for fq in "${arr[@]}"
 		do
 		# get file name -extension
 		label=$(echo $(echo $fq |sed 's/.*\///') | sed -e 's/.fq.gz//g')
-		echo "Running fastQC report for $label ..." >> $tmp_clog/qc-fastq.log
+		echo "Running fastQC report for $label ..." 2>&1 | tee -a $tmp_clog/qc-fastq.log
 		fast=$($fastq_path --noextract -f fastq $fq -o $tmp_qcfast)
 		echo $fq >> $tmp_qcfast/list-finished.lst
 		done
 	end=$(date +%s)
 	runtime=$((($(date +%s)-$start)/60))
-	echo "QC report finished in $runtime minutes." >> $tmp_clog/qc-fastq.log
-	echo "You can find the results in $tmp_qcfast folder." >> $tmp_clog/qc-fastq.log
+	echo "QC report finished in $runtime minutes." 2>&1 | tee -a $tmp_clog/qc-fastq.log
+	echo "You can find the results in $tmp_qcfast folder."
 	
 
 fi
@@ -76,9 +77,13 @@ then
 	remove=$(rm $tmp_qcfast/tmp.lst)
 fi
 
-sed -i "s/st_fastq=.*/st_fastq=3/g" config/pipeline.conf
 
-if [ -f $tmp_qcfast/list-finished.lst ]
-then 
+
+# check if everyfiles done then delete queue list 
+if [ -z $(comm -23 <(sort -u $tmp_qcfast/list-files.lst) <(sort -u $tmp_qcfast/list-finished.lst)) ]  
+then
+	com=$(sed -i "s/st_fastq=.*/st_fastq=2/g" config/pipeline.conf)
 	remove=$(rm $tmp_qcfast/list-finished.lst)
 fi
+
+

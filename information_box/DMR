@@ -1,5 +1,0 @@
-MethylStar performs methylation state calling using METHimpute, a Hidden Markov Model (HMM) based imputation algorithm that enables the construction of complete methylomes irrespective of sequencing depths or coverage.
-
-In addition to cytosine-resolution calls, MethylStar offers options for converting METHimpute output files for input into DMR callers such as Methylkit and DMRcaller.
-
-METHimpute output can also be converted to bigwig format for visualization using JBROWSE.

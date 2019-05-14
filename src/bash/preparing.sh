@@ -36,14 +36,11 @@ if [ ! -d $raw_dataset ]; then
 fi
 
 if [ ! -d $result_pipeline ]; then
-	mkdir  -p $result_pipeline
-	chmod 777 -R $result_pipeline
+	mkdir -p $result_pipeline
 	echo "creating result folder in $result_pipeline"
 	echo "All the results will save in $result_pipeline folder"
 
 fi
-
-
 
 #creating folders
 if [ ! -d $tmp_fq ]; then
@@ -115,10 +112,11 @@ fi
 if [ ! -d $tmp_bigwig ]; then
 		mkdir $tmp_bigwig
 fi
-
+: '
 if [ -d $result_pipeline ]; then
 	chmod 777 -R $result_pipeline
 fi
+'
 # reading all raw-files and creating a list, the script will be read this file and start to process the file. ("list-files")
 # the first script is "trimmomatic" so the file that we created above will be feed to this script.
 # The "list-files.txt"  is in '$tmp_fq' folder.

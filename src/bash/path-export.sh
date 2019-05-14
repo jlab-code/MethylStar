@@ -23,6 +23,5 @@ if ! [ -x "$(command -v samtools)" ]; then
   exit 1
  else 
  	sam=$(echo $(command -v samtools)) 
- 	echo $sam
 	export PATH="$PATH:$sam"
 fi

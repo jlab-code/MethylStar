@@ -40,19 +40,20 @@ methextractor=-p
 del_inter_file=true
 
 [STATUS]
-st_prep=1
-st_trim=3
-st_fastq=3
-st_bismark=3
-st_fastqbam=3
-st_bisdedup=3
-st_bismeth=3
-st_cx=3
-st_methimpute=3
-st_dmrcaller=3
-st_bigwig=3
-st_bedgraph=3
-st_methykit=3
+st_prep=0
+st_trim=0
+st_fastq=0
+st_bismark=0
+st_fastqbam=0
+st_bisdedup=0
+st_bissort=0
+st_bismeth=0
+st_cx=0
+st_methimpute=0
+st_dmrcaller=0
+st_bigwig=0
+st_bedgraph=0
+st_methykit=0
 
 [Methimpute]
 intermediate=true
@@ -61,6 +62,7 @@ fit_output=true
 enrichment_plot=true
 TES_report=true
 genes_report=true
+mincov=1
 
 [DMR]
 file=0

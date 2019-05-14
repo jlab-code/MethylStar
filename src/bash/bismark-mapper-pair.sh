@@ -4,58 +4,15 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 . $curr_dir/tmp.conf
 
 
-## Bismark Mapper
+## Bismark Mapper- pair mode none-parallel 
 #-------------------------------------------------------------------------------
-gen=$(ls -1v $tmp_fq/*.gz > $tmp_bismap/list-files.lst)
-if [ -f $tmp_bismap/list-finished.lst ]
-	then
-		echo "Resuming process ..." >> $tmp_clog/bismark-mapper.log
-		proc_a= $(sort $tmp_bismap/list-files.lst -o $tmp_bismap/list-files.lst)
-		proc_b= $(sort $tmp_bismap/list-finished.lst -o $tmp_bismap/list-finished.lst)
-		proc_c= $(comm -23 $tmp_bismap/list-files.lst $tmp_bismap/list-finished.lst > $tmp_bismap/tmp.lst)
-		input="$tmp_bismap/tmp.lst"
-		while read line
-			do
-				arr+=("$line")
-			done < $input;
-	else
-		echo "Starting Bismark mapper ..." > $tmp_clog/bismark-mapper.log
-		input="$tmp_bismap/list-files.lst"
-		gen=$(cp $tmp_bismap/list-files.lst  $tmp_bismap/tmp.lst)
-		while read line
-		do
-			arr+=("$line")
-		done < $input;
-	fi
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------	
-## Creating reference genome folders FOR FIRST TIME
-if [ ! -d $genome_ref/Bisulfite_Genome ]; then
-	echo "Preparing reference genome ...." >> $tmp_clog/bismark-mapper.log
-	gen=$($bismark_path/bismark_genome_preparation --verbose $genome_ref/)
-	current_modified=$(stat -c "%Y" $genome_ref/$genome_name)
-	sed -i "s/modified_time=.*/modified_time=$current_modified/g" config/pipeline.conf
-	com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-	. $curr_dir/tmp.conf
+# delete temp file from directory 
+
+if [ `ls $tmp_bismap/*temp* 2>/dev/null | wc -l ` -gt 0   ]
+then 
+	remove=$(rm $tmp_bismap/*temp*)
 fi
-
-## Checking if the references genome "TAIR10_chr_all.fa" is modified!
-## if modified then regenerate the reference genome.
-
-current_modified=$(stat -c "%Y" $genome_ref/$genome_name)
-if [ "$modified_time" -lt "$current_modified" ]; then
-	sed -i "s/modified_time=.*/modified_time=$current_modified/g" config/pipeline.conf
-	echo "The reference file modified, generating the new one..." >> $tmp_clog/bismark-mapper.log;
-	gen=$($bismark_path/bismark_genome_preparation --verbose $genome_ref/)
-	com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-	. $curr_dir/tmp.conf
-else
-     echo "No changes in Ref.genome." >> $tmp_clog/bismark-mapper.log ;
-
-fi
-
-#-------------------------------------------------------------------------------
-
+input="$tmp_bismap/tmp.lst"
 #-------------------------------------------------------------------------------
 #changing directory to write in folder path
 tmp_path=$tmp_bismap/
@@ -74,24 +31,24 @@ if $run_pair_bismark; then
 			file3=$label"_paired$secnd_pattern"
 			file4=$label"_unpaired$secnd_pattern"
 			if $nucleotide; then
-				echo "Nucleotide coverage is enabled." >> $tmp_clog/bismark-mapper.log  
-				echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." >> $tmp_clog/bismark-mapper.log
+				echo "Nucleotide coverage is enabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log  
+				echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 				result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
 			else
-				echo "Nucleotide coverage is disabled." >> $tmp_clog/bismark-mapper.log
-				echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." >> $tmp_clog/bismark-mapper.log
+				echo "Nucleotide coverage is disabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+				echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 				result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 			fi	
 			echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
 			echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
 			echo $tmp_fq/$file3 >> $tmp_bismap/list-finished.lst;
 			echo $tmp_fq/$file4 >> $tmp_bismap/list-finished.lst;
-			echo "Bismark for $file1 , $file2 , $file3 , $file4 finished." >> $tmp_clog/bismark-mapper.log
+			echo "Bismark for $file1 , $file2 , $file3 , $file4 finished." 
 			runtime=$((($(date +%s)-$start)/60)) 
 			echo "Bismark for $file1 , $file2 , $file3 , $file4 finished. Duration time $runtime Minutes." >> $tmp_clog/bismark-mapper.log
 			totaltime=$(($runtime + $totaltime))
 		done
-		echo "Bismark Mapper finished. Duration $totaltime Minutes." >> $tmp_clog/bismark-mapper.log
+		echo "Bismark Mapper finished. Total time $totaltime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 		
 else
 	# start to run bismark mapper JUST FOR TWO PAIR
@@ -103,21 +60,21 @@ else
 			file1=$label"$first_pattern"
 			file2=$label"$secnd_pattern"
 			if $nucleotide; then
-				echo "Nucleotide coverage is enabled." >> $tmp_clog/bismark-mapper.log 
-				echo "Running bismark for $file1 and $file2 ..." >> $tmp_clog/bismark-mapper.log
+				echo "Nucleotide coverage is enabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log 
+				echo "Running bismark for $file1 and $file2 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 				result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
 			else
-				echo "Nucleotide coverage is disabled." >> $tmp_clog/bismark-mapper.log
-				echo "Running bismark for $file1 and $file2 ..." >> $tmp_clog/bismark-mapper.log
+				echo "Nucleotide coverage is disabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+				echo "Running bismark for $file1 and $file2 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 				result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 			fi
 			echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
 			echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
 			runtime=$((($(date +%s)-$start)/60))
-			echo "Bismark for $file1 and $file2 finished. Duration time $runtime Minutes." >> $tmp_clog/bismark-mapper.log
+			echo "Bismark for $file1 and $file2 finished. Duration time $runtime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 			totaltime=$(($runtime + $totaltime))
 		done
-		echo "Bismark Mapper done. Total running time $totaltime Minutes." >> $tmp_clog/bismark-mapper.log
+		echo "Bismark Mapper done. Total running time $totaltime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 
 	
 fi
@@ -127,7 +84,7 @@ then
 	remove=$(rm $tmp_bismap/tmp.lst)
 fi
 
-echo "Bismark part finished. Please check the $tmp_bismap directory for logs." >> $tmp_clog/bismark-mapper.log
+echo "Bismark part finished. Please check the $tmp_bismap directory for logs." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 
 
 
@@ -149,10 +106,17 @@ for file in $(ls -1v $tmp_bismap/*.txt)
 	done
 #--------------------------------------
 cd -
-sed -i "s/st_bismark=.*/st_bismark=3/g" config/pipeline.conf
-
-if [ -f $tmp_bismap/list-finished.lst ]
+if [ -f $tmp_bismap/tmp.lst ]
 then 
+	remove=$(rm $tmp_bismap/tmp.lst)
+fi
+
+# check if everyfiles finished, then delete queue list 
+if [ -z $(comm -23 <(sort -u $tmp_bismap/list-files.lst) <(sort -u $tmp_bismap/list-finished.lst)) ]  
+then
+	com=$(sed -i "s/st_bismark=.*/st_bismark=2/g" config/pipeline.conf)
 	remove=$(rm $tmp_bismap/list-finished.lst)
 fi
+
+
 

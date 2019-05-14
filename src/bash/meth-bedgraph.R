@@ -1,19 +1,7 @@
 #!/usr/bin/env Rscript
-
-# installing libraries
-if(!any(installed.packages()[,"Package"]=="BiocInstaller") | !any(installed.packages()[,"Package"]=="BiocParallel"))
-  source("https://bioconductor.org/biocLite.R")
-list.of.packages = c("doParallel","data.table","dplyr")
-new.packages = list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) BiocInstaller::biocLite(new.packages)
-# libraries source file 
-req_pkg<-function(packages){
-  new.pkg <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-  if(length(new.pkg)) 
-    install.packages(new.pkg)
-  sapply(list.of.packages, require, character.only = TRUE)
-}
-req_pkg(list.of.packages)
+rm(list=ls())
+options(warn=-1)
+source("./src/bash/r-lib.R")
 #-------------------------------------------------------------
 # test if arguments are supplied
 #-------------------------------------------------------------
@@ -21,17 +9,11 @@ args <- commandArgs(trailingOnly = TRUE)
 wd = args[1] 
 setwd(paste0(wd,"/bedgraph-fromat"))
 output=(paste0(wd,"/bedgraph-fromat/"))
-#-----------------------------------------------------
-# logging part
-log_file <-(paste0(wd,"/logs/meth-bedgraph.log"))
-con <-file(log_file, open="wt")
-sink(con, type = c("output", "message")) 
 #----------------------------------------------------
 # function for reading methimpute files into Methylkit
 #-----------------------------------------------------
 MethimputeTobedGraph <- function(file1, file2) {
-  sink(con, type = c("output", "message"), append=TRUE)
-  print(paste0("Reading Methimpute file: ", file1))
+  cat(paste0("Reading Methimpute file: ", file1))
   fname <- fread(file1, skip = 0, header = TRUE)
   fChrlen <- fread(file2, skip = 0, header = FALSE)
   name <- gsub(pattern = "\\.txt$", "", basename(file1))
@@ -85,10 +67,8 @@ print(paste0("Max. of cores to use to proccess the files: ",no_cores))
 cl <- makeCluster(no_cores, type="FORK")  
 registerDoParallel(cl)
 result<-foreach(i=1:length(files_to_go$V1)) %dopar% MethimputeTobedGraph(files_to_go$V1[i:i],chrom_sizes)
-sink(con,type = c("output", "message"), append=TRUE)
 stopCluster(cl)  
 print("Cleaning list and workspace.")
 print("Proccessing files done!")
-sink()
 rm(list=ls())
 #gc(reset=TRUE)

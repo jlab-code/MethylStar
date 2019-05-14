@@ -3,7 +3,7 @@ output:
   html_document: default
   pdf_document: default
 ---
-<img src="MethylStar_logo.png" alt="drawing" width="250"/>
+<img src="docs/MethylStar_logo.png" alt="drawing" width="250"/>
 
 ### An efficient and flexible pipeline for population-level analysis of Whole Genome Bisulfite Sequencing (WGBS) data
 

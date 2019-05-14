@@ -4,12 +4,11 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 . $curr_dir/tmp.conf
 
 
-Rscript ./src/bash/methylkit.R $result_pipeline --no-save --no-restore --verbose > $tmp_clog/methylkit.log
-sed -i "s/st_methykit=.*/st_methykit=3/g" config/pipeline.conf
+Rscript ./src/bash/methylkit.R $result_pipeline --no-save --no-restore --verbose 
 
-if [ -f $tmp_methyl_fmt/file-processed.lst ]
-then 
+# check if everyfiles done then delete queue list 
+if [ -z $(comm -23 <(sort -u $tmp_methyl_fmt/list-files.lst) <(sort -u $tmp_methyl_fmt/file-processed.lst)) ]  
+then
+	com=$(sed -i "s/st_methykit=.*/st_methykit=2/g" config/pipeline.conf)
 	remove=$(rm $tmp_methyl_fmt/file-processed.lst)
 fi
-
-

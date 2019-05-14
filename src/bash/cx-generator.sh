@@ -54,7 +54,7 @@ if $parallel_mode; then
 			echo "CX-reports generated . Total time $runtime minutes." >> $tmp_clog/cx-report.log
 			echo "You can find the result in $tmp_cx_report folder." >> $tmp_clog/cx-report.log				
 	else
-			echo "Running in single mode!"  >> $tmp_clog/cx-report.log	
+			echo "Running in single mode.(Parallel mode disabled.)"  >> $tmp_clog/cx-report.log	
 			totaltime=0
 			for cx in "${arr[@]}"
 			do
@@ -77,8 +77,10 @@ if [ -f $tmp_cx_report/tmp.lst ]
 then 
 	remove=$(rm $tmp_cx_report/tmp.lst)
 fi
-sed -i "s/st_cx=.*/st_cx=3/g" config/pipeline.conf
-if [ -f $tmp_cx_report/list-finished.lst ]
-then 
+
+# check if everyfiles done then delete queue list 
+if [ -z $(comm -23 <(sort -u $tmp_cx_report/list-files.lst) <(sort -u $tmp_cx_report/list-finished.lst)) ]  
+then
+	com=$(sed -i "s/st_cx=.*/st_cx=2/g" config/pipeline.conf)
 	remove=$(rm $tmp_cx_report/list-finished.lst)
 fi

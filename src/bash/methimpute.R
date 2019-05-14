@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 rm(list=ls())
-source("./src/bash/r-lib.R")
+source("./src/bash/meth-r-lib.R")
 
 # reading base directory from config.cfg
 args <- commandArgs(trailingOnly = TRUE)
@@ -26,13 +26,12 @@ fileName <-fread("list-files.lst",skip = 0,header = FALSE)
 #-------------------------------------------------
 modifiedexportMethylome <- function( model, filename, original_file) {
   data <- model$data
-  df <-  methods::as(data, 'data.frame')
+  df <- methods::as(data, 'data.frame')
   df <- df[,c('seqnames', 'start', 'strand', 'context', 'counts.methylated', 'counts.total', 'posteriorMax', 'posteriorMeth', 'posteriorUnmeth', 'status','rc.meth.lvl')]
-  #df$seqnames <- as.numeric(as.character(df$seqnames))
+  df <- df %>% mutate_if(is.factor, as.character)
   # ------------ reading CX file
   col.names <- c("seqnames","start","context.trinucleotide")
-  Cx <- fread(original_file, skip=0, sep='\t', col.names =col.names, select=c(1,2,7) )
-  #Cx$seqnames <- as.numeric(as.character(Cx$seqnames))
+  Cx <- fread(original_file, skip=0, sep='\t', col.names =col.names, select=c(1,2,7), stringsAsFactors = FALSE )
   # applying CX column
   final_dataset <- df %>% left_join(Cx, by = c("seqnames", "start"))
   #------------------------
@@ -46,16 +45,6 @@ modifiedexportMethylome <- function( model, filename, original_file) {
   final_dataset$status<-str_replace_all(final_dataset$status, pattern = "Unmethylated", replacement = "U") # all
   final_dataset$status<-str_replace_all(final_dataset$status, pattern = "Intermediate", replacement = "I") # all
   final_dataset$status<-str_replace_all(final_dataset$status, pattern = "Methylated", replacement = "M") # all
-
-  # final_dataset <- data.frame(lapply(final_dataset, function(x) {
-  #   gsub("Methylated", "M", x)
-  # }),stringsAsFactors=F)
-  # final_dataset <- data.frame(lapply(final_dataset, function(x) {
-  #   gsub("Intermediate", "I", x)  
-  # }),stringsAsFactors=F)
-  # final_dataset <- data.frame(lapply(final_dataset, function(x) {
-  # gsub("Unmethylated", "U", x)
-  # }),stringsAsFactors=F)
   #-------------------------------------------------------------
   # take 4 digit of decimal value posteriorMax column 
   floor_dec <- function(x, level=1) round(x - 5*10^(-level-1), level)
@@ -152,4 +141,3 @@ startCompute <- function(files_to_go) {
 }
 startCompute(files_to_go)
 rm(list=ls())
-#gc(reset=TRUE)
