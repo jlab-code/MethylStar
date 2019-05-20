@@ -77,3 +77,8 @@ then
 	com=$(sed -i "s/st_bismark=.*/st_bismark=2/g" config/pipeline.conf)
 	remove=$(rm $tmp_bismap/list-finished.lst)
 fi
+# docker part 
+if $docker_mode; 
+then
+	perm=$(chmod 777 -R $result_pipeline)
+fi

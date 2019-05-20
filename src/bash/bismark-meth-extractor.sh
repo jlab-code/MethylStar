@@ -104,3 +104,8 @@ then
 	com=$(sed -i "s/st_bismeth=.*/st_bismeth=2/g" config/pipeline.conf)
 	remove=$(rm $tmp_dme/list-finished.lst)
 fi
+# docker part 
+if $docker_mode; 
+then
+	perm=$(chmod 777 -R $result_pipeline)
+fi

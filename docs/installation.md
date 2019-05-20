@@ -156,4 +156,4 @@ After running the docker file you will be in the main directory of pipeline, at 
 $ python2 run.py
 ```
 
-[For more information about how to use the pipline Please follow this documentation.](docs/runPipeline.md)
+[For more information about how to use the pipline Please follow this documentation.](runPipeline.md)

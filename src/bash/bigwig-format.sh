@@ -86,3 +86,8 @@ then
 	com=$(sed -i "s/st_bigwig=.*/st_bigwig=2/g" config/pipeline.conf)
 	remove=$(rm $tmp_bigwig/list-finished.lst)
 fi
+# docker part 
+if $docker_mode; 
+then
+	perm=$(chmod 777 -R $result_pipeline)
+fi

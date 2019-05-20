@@ -21,4 +21,8 @@ then
 	remove=$(rm $tmp_bed/file-processed.lst)
 fi
 
-
+# docker part 
+if $docker_mode; 
+then
+	perm=$(chmod 777 -R $result_pipeline)
+fi

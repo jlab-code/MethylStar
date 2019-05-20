@@ -12,3 +12,9 @@ then
 	com=$(sed -i "s/st_methykit=.*/st_methykit=2/g" config/pipeline.conf)
 	remove=$(rm $tmp_methyl_fmt/file-processed.lst)
 fi
+
+# docker part 
+if $docker_mode; 
+then
+	perm=$(chmod 777 -R $result_pipeline)
+fi
