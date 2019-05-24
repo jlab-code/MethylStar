@@ -94,8 +94,9 @@ Here you can download the image file and run by docker:
 
 ``` bash
 $ wget http://jlabdata.org/methylstar.tar.gz
+last update: May-24-2016
 file size: 1.1 Gb
-md5sum: 9cb62d289f30963bf47705c32a71fc8c
+md5sum: dbe93e80235fbd8ee3c9fae4ab36e3b3
 ```
 **Step 4** — Import the image file into docker:
 
