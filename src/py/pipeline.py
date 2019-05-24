@@ -22,7 +22,7 @@ def pip_menu():
     print "=="*25
     print "Please choose the menu you want to start:\n"
     print qucolor("A. Quick Run ...")
-    print ycolor("\t0.")+" Trimmomatic, QcFastq, Bisamrk(mapper, deduplicate), Methimpute.\n"
+    print ycolor("\t0.")+" Trimmomatic, QcFastq, Bismark(mapper, deduplicate), Methimpute.\n"
     print qucolor("B. Advanced Run ...")
     print ycolor("\t1.")+" Run Trimommatic"
     print ycolor("\t2.")+" Run QC-Fastq-report"

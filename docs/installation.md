@@ -110,7 +110,7 @@ Running the methylstar docker file.
 ``` bash
 $ docker run -it -v /PATH/TO/RAW-FILES/:/home/shared/rawfiles \
                  -v /PATH/TO/results/:/home/shared/results \
-                 methylstar
+                 methylstar:ver.1.1
 ```
 
 NOTE 1: Please change the */PATH/TO/RAW-FILES/* according to the your raw files folder in your system.

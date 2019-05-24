@@ -45,6 +45,7 @@ if $parallel_mode; then
 				. "$1"
 				label=$(echo $(echo "$2" | sed 's/.*\///') | sed -e 's/.bam//g')						
 				# Sleep up to 10 seconds
+				echo ""
 				echo "Running Bismark deduplication report for $label ..." 2>&1 | tee -a $tmp_clog/bismark-deduplicate.log
 				ded=$($bismark_path/deduplicate_bismark $deduplicate --bam  "$2" --output_dir $tmp_dide/ 2>&1 | tee -a $tmp_dide/$label.log )
 				echo $2 >> $tmp_dide/list-finished.lst;   
@@ -65,6 +66,7 @@ else
 			do
 				start=$(date +%s)
 				label=$(echo $(echo $bamfile | sed 's/.*\///') | sed -e 's/.bam//g')
+				echo ""
 				echo "Running Bismark deduplication report for $label ..." 
 				ded=$($bismark_path/deduplicate_bismark	$deduplicate --bam $bamfile --output_dir $tmp_dide/ 2>&1 | tee -a $tmp_dide/$label.log)
 				runtime=$((($(date +%s)-$start)/60))

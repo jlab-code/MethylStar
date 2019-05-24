@@ -43,7 +43,7 @@ def run_methimpute():
         2: successfully run  
         '''
         print(info_methimpute())
-        if int(read_config("STATUS", "st_bissort")) == 2:
+        if int(read_config("STATUS", "st_bissort")) != 2:
             print "==" * 40
             print qucolor("Running Methimpute Part...")
             replace_config("GENERAL", "parallel_mode", "false")
