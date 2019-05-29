@@ -22,10 +22,10 @@ menu_dmr = {}
 # Main menu
 def dmr_menu():
     print "=="*25
-    print "Please choose the menu you want to start:\n"
-    print ycolor("\t1.")+" Convert to DMR Format"
-    print ycolor("\t2.")+" Convert to Methykit Format"
-    print ycolor("\t3.") + " Convert to bedGraph Format (output)"
+    print "Please choose from the menu:\n"
+    print ycolor("\t1.")+" Convert Methimpute output to DMRCaller Format"
+    print ycolor("\t2.")+" Convert Methimpute output to Methylkit Format"
+    print ycolor("\t3.") + " Convert Methimpute output to bedGraph Format"
     print ycolor("\t4.") + " Convert bedGraph to BigWig Format"
 
     print rcolor("B.")+" Back to main Menu\n"

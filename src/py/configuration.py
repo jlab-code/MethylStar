@@ -62,7 +62,7 @@ stored_place={}
 def conf_menu():
     print "=="*25
     print "\nConfiguration part,\n"
-    print "Please choose the option you want to config:\n"
+    print "Please choose from the option:\n"
     print ycolor("\t1.")+" Path: RAW files"
     print ycolor("\t2.")+" Path: Export results"
     print ycolor("\t3.")+" Path: Reference Genome"
@@ -218,10 +218,10 @@ def confirm(config_section, config_value, mcode):
     if not str_conf == '':
         if int(mcode == 33):
             if str_conf != "true":
-                str_conf = "Currently you have files in 'Single-end' case."
+                str_conf = "Currently your files are 'Single-end'."
                 mcode = 3
             else:
-                str_conf = "Currently you have files in 'Paire-end' case."
+                str_conf = "Currently your files are 'Paired-end'."
                 mcode = 3
 
         print "You set the value to: " + mcolor(str_conf)+"\n"
@@ -346,14 +346,14 @@ def result_pipeline():
             print "\nYou have " + mcolor(size[0]) + " M.byte free space in your disk."
             print "The list bellow is recommendation to have Free space in your disk."
             print "(This calculation based on your data-set size.)"
-            print "\nFree space for Trimmomaatic part: " + mcolor(round(per_file * number_of_dataset * 1.2)) + " Gig."
-            print "Free space for Qc-Fastq reports: " + mcolor(round(2 * number_of_dataset)) + " MB."
-            print "Free space for Bismark-mapper part: " + mcolor(round(per_file * number_of_dataset * 1.8)) + " Gig."
-            print "Free space for Qc-Fastq Bam reports: " + mcolor(round(2 * number_of_dataset)) + " MB."
-            print "Free space for Bismark deduplicate: " + mcolor(round(per_file * number_of_dataset * 1.1)) + " Gig."
-            print "Free space for Bismark-Meth-Extractor:" + mcolor(round(per_file * number_of_dataset * 6)) + " Gig."
+            print "\nFree space for Trimmomatic part: " + mcolor(round(per_file * number_of_dataset * 1.2)) + " Gig."
+            print "Free space for QC-Fastq-report: " + mcolor(round(2 * number_of_dataset)) + " MB."
+            print "Free space for Bismark Mapper part: " + mcolor(round(per_file * number_of_dataset * 1.8)) + " Gig."
+            print "Free space for Qc-Fastq Bam report: " + mcolor(round(2 * number_of_dataset)) + " MB."
+            print "Free space for Bismark Deduplication: " + mcolor(round(per_file * number_of_dataset * 1.1)) + " Gig."
+            print "Free space for Bismark Methylation Extractor:" + mcolor(round(per_file * number_of_dataset * 6)) + " Gig."
             print "Free space for Methimpute: " + mcolor(round(per_file * number_of_dataset * 1.4)) + " Gig."
-            print "Free space for Other reports: " + mcolor(round(per_file * number_of_dataset * 100)) + " MB."
+            print "Free space for Other report: " + mcolor(round(per_file * number_of_dataset * 100)) + " MB."
             print bcolors.WARNING + "Note: We recommended at least " \
                   + str(number_of_dataset * 10) + " Gigabyte free space." + bcolors.ENDC
             print "-----" * 20
@@ -443,7 +443,7 @@ def trimmomatic():
             pass
             # find all fasta file from adaptor folder
 
-        print gcolor("--Configuration part for Adaptor--")
+        print gcolor("--Configuration part for Adapter--")
         if confirm("Trimmomatic", "name_adap",3):
             adap_tosearch=read_config("Trimmomatic", "trim_path")
             list_adaptors = []
@@ -708,7 +708,7 @@ def bismark_path():
         Sets nucleotide !
     '''
     print gcolor("--Configuration part for Bismark Nucleotide--")
-    print ycolor("To run Bismark by Nucleotide option please Enable it.")
+    print ycolor("To change the Nucleotide report option please Enable it.")
     if confirm("Bismark", "nucleotide", 3):
         sys.stdout.write(ycolor("\n1")+"-Enable this option.\n")
         sys.stdout.write(ycolor("2")+"-Disable this option.\n")
@@ -745,7 +745,7 @@ def en_di():
 
 def methimpute():
     try:
-        print gcolor("--Running with intermediate--")
+        print gcolor("--Running with intermediate status--")
         if confirm("Methimpute", "intermediate", 3):
             val = en_di()
             replace_config("Methimpute", "intermediate", val)
@@ -753,7 +753,7 @@ def methimpute():
         else:
             pass
 
-        print gcolor("--Generating fit reports--")
+        print gcolor("--Generating quality reports (fit, model convergence, histogram,etc.)--")
         if confirm("Methimpute", "fit_output", 3):
             val = en_di()
             replace_config("Methimpute", "fit_output", val)
@@ -761,7 +761,7 @@ def methimpute():
         else:
             pass
 
-        print gcolor("--Generating enrichment reports--")
+        print gcolor("--Generating enrichment reports( pdf files )--")
         if confirm("Methimpute", "enrichment_plot", 3):
             val = en_di()
             replace_config("Methimpute", "enrichment_plot", val)
@@ -788,7 +788,7 @@ def methimpute():
         else:
             pass
 
-        print gcolor("--Minimum coverage value(quick run)--")
+        print gcolor("--Minimum read coverage value (for quick run)--")
         if confirm("Methimpute", "mincov", 3):
             user_input = raw_input("\nPlease enter the value of min.coverage: ")
             replace_config("Methimpute", "mincov", user_input)
@@ -860,13 +860,15 @@ def show_config():
     print "     -- Buffer size: " + mcolor(read_config("Bismark", "buf_size"))+" Gigabyte."
     print "     -- Samtools Path: " + mcolor(read_config("Bismark", "samtools_path"))
     print "     -- Intermediate for MethExtractor: " +mcolor(true_false_fields_config(read_config("Bismark", "intermediate_files"),""))
+    print "- Methylation extraction parameters( Only for quick run)"
+    print "     -- Minimum read coverage: " + mcolor(read_config("Methimpute", "mincov"))
     print "- Methimpute Part:"
     print "     -- Methimpute Intermediate : " + mcolor(true_false_fields_config(read_config("Methimpute", "intermediate"), ""))
     print "     -- Methimpute Fit reports: " + mcolor(true_false_fields_config(read_config("Methimpute", "fit_output"), ""))
     print "     -- Methimpute Enrichment plots: " + mcolor(true_false_fields_config(read_config("Methimpute", "enrichment_plot"), ""))
     print "     -- Methimpute TEs reports: " + mcolor(true_false_fields_config(read_config("Methimpute", "TES_report"), ""))
     print "     -- Methimpute genes reports: " + mcolor(true_false_fields_config(read_config("Methimpute", "genes_report"), ""))
-    print "     -- Methimpute min.coverage: " + mcolor(read_config("Methimpute", "mincov"))
+    print "     -- Methimpute Context: " + mcolor("All/CHG|CHH|CG")
     print "- Parallel mode is: " +mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"),""))
     print "     -- Number of Parallel: " + mcolor(read_config("GENERAL", "npar"))+" Cores."
 

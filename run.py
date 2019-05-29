@@ -72,8 +72,9 @@ except Exception as e:
 # Main menu
 def main_menu():
     print "=="*25
-    print "\nWelcome,\n"
-    print "Please choose the menu you want to start:\n"
+    print ycolor("\n\tWelcome to MethylStar\n")
+    print "=="*25
+    print "Please choose from the menu:\n"
     print ycolor("\t1.")+" Run Pipeline (WGBS)"
     print ycolor("\t2.")+" Outputs/Reports"
     print ycolor("\t3.")+" Access JBrowse"

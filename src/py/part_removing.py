@@ -19,7 +19,7 @@ menu_remove = {}
 # Main menu
 def rem_menu():
     print "=="*25
-    print "Please choose the menu you want to remove:\n"
+    print "Please choose from the menu:\n"
     print ycolor("\t1.")+" Clean Trimmomatic/log file(s)."
     print ycolor("\t2.")+" Clean Qc-fastq-report/log file(s)."
     print ycolor("\t3.")+" Clean bismark mapper/log file(s)."
@@ -29,7 +29,7 @@ def rem_menu():
     print ycolor("\t7.")+" Clean Cx reports/log file(s)."
     print ycolor("\t8.")+" Clean Methimpute/log file(s)."
     print ycolor("\t9.")+" Clean DMR Directory/log file(s)."
-    print ycolor("\t10.")+" Clean meth-bedgraph/log file(s)."
+    print ycolor("\t10.")+" Clean bedgraph/log file(s)."
     print ycolor("\t11.")+" Clean methylkit/log file(s)."
     print ycolor("\t12.")+" Clean bigwig/log file(s)."
     print rcolor("B.")+" Back to main Menu\n"

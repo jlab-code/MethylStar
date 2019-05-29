@@ -20,16 +20,16 @@ menu_pip = {}
 # Main menu
 def pip_menu():
     print "=="*25
-    print "Please choose the menu you want to start:\n"
+    print "Please choose from the menu:\n"
     print qucolor("A. Quick Run ...")
-    print ycolor("\t0.")+" Trimmomatic, QcFastq, Bismark(mapper, deduplicate), Methimpute.\n"
-    print qucolor("B. Advanced Run ...")
+    print ycolor("\t0.")+" Trimmomatic, QC-Fastq-report, Bismark(alignment, remove duplicates), Extract methylation calls, Methimpute.\n"
+    print qucolor("B. Individual Run ...")
     print ycolor("\t1.")+" Run Trimommatic"
     print ycolor("\t2.")+" Run QC-Fastq-report"
     print ycolor("\t3.")+" Run Bismark Mapper"
     print ycolor("\t4.")+" Run Bismark deduplication"
-    print ycolor("\t5.")+" Run Meth. Extractor"
-    print ycolor("\t6.")+" Generate CX-reports"
+    print ycolor("\t5.")+" Run Bismark Methylation Extractor"
+    print ycolor("\t6.")+" Generate Cytosine Calls (cx-reports)"
     print ycolor("\t7.")+" Run Methimpute"
     print rcolor("B.")+" Back to main Menu\n"
     choice = raw_input(">>  ")
