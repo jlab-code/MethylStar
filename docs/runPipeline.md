@@ -29,7 +29,7 @@ Please choose from the menu:
 Q. Quit
 
 ```
-Select one of the options by typing the corresponding value and pressing 'ENTER'. Type 'Q' to Quit.
+Select one of the options by typing the corresponding value and pressing 'ENTER'. Type 'Q' to Quit. (Not case sensitive)
 
 > **_NOTE:_** Before running the pipeline, please edit the configuration file under option ```C. Configuration``` .
 
@@ -106,10 +106,10 @@ Please choose the menu you want to remove:
 B. Back to main Menu
 ```
 
-####### **Setting correct paths**
+##### **Setting correct paths**
 Ensure that specific PATHs to raw files ``option '1'``, output folders ``option '2'``, reference genome ``option '3'``, QC-FastQ path ``option '5'``exist.
 
-####### **Read-trimming parameters**
+##### **Read-trimming parameters**
 Configure read trimming parameters by specifying ``option '4'`` and then typing [y/n] to configure the settings.
 
 - By default the quality scores are converted to phred33.
@@ -148,7 +148,7 @@ You set the value to: 36
 You set the value to: 8
 
 ```
-####### **Alignment parameters**
+##### **Alignment parameters**
 Configure 'Bismark' by selecting ``option '6'``. 
 
 During the Bismark Alignment step, a Bisulfite genome will be created from the reference fasta for the first time.
@@ -183,7 +183,7 @@ To run Bismark by Nucleotide option please Enable it.
 You set the value to: true
 
 ```
-####### **Imputation of missing cytosines using Methimpute**
+##### **Imputation of missing cytosines using Methimpute**
 
 Select ``option '7'`` to edit the parameters for running Methimpute.
 Methimpute implements a HMM-based binomial test for methylation status calling. It achieves this by borrowing information from neighboring covered cytosines. The confidence in the methylation status call is reported as well.
@@ -215,10 +215,10 @@ You set the value to: true
 You set the value to: 1
 
 ```
-####### **Set Parallel mode**
+##### **Set Parallel mode**
 Set parallel mode for read trimming, alignment, bismark deduplicate, methylation calling steps
 
-####### **See configured parameters**
+##### **See configured parameters**
 Get an overview of configured parameters by selecting ``option '9'``.
 
 ```
