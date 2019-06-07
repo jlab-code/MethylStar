@@ -1,58 +1,68 @@
 Running MethylStar pipeline
 ================
 
-The pipeline can be run by typing the following command:
+Once you are in the main directory of MethylStar, type the following command:
 
 ``` bash  
 python2 run.py
 ```
 
-MethylStar provides a visual (TUI) interface which is created with Python. This makes it easy and intuitive to run all steps in the pipeline.
-
-An interactive screen will display the list of following options in the Main menu:
-
-
+List of following options will be displayed in the Main menu:
 
 
 ```
-Run Pipeline (WGBS)
-Output/Reports
-Access Jbrowse
-Clean-up files
-Help
+==================================================
 
-Configuration
+	Welcome to MethylStar
+
+==================================================
+Please choose from the menu:
+
+	1. Run Pipeline (WGBS)
+	2. Outputs/Reports
+	3. Access JBrowse
+	4. Clean-up files
+	5. Help
+
+	C. Configuration
+
+Q. Quit
+
+```
+Select one of the options by typing the corresponding value and pressing 'ENTER'. Type 'Q' to Quit.
+
+> **_NOTE:_** Before running the pipeline, please edit the configuration file under option ```C. Configuration``` .
+
+Selecting ``option '1'`` will display the different options for running the pipeline. 
+
+- Select option ``A. Quick Run...`` to run the entire pipeline in one go.
+- Select option ``B. Individual Run ...`` to run individual steps of the pipeline.
+
+
+#### **1. Run Pipeline (WGBS)**
+
+```
+A. Quick Run ...
+	0. Trimmomatic, QC-Fastq-report, Bismark(alignment, remove duplicates), Extract methylation calls, Methimpute.
+
+B. Individual Run ...
+	1. Run Trimommatic
+	2. Run QC-Fastq-report
+	3. Run Bismark Mapper
+	4. Run Bismark deduplication
+	5. Run Bismark Methylation Extractor
+	6. Generate Cytosine Calls (cx-reports)
+	7. Run Methimpute
+
+B. Back to main Menu
+
 ```
 
-**_User Controls:_**
-
-**_1: Individual steps of the pipeline can be executed by navigating to the specific step and pressing 'ENTER'._**
-
-**_2: For each individual step, parameters can be set by clicking on the popup menu._**
-
-**_3: The user can return back to the main form by navigating or clicking the 'OK' button at the bottom of the screen and pressing 'ENTER'._**
-
-------------------------------------------------------------------------------------------
-
-
-##### **1. Run Pipeline (WGBS)**
-```
-1. Run Trimmomatic
-2. Run QC-Fastq-report
-3. Run Bismark Mapper
-4. Run QC-Bam report
-5. Run Bismark-deduplicate
-6. Run Bismark Meth.Extractor
-7. Generate CX reports
-8. Run Methimpute
-```
-The above options will be displayed upon navigating to 'Run Pipeline (WGBS)' and pressing 'ENTER'. Before running the pipeline, please check the parameters in 'Configuration' or configure them.
-
-##### **2. Output/Reports**
+#### **2. Output/Reports**
 
 All outputs from the pipeline run will be available in Output/Reports. This option allows the user to convert Methimpute outputs into bedgraph, bigwig and for input into DMRcallers (e,g Methylkit, DMRcaller).
 
-##### **3. Access JBrowse**
+#### **3. Access JBrowse**
 
 Guest users can create an account for the first time by signing up on this site: 
 http://jlabdata.org/signup
@@ -60,94 +70,199 @@ http://jlabdata.org/signup
 If you already have an account, please open the following URL in your web browser:
 http://jlabdata.org/jbrowse
 
-##### **4. Clean-up files**
-In this part you can delete all the files that generated after running pipeline. Just select the item by number and will delete all content inside the target folder.
+Users can upload bigwig files on to Jbrowse for visualization of regions of interest. 
 
-##### **5. Help**
+#### **4. Clean-up files**
+Here, you can delete log files that were generated during analysis. 
+```
+Please choose the menu you want to remove:
 
+	1. Clean Trimmomatic/log file(s).
+	2. Clean Qc-fastq-report/log file(s).
+	3. Clean bismark mapper/log file(s).
+	4. Clean qc-bam report Directory log file(s).
+	5. Clean Bismark deduplicate/log file(s).
+	6. Clean Bismark Meth. Extractor/log file(s).
+	7. Clean Cx reports/log file(s).
+	8. Clean Methimpute/log file(s).
+	9. Clean DMR Directory/log file(s).
+	10. Clean meth-bedgraph/log file(s).
+	11. Clean methylkit/log file(s).
+	12. Clean bigwig/log file(s).
+```
+* * *
+#### **C. Configuration**
+```
+1. Path: RAW files
+2. Path: Export results
+3. Path: Reference Genome
+4. Read-trimming parameters
+5. Path: QC-Fastq
+6. Alignment parameters
+7. Methimpute parameters
+8. Parallel mode
+9. See configured parameters
 
-##### **6. Configuration**
+B. Back to main Menu
+```
 
-    Path: RAW files
-    Path: Export results
-    Path: Reference Genome
-    Read-trimming parameters
-    Path: QC-Fastq
-    Alignment parameters
-    Methimpute parameters
-    Parallel mode
+####### **Setting correct paths**
+Ensure that specific PATHs to raw files ``option '1'``, output folders ``option '2'``, reference genome ``option '3'``, QC-FastQ path ``option '5'``exist.
 
-Before, running the pipeline, parameters for each individual step can be specified by navigating to the option 'Configuration'.
-Ensure that specific PATHs to RAW files, output folders and reference genome exist.
+####### **Read-trimming parameters**
+Configure read trimming parameters by specifying ``option '4'`` and then typing [y/n] to configure the settings.
 
---------------------------------------------------------------------------------------------------------
-### Parameters for individual steps of the pipeline can be configured as follows:
+- By default the quality scores are converted to phred33.
+- specify SE for single-end reads and PE for paired-end reads
+- Remove leading low quality or N bases (below quality 20)
+- Remove trailing low quality or N bases (below quality 20)
+- Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold
+- Drop the read if it is below a specified length with MINLEN
 
-> **Trimming parameters**
+```
+4. Read-trimming parameters
 
 Parameters for trimming FASTQ reads. The following values are set as default.
+--Configuration part for Adapter--
+You set the value to: software/Trimmomatic-0.38/adapters/TruSeq3-SE.fa
 
-(a) single/paired-end reads 
-(b) no. of threads
-(b) convert quality scores to phred33
-(c) ILLUMINACLIP::::for e.g TruSeq3-SE.fa:1:30:9
-(d) Remove leading low quality or N bases (below quality 20) (LEADING:20) 
-(e) Remove trailing low quality or N bases (below quality 20) (TRAILING:20)
-(f) SLIDINGWINDOW:: Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. for e.g SLIDINGWINDOW: 4:20 
-(g) Drop the read if it is below a specified length for e.g MINLEN:36
+--Configuration part for running mode--
+You set the value to: SE
 
-> **Pre Alignment quality control**
+--Configuration part for ILLUMINACLIP--
+You set the value to: 1:30:9
 
-Running fastQC on the trimmed fastq files provide a comprehensive assessment of the sequencing quality and any remaining adapter contamination.
-    
-> **Alignment using Bismark Mapper**
+--Configuration part for LEADING--
+You set the value to: 20
 
-Start running bismark mapper on all the trimmed files using the following default parameters or changing accordingly. A Bisulfite genome will be created from the reference fasta for the first time.
+--Configuration part for TRAILING--
+You set the value to: 20
 
-(1) -s/--skip : Skip (i.e. do not align) the first <int> reads or read pairs from the input. (Default: set as 0)
-(2) -u/--upto : Only aligns the first <int> reads or read pairs from the input. (Default: set as 0)
-(3) -N/--seedmms : Sets the number of mismatches allowed in a seed alignment during multiseed alignment (Default: set as 0)
-(4) -L/--seedlen : Sets the length of the seed substrings to align during multiseed alignment (Default: set as 20)
-(5) use parallel
-(6) --nucleotide_coverage : Calculates the mono- and di-nucleotide sequence composition of covered positions in the analysed BAM file and compares it to the genomic average composition once alignments are complete by calling 'bam2nuc'.
-(7) --genome
+--Configuration part for SLIDINGWINDOW--
+You set the value to: 4:20
 
-> **Post Alignment quality control**
+--Configuration part for MINLEN--
+You set the value to: 36
 
-FASTQC is primarily for pre-alignment and it takes as input FASTQ or FASTA files. Here we will run fastQC on the BAM files to have a quick overview of the aligned files.
+--Configuration part for Threading--
+You set the value to: 8
 
-> **Run bismark deduplicate**
+```
+####### **Alignment parameters**
+Configure 'Bismark' by selecting ``option '6'``. 
 
-Bismark includes tools for deduplication, based on identical genomic mapping.
-This tool is supposed to remove alignments to the same position in the genome from the Bismark mapping output (both single and paired-end files), which can arise by e.g. excessive PCR amplification. If sequences align to the same genomic position but on different strands they will be scored individually. 
+During the Bismark Alignment step, a Bisulfite genome will be created from the reference fasta for the first time.
 
-(1) -s/--single : deduplicate single-end Bismark files
-(2) --bam : output will be written in BAM format
+The following settings are set as default for alignment using Bismark.
 
-> **Bismark methylation extractor**
+- -s/--skip : Skip (i.e. do not align) the first <int> reads or read pairs from the input. (Default: set as 0)
+- -u/--upto : Only aligns the first <int> reads or read pairs from the input. (Default: set as 0)
+- -N/--seedmms : Sets the number of mismatches allowed in a seed alignment during multiseed alignment (Default: set as 0)
+- -L/--seedlen : Sets the length of the seed substrings to align during multiseed alignment (Default: set as 20)
+- Bismark Nucleotide option calculates the mono- and di-nucleotide sequence composition of covered positions in the analysed BAM file and compares it to the genomic average composition.
 
-Context-dependent (CpG/CHG/CHH) methylation calls will be extracted. The user can choose which reports should be generated. 
+Edit other settings by typing [y/n].
 
-start the run with following default parameters or specify accordingly:
+Bismark includes tools for deduplication, based on identical genomic mapping.This tool will remove alignments to the same position in the genome from the Bismark mapping output, which can arise by e.g. excessive PCR amplification.Output is in BAM format.
 
-(1) -s/--single : input files are from single-end or paired-end read data
-(2) --bedGraph : After finishing the methylation extraction, the methylation output is written into a sorted bedGraph file that reports the position of a given cytosine and its methylation state
-(3) --CX/--CX_context : The sorted bedGraph output file contains information on every single cytosine that was covered in the experiment irrespective of its sequence context.
-(4) --cytosine_report : After the conversion to bedGraph has completed, the option '--cytosine_report' produces a genome-wide methylation report for all cytosines in the genome.
-(5) use --parallel
-(6) --buffer_size : This allows you to specify the main memory sort buffer when sorting the methylation information.
-(7) specify --genome_folder
+Bismark methylation extractor will extract Context-dependent (CpG/CHG/CHH) methylation calls. 
 
+```
+6. Alignment parameters
 
-> **Run Methimpute**
+You set the location to: /software/Bismark
 
-Impute DNA methylation from WGBS data. Methimpute implements a powerful HMM-based binomial test for methylation status calling. Besides improved accuracy over the classical binomial test, the HMM allows imputation of the methylation status of all cytosines in the genome. It achieves this by borrowing information from neighboring covered cytosines. The confidence in the methylation status call is reported as well. Methimpute also outputs context-specific conversion rates, which might be used to optimize the experimental procedure.
+--Configuration part for Bismark Parallel--
+You set the value to: 8
 
-start the run with following parameters:
+--Configuration part for Bismark buffer Size--
+You set the value to: 40
 
-(1) Intermediate: Run model with Intermediate status of Cytosines. Cytosines will be assigned as Methylated, Intermediate and Unmethylated.
-(2) Plot model fits
-(3) Enrichment: Methylation level around Genes and transposable elements
-(4) Specify the genome
+--Configuration part for Bismark Nucleotide--
+To run Bismark by Nucleotide option please Enable it.
+You set the value to: true
 
+```
+####### **Imputation of missing cytosines using Methimpute**
+
+Select ``option '7'`` to edit the parameters for running Methimpute.
+Methimpute implements a HMM-based binomial test for methylation status calling. It achieves this by borrowing information from neighboring covered cytosines. The confidence in the methylation status call is reported as well.
+
+The following settings can be edited by typing [y/n].
+
+- Run model with Intermediate status of Cytosines. Cytosines will be assigned as Methylated, Intermediate and Unmethylated.
+- Methylation level around Genes and transposable elements will be plotted
+
+```
+7. Methimpute parameters
+
+--Running with intermediate status--
+You set the value to: true
+
+--Generating quality reports (fit, model convergence, histogram,etc.)--
+You set the value to: true
+
+--Generating enrichment reports( pdf files )--
+You set the value to: false
+
+--Generating TEs reports--
+You set the value to: true
+
+--Generating genes reports--
+You set the value to: true
+
+--Minimum read coverage value (for quick run)--
+You set the value to: 1
+
+```
+####### **Set Parallel mode**
+Set parallel mode for read trimming, alignment, bismark deduplicate, methylation calling steps
+
+####### **See configured parameters**
+Get an overview of configured parameters by selecting ``option '9'``.
+
+```
+9. See configured parameters
+
+Here is summary of configuration parameters: 
+
+- RAW files location: /home/user/raw-dataset
+- Number and Size of the data-set: 8 Files and Total size: 18.0 Gigabyte
+- The directory of results: /home/user
+- Genome folder location: /home/user/TAIR10
+     -- Genome Reference name: TAIR10_chr_all.fa
+- Paired End: Enabled
+- Trimmomatic location: /home/user/software/Trimmomatic-0.38
+     -- JAVA path: /usr/bin/java
+     -- ILLUMINACLIP: software/Trimmomatic-0.38/adapters/TruSeq3-SE.fa:1:30:9
+     -- LEADING: 20
+     -- TRAILING: 20
+     -- SLIDINGWINDOW: 4:20
+     -- MINLEN: 36
+     -- Number of Threads: 8
+- QC-Fastq path: software/FastQC/fastqc
+- Bismark parameters: /home/user/software/Bismark_v0.20.0
+     -- Nucleotide status: false
+     -- Number of Parallel: 8 Threads.
+     -- Buffer size: 40 Gigabyte.
+     -- Samtools Path: /bin/samtools
+     -- Intermediate for MethExtractor: Enabled
+- Methylation extraction parameters( Only for quick run)
+     -- Minimum read coverage: 1
+- Methimpute Part:
+     -- Methimpute Intermediate : Enabled
+     -- Methimpute Fit reports: Enabled
+     -- Methimpute Enrichment plots: Disabled
+     -- Methimpute TEs reports: Enabled
+     -- Methimpute genes reports: Enabled
+     -- Methimpute Context: All/CHG|CHH|CG
+- Parallel mode is: Disabled
+     -- Number of Parallel: 4 Cores.
+
+Please, press ENTER to continue ...
+
+```
+``Return to main Menu``
+
+***
 
