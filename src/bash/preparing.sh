@@ -32,7 +32,7 @@ fi
 # check user input directories
 if [ ! -d $raw_dataset ]; then
 	echo "Directory of data-sets is not exist. see the configuration file 'config.cfg'"
-	exit 1
+	#exit 1
 fi
 
 if [ ! -d $result_pipeline ]; then

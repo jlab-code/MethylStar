@@ -53,7 +53,7 @@ if $parallel_mode; then
 
 	end=$(date +%s)
 	runtime=$((($(date +%s)-$start)/60)) 
-	echo "Trimmomatic $label finished. Duration $runtime Minutes."
+	echo "Trimmomatic $label finished. Duration $runtime Minutes." 2>&1 | tee -a $tmp_clog/trimmomatic.log;
 
 else
 	for file in $(grep $first_pattern $input)
@@ -73,7 +73,7 @@ else
 		echo $path$second_file >> $tmp_fq/list-finished.lst;
 		end=$(date +%s)
 		runtime=$((($(date +%s)-$start)/60)) 
-		echo "Trimmomatic $label finished. Duration $runtime Minutes."
+		echo "Trimmomatic $label finished. Duration $runtime Minutes." 2>&1 | tee -a $tmp_clog/trimmomatic.log;
 		done;
 fi
 
