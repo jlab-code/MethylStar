@@ -340,6 +340,8 @@ def result_pipeline():
             number_of_dataset=float(read_config("GENERAL", "number_of_dataset"))
             dataset_size = float(read_config("GENERAL", "dataset_size"))
             # size per file
+            if number_of_dataset==0:
+                number_of_dataset=1
             per_file = round(dataset_size/number_of_dataset)
 
             print "-----" * 20
