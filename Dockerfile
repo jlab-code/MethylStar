@@ -57,7 +57,7 @@ RUN mkdir -p /home/software/samtools
 RUN ./configure --prefix=/home/software/samtools
 RUN make
 RUN make install
-ENV PATH "$PATH:/home/software/samtools/bin"
+ENV PATH "$PATH:/home/software/samtools/bin/samtools"
 WORKDIR /home/software/
 
 #---------------------------------------------
