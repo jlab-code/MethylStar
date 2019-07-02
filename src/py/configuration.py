@@ -361,6 +361,8 @@ def result_pipeline():
             print "-----" * 20
             stored_place['result_pipeline'] = response
             replace_config("GENERAL", "result_pipeline", response)
+            print "creating folders "
+            subprocess.call(['./src/bash/preparing.sh'])
             message(0, "Configuration updated! ")
         else:
             pass
