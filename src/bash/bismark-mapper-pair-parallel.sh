@@ -31,7 +31,6 @@ if $run_pair_bismark; then
 		cd "${tmp_path%/*}"
 		label=$(echo $(echo $2 | sed 's/.*\///') | sed -e "s/_paired$first_pattern//g")
 		path=$(echo $(echo $2 | sed -e 's:[^/]*$::'))
-		echo $label 
 		instart=$(date +%s)
 		file1=$label"_paired$first_pattern"
 		file2=$label"_unpaired$first_pattern"

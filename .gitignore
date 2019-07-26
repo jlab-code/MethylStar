@@ -6,3 +6,5 @@ src/__init__\.pyc
 src/bash/\.Rhistory
 
 src/py/__init__\.pyc
+
+.idea/*
