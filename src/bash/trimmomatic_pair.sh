@@ -1,7 +1,8 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-. $curr_dir/tmp.conf
+. $curr_dir/detect.sh trimm;
+. $curr_dir/tmp.conf;
 
 
 

@@ -330,9 +330,16 @@ def result_pipeline():
             '''
             check for permission! is it writable?
             '''
+
             while not (os.access(response, os.W_OK)):
-                message(1, "It seems you don't have permission to write in this directory")
-                response = raw_input("Please enter another location: ")
+                try:
+                    os.mkdir(response)
+                except OSError:
+                    print ("Creation of the directory %s failed" % response)
+                    message(1, "It seems you don't have permission to write in this directory")
+                    response = raw_input("Please enter another location: ")
+                else:
+                    print ("Successfully created the directory %s " % response)
 
             # checking space and warning to user
             size = subprocess.check_output(['df', '-Bm', response]).split()[-3].decode('utf-8')
