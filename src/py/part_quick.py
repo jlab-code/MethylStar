@@ -54,6 +54,10 @@ def run_quick():
                 subprocess.call(['./src/bash/gen-rdata.sh'])
                 print(info_methimpute())
                 subprocess.call(['./src/bash/methimpute-bam.sh'])
+                replace_config("STATUS", "st_trim", "0")
+                replace_config("STATUS", "st_fastq", "0")
+                replace_config("STATUS", "st_bismark", "0")
+                replace_config("STATUS", "st_bisdedup", "0")
 
             message(0, "Processing files are finished, results are in :"
                     + read_config("Others", "tmp_meth_out"))

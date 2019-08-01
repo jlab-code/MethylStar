@@ -46,7 +46,7 @@ def run_bimark_dedup(status):
             subprocess.call(['./src/bash/path-export.sh'])
             subprocess.call(['./src/bash/bismark-deduplicate.sh'])
             subprocess.call(['./src/bash/bam-sorting.sh'])
-            #replace_config("STATUS", "st_bisdedup", "2")
+            replace_config("STATUS", "st_bisdedup", "2")
         else:
             if confirm_run():
                 subprocess.call(['./src/bash/path-export.sh'])
