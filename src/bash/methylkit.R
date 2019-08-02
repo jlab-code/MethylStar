@@ -27,9 +27,9 @@ readMethimputeForMethylkit <- function(filename) {
     base = as.integer(MethOut[,c(start)]),
     strand = factor(MethOut[,c(strand)], levels = c("+","-")),
     coverage = as.integer(MethOut[,c(counts.total)]),
-    freqC = ifelse(MethOut[,c(counts.methylated)]==0 | MethOut[,c(counts.total)]==0, 0, 
+    freqC = ifelse(MethOut[,c(counts.methylated)]==0 & MethOut[,c(counts.total)]==0, 0, 
                    MethOut[,c(counts.methylated/counts.total)]*100),
-    freqT = ifelse(MethOut[,c(counts.methylated)]==0 | MethOut[,c(counts.total)]==0, 0,
+    freqT = ifelse(MethOut[,c(counts.methylated)]==0 & MethOut[,c(counts.total)]==0, 0,
                    MethOut[,c((1-counts.methylated/counts.total)*100)]))
   df$strand <- ifelse(df$strand=="+", "F", "R")
   print(paste0("Writing: ",name," result to the file."))
