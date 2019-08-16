@@ -71,17 +71,17 @@ except Exception as e:
 
 # Main menu
 def main_menu():
-    print "=="*25
-    print ycolor("\n\tWelcome to MethylStar\n")
-    print "=="*25
-    print "Please choose from the menu:\n"
-    print ycolor("\t1.")+" Run Pipeline (WGBS)"
-    print ycolor("\t2.")+" Outputs/Reports"
-    print ycolor("\t3.")+" Access JBrowse"
-    print ycolor("\t4.")+" Clean-up files"
-    print ycolor("\t5.")+" Help\n"
-    print ycolor("\tC.")+" Configuration"
-    print rcolor("Q.")+" Quit\n"
+    print("=="*25)
+    print(ycolor("\n\tWelcome to MethylStar\n"))
+    print("=="*25)
+    print("Please choose from the menu:\n")
+    print(ycolor("\t1.")+" Run Pipeline (WGBS)")
+    print(ycolor("\t2.")+" Outputs/Reports")
+    print(ycolor("\t3.")+" Access JBrowse")
+    print(ycolor("\t4.")+" Clean-up files")
+    print(ycolor("\t5.")+" Help\n")
+    print(ycolor("\tC.")+" Configuration")
+    print(rcolor("Q.")+" Quit\n")
     choice = raw_input(">>  ")
     exec_menu(choice)
 
@@ -98,7 +98,7 @@ def exec_menu(choice):
         try:
             menu_actions[ch]()
         except KeyError:
-            print "Invalid selection, please try again.\n"
+            print("Invalid selection, please try again.\n")
             menu_actions['main_menu']()
     return
 
@@ -122,7 +122,7 @@ def jbrowse():
     s += "http://jlabdata.org/signup\n"
     s += "If you already have an account, please open the following URL in your web browser:\n"
     s += "http://jlabdata.org/jbrowse\n\n"
-    print qucolor(s)
+    print(qucolor(s))
     menu_actions['main_menu']()
 
 def run_remove():

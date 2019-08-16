@@ -19,19 +19,19 @@ menu_pip = {}
 
 # Main menu
 def pip_menu():
-    print "=="*25
-    print "Please choose from the menu:\n"
-    print qucolor("A. Quick Run ...")
-    print ycolor("\t0.")+" Trimmomatic, QC-Fastq-report, Bismark(alignment, remove duplicates), Extract methylation calls, Methimpute.\n"
-    print qucolor("B. Individual Run ...")
-    print ycolor("\t1.")+" Run Trimommatic"
-    print ycolor("\t2.")+" Run QC-Fastq-report"
-    print ycolor("\t3.")+" Run Bismark Mapper"
-    print ycolor("\t4.")+" Run Bismark deduplication"
-    print ycolor("\t5.")+" Run Bismark Methylation Extractor"
-    print ycolor("\t6.")+" Generate Cytosine Calls (cx-reports)"
-    print ycolor("\t7.")+" Run Methimpute"
-    print rcolor("B.")+" Back to main Menu\n"
+    print("=="*25)
+    print("Please choose from the menu:\n")
+    print(qucolor("A. Quick Run ..."))
+    print(ycolor("\t0.")+" Trimmomatic, QC-Fastq-report, Bismark(alignment, remove duplicates), Extract methylation calls, Methimpute.\n")
+    print(qucolor("B. Individual Run ..."))
+    print(ycolor("\t1.")+" Run Trimommatic")
+    print(ycolor("\t2.")+" Run QC-Fastq-report")
+    print(ycolor("\t3.")+" Run Bismark Mapper")
+    print(ycolor("\t4.")+" Run Bismark deduplication")
+    print(ycolor("\t5.")+" Run Bismark Methylation Extractor")
+    print(ycolor("\t6.")+" Generate Cytosine Calls (cx-reports)")
+    print(ycolor("\t7.")+" Run Methimpute")
+    print(rcolor("B.")+" Back to main Menu\n")
     choice = raw_input(">>  ")
     exec_menu(choice)
 
@@ -48,7 +48,7 @@ def exec_menu(choice):
         try:
             menu_pip[ch]()
         except KeyError:
-            print "Invalid selection, please try again.\n"
+            print("Invalid selection, please try again.\n")
             menu_pip['pip_menu']()
     return
 

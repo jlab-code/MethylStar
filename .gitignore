@@ -8,3 +8,5 @@ src/bash/\.Rhistory
 src/py/__init__\.pyc
 
 .idea/*
+
+*.pyc
