@@ -67,23 +67,8 @@ mincov=1
 
 [DMR]
 file=0
-statistic=Fishers.testDMB
 NCORES=4
-DMR_Method=bins
-Chr_local=3,1,20427494
-Chr_local_plotting=3,120000,130000
-Cytosine_context_DMRcaller=CG
-Cytosine_context_Methylkit=CpG
-qvalue=0.01
-difference=25
-qvalue_cutoff=0.01
-meth_cutoff=25
-lo_count=10
-lo_perc=NULL
-hi_count=NULL
-hi_perc=99.9
-win_size=1000
-step_size=1000
+
 
 [SGE]
 qsub=false
@@ -100,11 +85,11 @@ tmp_dme=$result_pipeline/bismark-meth-extractor
 tmp_clog=$result_pipeline/logs
 tmp_cx_report=$result_pipeline/cx-reports
 tmp_meth_out=$result_pipeline/methimpute-out
-tmp_tes_out=$result_pipeline/tes-reports
-tmp_gen_out=$result_pipeline/gen-reports
+tmp_tes_out=$result_pipeline/te-reports
+tmp_gen_out=$result_pipeline/gene-reports
 tmp_fit_out=$result_pipeline/fit-reports
 tmp_methyl_fmt=$result_pipeline/methylkit-format
 tmp_dmr=$result_pipeline/dmrcaller-format
-tmp_bed=$result_pipeline/bedgraph-fromat
-tmp_bigwig=$result_pipeline/bigwig-fromat
+tmp_bed=$result_pipeline/bedgraph-format
+tmp_bigwig=$result_pipeline/bigwig-format
 
