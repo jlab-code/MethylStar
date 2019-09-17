@@ -47,6 +47,12 @@ def run_trimmomatic(status):
     try:
         preparing_part()
         print(info_trimmomatic())
+
+        gen_type = read_config("GENERAL", "genome_type")
+        if (gen_type in ["Human", "Maize"]):
+            replace_config("GENERAL", "parallel_mode", "false")
+
+
         pairs_mode = read_config("GENERAL", "pairs_mode")
         # checking using SE but pair file
         if pairs_mode == "true" and read_config("Trimmomatic", "end_mode") == "SE":

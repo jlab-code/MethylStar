@@ -6,10 +6,6 @@ __license__ = "GPL"
 __version__ = "1.0.0"
 __email__ = "shahryary@gmail.com"
 
-
-import traceback
-import logging
-import imp
 import sys
 import os
 import subprocess
@@ -27,18 +23,6 @@ def get_username():
 #     checking lib packages
 # =======================
 
-
-try:
-    import importlib
-    from pip import main
-except:
-    from pip._internal import main
-
-try:
-    imp.find_module('npyscreen')
-    found = True
-except ImportError:
-    found = False
 
 ToNULL = open(os.devnull, 'w')
 try:

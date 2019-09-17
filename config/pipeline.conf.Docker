@@ -1,8 +1,10 @@
 [GENERAL]
+firstRun=false
 raw_dataset=/home/shared/rawfiles
 result_pipeline=/home/shared/results
 genome_ref=/home/shared/reference_genome
 genome_name=TAIR10_chr_all.fa
+genome_type=Arabidopsis
 docker_mode=true
 parallel_mode=false
 npar=3

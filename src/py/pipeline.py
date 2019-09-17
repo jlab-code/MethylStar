@@ -9,7 +9,7 @@ __email__ = "shahryary@gmail.com"
 
 import os, glob
 from configuration import rcolor, qucolor, ycolor
-
+from globalParameters import *
 
 # =======================
 #     MENUS FUNCTIONS
@@ -120,4 +120,9 @@ menu_pip = {
 }
 
 def __pipeline__():
-    pip_menu()
+    firstrun = read_config("GENERAL", "firstRun")
+    if firstrun == 'true':
+        message(2, "\n You're running the Pipeline for the first time, Please configure it in 'Configuration Part' ")
+        #exec_menu('b')
+    else:
+        pip_menu()

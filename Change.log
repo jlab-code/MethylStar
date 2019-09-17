@@ -1,3 +1,19 @@
+Ver. 1.3
+  - added maize, human genome support
+  - fixed parallel issues
+  - Added genome configuration
+  - worked on performance
+  - fixed some bugs.
+ver. 1.2
+  - added te-report, gen-report, 
+
+ver. 1.1
+  - changed directories name
+  - renames some variants for more redable
+  - generating list of files for fastq
+  - checking installed  path for programs
+  - folder for .RData file for genes/TEs/etc.(annotation files)
+  - converted factors to numbers for joining "methimputemodifiedexport" function
 Ver. 1.2.1
   - fixed some bugs.
 ver. 1.2
@@ -10,4 +26,4 @@ ver. 1.1
   - checking installed  path for programs
   - folder for .RData file for genes/TEs/etc.(annotation files)
   - converted factors to numbers for joining "methimputemodifiedexport" function
-  -
+  

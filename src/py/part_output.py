@@ -27,7 +27,7 @@ def dmr_menu():
     print ycolor("\t2.")+" Convert Methimpute output to Methylkit Format"
     print ycolor("\t3.") + " Convert Methimpute output to bedGraph Format"
     print ycolor("\t4.") + " Convert bedGraph to BigWig Format"
-
+    print ycolor("\t5.") + " Run jDMR Caller"
     print rcolor("B.")+" Back to main Menu\n"
     choice = raw_input(">>  ")
     exec_menu(choice)
@@ -140,6 +140,28 @@ def bedToBig():
 
     exec_menu('')
 
+def jdmr():
+    s = "\njDMR package will be available soon!\n"
+    print(qucolor(s))
+    exec_menu('')
+    '''
+    try:
+        preparing_part()
+        print "converting to DMRCaller format ..."
+        if confirm_run():
+            subprocess.call(['./src/bash/bigwig-format.sh'])
+            message(0, "Processing files is finished.")
+
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        print(rcolor(e.message))
+        message(2, "something is going wrong... please run again. ")
+        # set 1 to resuming
+        replace_config("STATUS", "st_bigwig", "1")
+
+    exec_menu('')
+    '''
+
 # Back to main menu
 def exit():
      pass
@@ -156,6 +178,7 @@ menu_dmr = {
     '2': Methylkit,
     '3': bedGraph,
     '4': bedToBig,
+    '5': jdmr,
     'b': exit,
 }
 

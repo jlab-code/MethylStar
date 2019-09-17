@@ -37,6 +37,10 @@ def run_bimark_meth():
         preparing_part()
         print(info_bismark_meth())
 
+        gen_type = read_config("GENERAL", "genome_type")
+        if (gen_type in ["Human", "Maize"]):
+            replace_config("GENERAL", "parallel_mode", "false")
+
         if read_config("GENERAL", "pairs_mode") == 'true':
             replace_config("Bismark", "methextractor", "-p")
         else:

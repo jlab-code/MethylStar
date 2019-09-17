@@ -232,7 +232,7 @@ def confirm(config_section, config_value, mcode):
         else:
             message(mcode, "Keeping the default value.")
     else:
-        print "This is the first time you are configuring this parameter ..."
+        print "Please config parameter ..."
         return True
 
 
@@ -379,8 +379,11 @@ def result_pipeline():
 
 
 def genome_ref():
+    # running kind of gen
+    genome_type()
+
     try:
-        if confirm("GENERAL", "genome_ref",0):
+        if confirm("GENERAL", "genome_ref", 0):
             print "Please specify a reference genome location.\n"
             print "(We will generate the Bisulfite_Genome folder inside this folder.)\n"
             response = raw_input(">> ")
@@ -390,6 +393,7 @@ def genome_ref():
             stored_place['genome_ref'] = response
             # call immediately after folder to ask file
             genome_name()
+
         else:
             pass
     except Exception as e:
@@ -424,6 +428,19 @@ def genome_name():
         replace_config("GENERAL", "genome_name", response)
         message(0, "Configuration updated!")
 
+def genome_type():
+    print("Enter the Genome type from the list: \n")
+    list_gen=["Arabidopsis", "Human", "Maize", "Rice"]
+    for file in list_gen:
+        sys.stdout.write(ycolor(str(list_gen.index(file))) + " : " + file + "\n")
+
+    response = inputNumber("\nPlease enter the number to select:")
+    while not int(response) in range(0, len(list_gen)):
+        response = inputNumber("Please enter the valid number:")
+
+    response = list_gen[int(response)]
+    replace_config("GENERAL", "genome_type", response)
+    print(mcolor("Configuration updated!\n"))
 
 def trimmomatic():
     # checking for java
@@ -850,6 +867,7 @@ def show_config():
     print "- Number and Size of the data-set: " + mcolor(read_config("GENERAL", "number_of_dataset"))\
           + " Files and Total size: " + mcolor(read_config("GENERAL", "dataset_size"))+" Gigabyte"
     print "- The directory of results: " + mcolor(read_config("GENERAL", "result_pipeline"))
+    print "- Genome type: " + mcolor(read_config("GENERAL", "genome_type"))
     print "- Genome folder location: " + mcolor(read_config("GENERAL", "genome_ref"))
     print "     -- Genome Reference name: " + mcolor(read_config("GENERAL", "genome_name"))
     print "- Paired End: " + mcolor(true_false_fields_config(read_config("GENERAL", "pairs_mode"),""))
