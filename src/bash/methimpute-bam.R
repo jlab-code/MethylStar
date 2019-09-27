@@ -192,7 +192,7 @@ startCompute <- function(files_to_go) {
         
         print(paste0("Generating enrichment plot for genes...", name))
         B1 <- plotEnrichment(model$data, annotation=genes, range = 2000, category.column='category', plot = TRUE, df.list = NULL)
-        pdf(paste0(wd, "/gen-reports/gene_", name, ".pdf", sep = "")) 
+        pdf(paste0(wd, "/gene-reports/gene_", name, ".pdf", sep = "")) 
         print(B1)
         dev.off()
       }
@@ -204,7 +204,7 @@ startCompute <- function(files_to_go) {
       if(genes_report==TRUE){
         print(paste0("Generating genes reports...", name))
         B2 <- plotEnrichment(model$data, annotation=genes, range = 2000, category.column='category', plot = FALSE)
-        write.table(B2, paste0(wd,"/gen-reports/genes_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
+        write.table(B2, paste0(wd,"/gene-reports/genes_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
       }
       #---------------------------------------------------------------------------
       fileConn<-"file-processed.lst"
