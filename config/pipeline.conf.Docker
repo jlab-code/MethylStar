@@ -72,8 +72,9 @@ file=0
 NCORES=4
 
 
-[SGE]
-qsub=false
+[CONFIGPART]
+resultdir=false
+genomref=false
 
 [Others]
 tmp_rdata=$result_pipeline/rdata

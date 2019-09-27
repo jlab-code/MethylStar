@@ -368,6 +368,7 @@ def result_pipeline():
             print "-----" * 20
             stored_place['result_pipeline'] = response
             replace_config("GENERAL", "result_pipeline", response)
+            replace_config("CONFIGPART", "resultdir", "true")
             print "creating folders "
             subprocess.call(['./src/bash/preparing.sh'])
             message(0, "Configuration updated! ")
@@ -393,7 +394,7 @@ def genome_ref():
             stored_place['genome_ref'] = response
             # call immediately after folder to ask file
             genome_name()
-
+            replace_config("CONFIGPART", "genomref", "true")
         else:
             pass
     except Exception as e:
@@ -908,7 +909,9 @@ def show_config():
 
 # Back program
 def exit():
-     pass
+    if (read_config("CONFIGPART", "genomref") == "true" and read_config("CONFIGPART", "resultdir")=="true"):
+        replace_config("GENERAL", "firstRun", "false")
+    pass
 
 
 # Menu definition
