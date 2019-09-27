@@ -122,7 +122,7 @@ def remCx():
 def remMethimpute():
     removeRef("/methimpute-out/", "st_methimpute")
     removeRef("/tes-reports/", "st_methimpute")
-    removeRef("/gen-reports/", "st_methimpute")
+    removeRef("/gene-reports/", "st_methimpute")
     removeRef("/fit-reports/", "st_methimpute")
     exec_menu('')
 
