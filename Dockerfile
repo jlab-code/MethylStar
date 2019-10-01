@@ -2,7 +2,7 @@
 FROM ubuntu:18.04
 
 MAINTAINER Yadi Shahryary <shahryary@gmail.com>
-LABEL version="1.0"
+LABEL version="1.1"
 LABEL description="MethylStar Dockerfile."
 
 #---------------------------------------------
@@ -154,6 +154,8 @@ RUN wget http://jlabdata.org/refgenome/TAIR10_chr_all.fa
 RUN chmod +x TAIR10_chr_all.fa
 RUN mv TAIR10_chr_all.fa /home/shared/reference_genome
 
+RUN mkdir -p /data
+RUN chmod 777 -R /data
 
 
 

@@ -19,6 +19,10 @@ import ConfigParser
 import subprocess
 import re
 from globalParameters import true_false_fields_config
+from globalParameters import GrumpyConfigParser
+from globalParameters import replace_config
+from globalParameters import read_config
+'''
 class GrumpyConfigParser(ConfigParser.ConfigParser):
   """Virtually identical to the original method, but delimit keys and values with '=' instead of ' = '"""
   def write(self, fp):
@@ -38,7 +42,7 @@ class GrumpyConfigParser(ConfigParser.ConfigParser):
 
         fp.write("%s\n" % (key))
       fp.write("\n")
-
+'''
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -91,7 +95,7 @@ def exec_menu(choice):
             menu_act['conf_menu']()
     return
 
-
+'''
 def replace_config(section, old_string, new_string):
 
     config = GrumpyConfigParser()
@@ -110,7 +114,7 @@ def read_config(section, get_string):
     val_str = config.get(section, get_string)
     return val_str
 
-
+'''
 
 def query_yes_no(question, default):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -394,7 +398,7 @@ def genome_ref():
             stored_place['genome_ref'] = response
             # call immediately after folder to ask file
             genome_name()
-            replace_config("CONFIGPART", "genomref", "true")
+
         else:
             pass
     except Exception as e:
@@ -427,11 +431,12 @@ def genome_name():
         response = onlyfiles[int(response)]
         replace_config("GENERAL", "genome_ref", di_tosearch)
         replace_config("GENERAL", "genome_name", response)
+        replace_config("CONFIGPART", "genomref", "true")
         message(0, "Configuration updated!")
 
 def genome_type():
     print("Enter the Genome type from the list: \n")
-    list_gen=["Arabidopsis", "Human", "Maize", "Rice"]
+    list_gen=["Arabidopsis", "Human", "Maize", "Rice", "Others"]
     for file in list_gen:
         sys.stdout.write(ycolor(str(list_gen.index(file))) + " : " + file + "\n")
 

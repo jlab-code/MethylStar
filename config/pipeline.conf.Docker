@@ -1,7 +1,7 @@
 [GENERAL]
 firstRun=false
-raw_dataset=/home/shared/rawfiles
-result_pipeline=/home/shared/results
+raw_dataset=/data
+result_pipeline=/results
 genome_ref=/home/shared/reference_genome
 genome_name=TAIR10_chr_all.fa
 genome_type=Arabidopsis
@@ -70,7 +70,6 @@ mincov=1
 [DMR]
 file=0
 NCORES=4
-
 
 [CONFIGPART]
 resultdir=false

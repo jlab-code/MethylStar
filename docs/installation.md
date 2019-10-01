@@ -1,5 +1,6 @@
 Installation and Configuration MethylStar
 ================
+###### *last update documentation: Oct-01-2019 *
 MethylStar is based on several softwares/tools therefore, it is necessary to have all dependencies to be pre-installed in your system and available in the PATH ( [A. Standard installation](#standard) ) or it can be installed as a docker image ( [B. Installation using docker](#docker) ). 
 
 It is highly recommended to use a docker image as it simplifies the process of managing application processes in containers. Containers let you run your applications in resource-isolated processes. They’re similar to virtual machines, but containers are more portable, resource-friendly and dependent on the host operating system.
@@ -94,9 +95,9 @@ Here you can download the image file and run by docker:
 
 ``` bash
 $ wget http://jlabdata.org/methylstar.tar.gz
-last update: May-24-2016
+last update: Oct-01-2019
 file size: 1.1 Gb
-md5sum: dbe93e80235fbd8ee3c9fae4ab36e3b3
+md5sum: 26c8e23d08c04179857b69a81a4ca389
 ```
 **Step 4** — Import the image file into docker:
 
@@ -109,16 +110,16 @@ $ docker load < methylstar.tar.gz
 Running the methylstar docker file.
 
 ``` bash
-$ docker run -it -v /PATH/TO/RAW-FILES/:/home/shared/rawfiles \
-                 -v /PATH/TO/results/:/home/shared/results \
-                 methylstar:ver.1.1
+$ docker run -it -v /PATH/TO/RAW-FILES/:/data \
+                 -v /PATH/TO/results/:/results \
+                 methylstar:latest
 ```
 
 NOTE 1: Please change the */PATH/TO/RAW-FILES/* according to the your raw files folder in your system.
 
 NOTE 2: All the pipeline result will save in */PATH/TO/results/* so please change the directory.
 
-NOTE 3: Please do not change */home/shared/rawfiles and results*.
+NOTE 3: Please do not change */data and /results*.
 
 ------------------------------------------------------------------------
 
