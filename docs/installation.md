@@ -1,6 +1,8 @@
 Installation and Configuration MethylStar
 ================
-###### *last update documentation: Oct-01-2019 *
+
+###### *last update: Oct-01-2019*
+
 MethylStar is based on several softwares/tools therefore, it is necessary to have all dependencies to be pre-installed in your system and available in the PATH ( [A. Standard installation](#standard) ) or it can be installed as a docker image ( [B. Installation using docker](#docker) ). 
 
 It is highly recommended to use a docker image as it simplifies the process of managing application processes in containers. Containers let you run your applications in resource-isolated processes. They’re similar to virtual machines, but containers are more portable, resource-friendly and dependent on the host operating system.

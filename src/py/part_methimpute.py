@@ -36,6 +36,7 @@ def info_methimpute():
 def run_methimpute():
     try:
         preparing_part()
+        txt = "Methimpute part finished."
         '''
         pipeline.conf
         0: not yet run 
@@ -49,12 +50,19 @@ def run_methimpute():
             replace_config("GENERAL", "parallel_mode", "false")
             subprocess.call(['./src/bash/gen-rdata.sh'])
             subprocess.call(['./src/bash/methimpute.sh'])
-
+            if read_config("EMAIL", "active") == "true":
+                parmEmail(txt)
             message(0, "Processing files are finished.")
+
     except Exception as e:
         logging.error(traceback.format_exc())
         print(rcolor(e.message))
+        txt = e.message
+        # email part
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
         message(2, "something is going wrong... please run again. ")
         # set 1 to resuming
         replace_config("STATUS", "st_methimpute", "1")
+
     return

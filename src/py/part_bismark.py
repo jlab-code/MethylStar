@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 __author__ = "Yadollah Shahryary Dizaji"
 __title__ = "setup.py"
 __description__ = "Setup file for Pipeline."
@@ -7,7 +7,6 @@ __version__ = "1.0.0"
 __email__ = "shahryary@gmail.com"
 
 from globalParameters import *
-
 
 def info_bismark_mapper():
     s = gcolor("* If you need to change please back to the configuration part. ")+\
@@ -40,7 +39,7 @@ def run_bimark_mapper(status):
     try:
         preparing_part()
         print(info_bismark_mapper())
-
+        txt = "Bismark Mapper Part finished."
         gen_type = read_config("GENERAL", "genome_type")
         if (gen_type in ["Human", "Maize"]):
             replace_config("GENERAL", "parallel_mode", "false")
@@ -63,6 +62,9 @@ def run_bimark_mapper(status):
 
             replace_config("GENERAL", "parallel_mode", "true")
             subprocess.call(['./src/bash/qc-bam-report.sh'])
+
+            if read_config("EMAIL", "active") == "true":
+                parmEmail(txt)
         else:
             if confirm_run():
                 subprocess.call(['./src/bash/path-export.sh'])
@@ -79,14 +81,21 @@ def run_bimark_mapper(status):
                 # start to run fastqc bam report
 
                 subprocess.call(['./src/bash/qc-bam-report.sh'])
-
+                if read_config("EMAIL", "active") == "true":
+                    parmEmail(txt)
                 message(0, "Processing files is finished, You can check the logs in Menu, part 'Bismark-log' ")
+
+
     except Exception as e:
         logging.error(traceback.format_exc())
         print(rcolor(e.message))
+        txt = e.message
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
         message(2, "something is going wrong... please run again. ")
         # set 1 to resuming
         replace_config("STATUS", "bismark", "1")
+
 
 
     return

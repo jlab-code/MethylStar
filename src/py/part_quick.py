@@ -23,7 +23,7 @@ def run_quick():
         1: bug during run 
         2: successfully run  
         '''
-
+        txt = "Processing files are finished."
         if confirm_run():
 
             if int(read_config("STATUS", "st_trim")) != 2:
@@ -58,13 +58,24 @@ def run_quick():
                 replace_config("STATUS", "st_fastq", "0")
                 replace_config("STATUS", "st_bismark", "0")
                 replace_config("STATUS", "st_bisdedup", "0")
-
+            # email part
+            if read_config("EMAIL", "active") == "true":
+                parmEmail(txt)
             message(0, "Processing files are finished, results are in :"
                     + read_config("Others", "tmp_meth_out"))
+
+
+
     except Exception as e:
         logging.error(traceback.format_exc())
         print(rcolor(e.message))
+        txt = e.message
+        # email part
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
         message(2, "something is going wrong... please run again. ")
         # set 1 to resuming
         replace_config("STATUS", "st_methimpute", "1")
+
+
     return

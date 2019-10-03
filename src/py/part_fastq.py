@@ -36,11 +36,23 @@ def run_fastQC(status):
             if confirm_run():
                 subprocess.call(['./src/bash/qc-fastq-report.sh'])
                 #replace_config("STATUS", "fastq", "2")
+                txt = "FASTQC part finished."
+                # email part
+                if read_config("EMAIL", "active") == "true":
+                    parmEmail(txt)
+
                 message(0, "Task finished!")
+
     except Exception as e:
         #logging.error(traceback.format_exc())
         print(rcolor(e.message))
+        txt = e.message
+        # email part
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
         message(2, "something is going wrong... please run again. ")
         # set 1 to resuming
         replace_config("STATUS", "fastq", "1")
+
+
     return

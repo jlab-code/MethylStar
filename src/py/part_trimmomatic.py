@@ -8,7 +8,6 @@ __email__ = "shahryary@gmail.com"
 
 from globalParameters import *
 
-
 def info_trimmomatic():
     s = gcolor("* If you need to change the following Trimmomatic settings then please go back to configuration.")+"\n\n"\
     "Configured Java location: " + mcolor(read_config("Trimmomatic", "java_path")) + "\n" \
@@ -48,6 +47,8 @@ def run_trimmomatic(status):
         preparing_part()
         print(info_trimmomatic())
 
+        txt = "Trimmomatic Part finished."
+
         gen_type = read_config("GENERAL", "genome_type")
         if (gen_type in ["Human", "Maize"]):
             replace_config("GENERAL", "parallel_mode", "false")
@@ -72,6 +73,9 @@ def run_trimmomatic(status):
                 #replace_config("STATUS", "st_trim", "2")
             else:
                 subprocess.call(['./src/bash/trimmomatic.sh'])
+
+            if read_config("EMAIL", "active") == "true":
+                parmEmail(txt)
         else:
             if confirm_run():
                 if pairs_mode == 'true':
@@ -79,14 +83,26 @@ def run_trimmomatic(status):
                     #replace_config("STATUS", "st_trim", "2")
                 else:
                     subprocess.call(['./src/bash/trimmomatic.sh'])
+
+                if read_config("EMAIL", "active") == "true":
+                    parmEmail(txt)
+
                 message(0, "Processing files is finished, You can check the log files in Menu, part 'Trimmomatic-log' ")
+
+
 
     except Exception as e:
         #logging.error(traceback.format_exc())
         print(rcolor(e.message))
+        txt = e.message
+        # email part
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
         message(2, "something is going wrong... please run again. ")
         # set 1 to resuming
         replace_config("STATUS", "st_trim", "1")
+
+
     return
 
 

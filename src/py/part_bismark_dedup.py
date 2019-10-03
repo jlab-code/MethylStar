@@ -8,7 +8,6 @@ __email__ = "shahryary@gmail.com"
 
 from globalParameters import *
 
-
 def info_bismark_dedup():
     s = gcolor("* If you need to change please back to the configuration part. ") + \
         "" + gcolor("* Sorting will be start after deduplication.") + "\n\n"\
@@ -36,6 +35,7 @@ def run_bimark_dedup(status):
     try:
         preparing_part()
         print(info_bismark_dedup())
+        txt = "Bismark deduplication is done."
         # if pair then set to -p
         if read_config("GENERAL", "pairs_mode") == 'true':
             replace_config("Bismark", "deduplicate", "-p")
@@ -47,17 +47,27 @@ def run_bimark_dedup(status):
             subprocess.call(['./src/bash/bismark-deduplicate.sh'])
             subprocess.call(['./src/bash/bam-sorting.sh'])
             replace_config("STATUS", "st_bisdedup", "2")
+
         else:
             if confirm_run():
                 subprocess.call(['./src/bash/path-export.sh'])
                 subprocess.call(['./src/bash/bismark-deduplicate.sh'])
                 # sorting is not accepting by meth-extractor
                 #subprocess.call(['./src/bash/bam-sorting.sh'])
+                if read_config("EMAIL", "active") == "true":
+                    parmEmail(txt)
                 message(0, "Processing files is finished, You can check the logs in Menu, part 'Bismark-log' ")
+
+
+
     except Exception as e:
         logging.error(traceback.format_exc())
         print(rcolor(e.message))
+        txt = e.message
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
         message(2, "something is going wrong... please run again. ")
-        # set 1 to resuming
         replace_config("STATUS", "st_bisdedup", "1")
+
+
     return

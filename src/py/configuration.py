@@ -22,27 +22,7 @@ from globalParameters import true_false_fields_config
 from globalParameters import GrumpyConfigParser
 from globalParameters import replace_config
 from globalParameters import read_config
-'''
-class GrumpyConfigParser(ConfigParser.ConfigParser):
-  """Virtually identical to the original method, but delimit keys and values with '=' instead of ' = '"""
-  def write(self, fp):
-    if self._defaults:
-      fp.write("[%s]\n" % DEFAULTSECT)
-      for (key, value) in self._defaults.items():
-        fp.write("%s = %s\n" % (key, str(value).replace('\n', '\n\t')))
-      fp.write("\n")
-    for section in self._sections:
-      fp.write("[%s]\n" % section)
-      for (key, value) in self._sections[section].items():
-        if key == "__name__":
-          continue
-        if (value is not None) or (self._optcre == self.OPTCRE):
-          # This is the important departure from ConfigParser for what you are looking for
-          key = "=".join((key, str(value).replace('\n', '\n\t')))
 
-        fp.write("%s\n" % (key))
-      fp.write("\n")
-'''
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -75,7 +55,9 @@ def conf_menu():
     print ycolor("\t6.")+" Alignment parameters"
     print ycolor("\t7.")+" Methimpute parameters"
     print ycolor("\t8.")+" Parallel mode"
-    print ycolor("\t9.")+" See configured parameters"
+    print ycolor("\t9.") + " E-mail notification"
+    print ycolor("\t10.")+" See configured parameters"
+
     print rcolor("B.")+" Back to main Menu\n"
     choice = raw_input(">>  ")
     exec_menu(choice)
@@ -94,27 +76,6 @@ def exec_menu(choice):
             print "Invalid selection, please try again.\n"
             menu_act['conf_menu']()
     return
-
-'''
-def replace_config(section, old_string, new_string):
-
-    config = GrumpyConfigParser()
-    config.optionxform = str
-    config.read('config/pipeline.conf')
-    config.set(section, old_string, new_string)
-    with open('config/pipeline.conf', 'wb') as config_file:
-        config.write(config_file)
-
-
-def read_config(section, get_string):
-
-    config = GrumpyConfigParser()
-    config.optionxform = str
-    config.read('config/pipeline.conf')
-    val_str = config.get(section, get_string)
-    return val_str
-
-'''
 
 def query_yes_no(question, default):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -865,6 +826,50 @@ def parallel_mode():
         logging.error(traceback.format_exc())
         message(2, "Something is going wrong... please run again. ")
 
+def email():
+    try:
+        print gcolor("--Configuration part for E-mail notifications--")
+        if confirm("EMAIL", "active", 3):
+            sys.stdout.write(ycolor("\n1")+"-Enable email notification.\n")
+            sys.stdout.write(ycolor("2")+"-Disable email notification.\n")
+            nu_mode = inputNumber("Please enter the number to select:")
+            while not int(nu_mode) in range(1, 3):
+                nu_mode = inputNumber("Please enter the valid number:")
+            if int(nu_mode)==1:
+                mode="true"
+            else:
+                mode="false"
+            replace_config("EMAIL", "active", mode)
+            message(4, "Configuration updated!")
+
+        if confirm("EMAIL", "email_rec", 3):
+                '''
+                 Email sender
+                '''
+                user_input = raw_input("\nPlease enter your email address: ")
+                replace_config("EMAIL", "email_rec", user_input)
+                message(4, "Configuration updated!")
+        else:
+            pass
+
+        print rcolor("ATTENTION: For more security please setup 'App Passwords' from your Google account. ")
+
+        if confirm("EMAIL", "password", 3):
+                '''
+                 Email sender
+                '''
+                user_input = raw_input("\nPlease enter your password: ")
+                replace_config("EMAIL", "password", user_input)
+                message(4, "Configuration updated!")
+        else:
+            pass
+
+        message(0, "Configuration updated!")
+
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        print(rcolor(e.message))
+        message(2, "Something is going wrong... please run again. ")
 
 def show_config():
     print "\n"+"=="*30
@@ -906,6 +911,8 @@ def show_config():
     print "     -- Methimpute Context: " + mcolor("All/CHG|CHH|CG")
     print "- Parallel mode is: " +mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"),""))
     print "     -- Number of Parallel: " + mcolor(read_config("GENERAL", "npar"))+" Cores."
+    print "- E-mail notification: " + mcolor(true_false_fields_config(read_config("EMAIL", "active"), ""))
+    print "     -- E-mail address: " + mcolor(read_config("EMAIL", "email_rec"))
 
     message(0, "...")
 
@@ -930,8 +937,8 @@ menu_act = {
     '6': bismark_path,
     '7': methimpute,
     '8': parallel_mode,
-    '9': show_config,
-
+    '9': email,
+    '10':show_config,
     'b': exit,
 }
 

@@ -36,7 +36,7 @@ def run_bimark_meth():
     try:
         preparing_part()
         print(info_bismark_meth())
-
+        txt = "Bismark meth extractor part finished."
         gen_type = read_config("GENERAL", "genome_type")
         if (gen_type in ["Human", "Maize"]):
             replace_config("GENERAL", "parallel_mode", "false")
@@ -49,13 +49,24 @@ def run_bimark_meth():
         if confirm_run():
             subprocess.call(['./src/bash/path-export.sh'])
             subprocess.call(['./src/bash/bismark-meth-extractor.sh'])
+            if read_config("EMAIL", "active") == "true":
+                parmEmail(txt)
             # running methimpute
             message(0, "Processing files is finished, You can check the logs in Menu, part 'Bismark-log' ")
+
+
 
     except Exception as e:
         logging.error(traceback.format_exc())
         print(rcolor(e.message))
+        txt = e.message
+        # email part
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
         message(2, "something is going wrong... please run again. ")
         # set 1 to resuming
         replace_config("STATUS", "st_bismeth", "1")
+
+
+
     return

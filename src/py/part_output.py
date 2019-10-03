@@ -110,6 +110,7 @@ def bedGraph():
         preparing_part()
         print "converting to DMRCaller format ..."
         if confirm_run():
+            subprocess.call(['./src/bash/gen-rdata.sh'])
             subprocess.call(['./src/bash/meth-bedgraph.sh'])
             message(0, "Processing files is finished.")
 

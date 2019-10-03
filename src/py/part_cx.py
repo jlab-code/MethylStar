@@ -35,16 +35,24 @@ def run_cx():
     try:
         preparing_part()
         print(info_cx())
-
+        txt = "Cx generator Part finished."
         if confirm_run():
             subprocess.call(['./src/bash/cx-generator.sh'])
             # running methimpute
+            # email part
+            if read_config("EMAIL", "active") == "true":
+                parmEmail(txt)
             message(0, "Processing files is finished, You can check the logs in Menu, part 'Bismark-log' ")
 
     except Exception as e:
         logging.error(traceback.format_exc())
         print(rcolor(e.message))
+        txt = e.message
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
         message(2, "something is going wrong... please run again. ")
         # set 1 to resuming
         replace_config("STATUS", "st_cx", "1")
+
+
     return
