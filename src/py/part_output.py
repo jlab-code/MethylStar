@@ -108,7 +108,7 @@ def Methylkit():
 def bedGraph():
     try:
         preparing_part()
-        print "converting to DMRCaller format ..."
+        print "converting to bedGraph format ..."
         if confirm_run():
             subprocess.call(['./src/bash/gen-rdata.sh'])
             subprocess.call(['./src/bash/meth-bedgraph.sh'])
@@ -127,7 +127,7 @@ def bedGraph():
 def bedToBig():
     try:
         preparing_part()
-        print "converting to DMRCaller format ..."
+        print "converting bedGraph format to Bigwig format ..."
         if confirm_run():
             subprocess.call(['./src/bash/bigwig-format.sh'])
             message(0, "Processing files is finished.")

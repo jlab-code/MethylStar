@@ -42,7 +42,7 @@ Before running MethylStar, you will need to install or check the installation of
 ##### Step A.2 — Download MethylStar folder from github
 
 ``` bash
-$ git clone https://github.com/shahryary/MethylStar
+$ git clone https://github.com/jlab-code/MethylStar
 
 ```
 ##### Step A.3 — ‘cd’ into the MethylStar folder and type the following command

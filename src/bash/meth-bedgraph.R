@@ -7,8 +7,8 @@ source("./src/bash/r-lib.R")
 #-------------------------------------------------------------
 args <- commandArgs(trailingOnly = TRUE)
 wd = args[1] 
-#setwd(paste0(wd,"/bedgraph-fromat"))
-output=(paste0(wd,"/bedgraph-format/"))
+setwd(paste0(wd,"/bedgraph-format/"))
+#output=(paste0(wd,"/bedgraph-format/"))
 #----------------------------------------------------
 # function for reading methimpute files into Methylkit
 #-----------------------------------------------------
@@ -36,7 +36,7 @@ MethimputeTobedGraph <- function(file1, chrom_sizes) {
   dfnew$pos_start <- format(dfnew$pos_start, scientific = FALSE) 
   dfnew$pos_end <- format(dfnew$pos_end, scientific = FALSE)
   print(paste0("Writing to the bedGraph format....",name))
-  fwrite(x= dfnew, file=paste0(output, name, ".bedGraph"), sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
+  fwrite(x= dfnew, file=paste0(name, ".bedGraph"), sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
   fileConn<-"file-processed.lst"
   cat(file1, file = fileConn, append = TRUE, sep = "\n" )
 }
@@ -46,8 +46,8 @@ MethimputeTobedGraph <- function(file1, chrom_sizes) {
 # converts methimpute files to methylkit format if donot exist
 #-------------------------------------------------------------
 
-try(system(paste0("ls -1v ",wd,"/methimpute-out/*.txt > ",wd,"/bedgraph-format/list-files.lst") ,intern = TRUE))
-chrom_sizes <-list.files(paste0(wd,"/rdata/"), pattern='\\.txt$', full.names = TRUE)
+try(system("ls -1v ../methimpute-out/*.txt > list-files.lst",intern = TRUE))
+chrom_sizes <-list.files("../rdata/", pattern='\\.txt$', full.names = TRUE)
 
 filenames <-fread("list-files.lst",skip = 0,header = FALSE)
 files_to_go <-NULL

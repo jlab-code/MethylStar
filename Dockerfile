@@ -140,7 +140,7 @@ RUN R -e "library("devtools"); install_github('ataudt/methimpute')"
 # Pipeline and preparing directories
 #--------------------------------
 WORKDIR /home/
-RUN git clone https://github.com/shahryary/MethylStar.git
+RUN git clone https://github.com/jlab-code/MethylStar.git
 WORKDIR /home/MethylStar/
 RUN rm config/pipeline.conf
 RUN mv config/pipeline.conf.Docker config/pipeline.conf
