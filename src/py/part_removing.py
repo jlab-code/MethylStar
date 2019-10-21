@@ -133,7 +133,7 @@ def remDmr():
 
 
 def remMethbed():
-    removeRef("/bedgraph-fromat/", "st_bedgraph")
+    removeRef("/bedgraph-format/", "st_bedgraph")
     exec_menu('')
 
 
