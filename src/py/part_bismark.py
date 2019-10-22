@@ -40,10 +40,11 @@ def run_bimark_mapper(status):
         preparing_part()
         print(info_bismark_mapper())
         txt = "Bismark Mapper Part finished."
+        '''
         gen_type = read_config("GENERAL", "genome_type")
         if (gen_type in ["Human", "Maize"]):
             replace_config("GENERAL", "parallel_mode", "false")
-
+        '''
         pairs_mode = read_config("GENERAL", "pairs_mode")
         if status:
 

@@ -1,8 +1,10 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-. $curr_dir/detect.sh bismeth;
 . $curr_dir/tmp.conf;
+. $curr_dir/detect.sh $genome_type bismeth;
+. $curr_dir/tmp.conf;
+
 
 
 : '

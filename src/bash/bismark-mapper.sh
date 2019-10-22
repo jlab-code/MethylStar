@@ -2,6 +2,8 @@
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf
+. $curr_dir/detect.sh  $genome_type  bismap;
+. $curr_dir/tmp.conf
 
 
 ## Bismark Mapper
@@ -33,11 +35,11 @@ for fq in "${arr[@]}"
 		if $nucleotide; then
 			echo "Nucleotide coverage is enabled." 
 			echo "Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-			result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
+			result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
 		else
 			echo "Nucleotide coverage is disabled." 
 			echo "Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-			result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+			result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 		fi
 		#---------------------------------------------------------------------------
 		echo $fq >> $tmp_bismap/list-finished.lst;

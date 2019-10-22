@@ -1,7 +1,8 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
-. $curr_dir/detect.sh bismap;
+. $curr_dir/tmp.conf;
+. $curr_dir/detect.sh  $genome_type  bismap;
 . $curr_dir/tmp.conf;
 
 ## Bismark Mapper - pair mode parallel 
@@ -40,11 +41,11 @@ if $run_pair_bismark; then
 			if $nucleotide; then
 				echo "Nucleotide coverage is enabled." >> $tmp_clog/bismark-mapper.log  
 				echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." >> $tmp_clog/bismark-mapper.log
-				result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
+				result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
 			else
 				echo "Nucleotide coverage is disabled." >> $tmp_clog/bismark-mapper.log
 				echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." >> $tmp_clog/bismark-mapper.log
-				result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+				result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 			fi	
 			echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
 			echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
@@ -74,11 +75,11 @@ else
 		if $nucleotide; then
 			echo "Nucleotide coverage is enabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log 
 			echo "Running bismark for $file1 and $file2 ..." >> $tmp_clog/bismark-mapper.log
-			result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
+			result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel  -p $Nthreads --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
 		else
 			echo "Nucleotide coverage is disabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 			echo "Running bismark for $file1 and $file2 ..." >> $tmp_clog/bismark-mapper.log
-			result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+			result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel -p $Nthreads --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 		fi
 		echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
 		echo $tmp_fq/$file2 >> $tmp_bismap/list-finished.lst;
@@ -108,12 +109,20 @@ for file in $(ls -1v $tmp_bismap/*.bam)
 		mv $file $tmp_bismap/$tmp.bam
 	done
 # rename logs to fq
-for file in $(ls -1v $tmp_bismap/*.txt)
-	do
-		label=$(echo $(echo $file | sed 's/.*\///') | sed -e "s/_bismark_bt2_PE_report.txt//g")
-		tmp=$(echo $label | sed "s/_paired_.//g")
-		mv $file $tmp_bismap/$tmp.txt
-	done
+for file in $(ls -1v $tmp_bismap/*_bismark_bt2_PE_report.txt)
+        do
+                label=$(echo $(echo $file | sed 's/.*\///') | sed -e "s/_bismark_bt2_PE_report.txt//g")
+                tmp=$(echo $label | sed "s/_paired_.//g")
+                mv $file $tmp_bismap/$tmp.txt
+        done
+
+for file in $(ls -1v $tmp_bismap/*nucleotide_stats.txt)
+        do
+                label=$(echo $(echo $file | sed 's/.*\///') | sed -e "s/_bismark_bt2_pe.nucleotide_stats.txt//g")
+                #tmp=$(echo $label | sed "s/_paired_.//g")
+                mv $file $tmp_bismap/$label_ns.txt
+        done
+
 #--------------------------------------
 cd -
 
