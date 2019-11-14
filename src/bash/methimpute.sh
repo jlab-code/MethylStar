@@ -6,7 +6,7 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 
 
 #R CMD BATCH $result_pipeline $genome_name --save output.log
-Rscript ./src/bash/methimpute.R $result_pipeline $genome_ref $genome_name $tmp_rdata $intermediate $fit_output $enrichment_plot $TES_report $genes_report --no-save --no-restore --verbose 
+Rscript ./src/bash/methimpute.R $result_pipeline $genome_ref $genome_name $tmp_rdata $intermediate $fit_output $enrichment_plot $full_report $context_report $intermediate_mode --no-save --no-restore --verbose 
 
 # check if everyfiles finished, then delete queue list 
 if [ -z $(comm -23 <(sort -u $tmp_meth_out/list-files.lst) <(sort -u $tmp_meth_out/file-processed.lst)) ]  

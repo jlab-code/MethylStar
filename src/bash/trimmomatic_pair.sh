@@ -2,7 +2,7 @@
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf;
-. $curr_dir/detect.sh $genome_type trimm;
+. $curr_dir/detect.sh $genome_type trimm $npar;
 . $curr_dir/tmp.conf;
 
 
@@ -27,7 +27,7 @@ if [ -f $tmp_fq/list-finished.lst ]
 
 if $parallel_mode; then
 
-	echo "Running in Parallel mode, number of jobs: $npar ."
+	echo -e "Running in Parallel mode, number of jobs: $npar .\n"
 	start=$(date +%s)
 	doit() {
 
@@ -50,7 +50,7 @@ if $parallel_mode; then
 
 	export -f doit
 	par=$(echo $curr_dir/tmp.conf) 
-	grep "$first_pattern" "$input"  | parallel -j $npar doit "$par"
+	grep "$first_pattern" "$input"  | parallel -j $npar --lb doit "$par"
 
 	end=$(date +%s)
 	runtime=$((($(date +%s)-$start)/60)) 

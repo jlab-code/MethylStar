@@ -37,8 +37,8 @@ fi
 
 if [ ! -d $result_pipeline ]; then
 	mkdir -p $result_pipeline
-	echo "creating result folder in $result_pipeline"
-	echo "All the results will save in $result_pipeline folder"
+	echo -e "creating result folder in $result_pipeline. \n"
+	echo -e "All the results will save in $result_pipeline folder. \n"
 
 fi
 
@@ -57,6 +57,10 @@ fi
 
 if [ ! -d $tmp_bismap ]; then
     mkdir $tmp_bismap
+fi
+
+if [ ! -d $tmp_covseq ]; then
+    mkdir $tmp_covseq
 fi
 
 if [ ! -d $tmp_qcbam ]; then

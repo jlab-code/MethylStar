@@ -2,7 +2,7 @@
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf;
-. $curr_dir/detect.sh $genome_type trimm;
+. $curr_dir/detect.sh $genome_type trimm $npar;
 . $curr_dir/tmp.conf;
 
 
@@ -10,7 +10,7 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 # check point
 if [ -f $tmp_fq/list-finished.lst ]
 	then
-		echo "Resuming process ..." 
+		echo -e "\n Resuming process ..." 
 		proc_a= $(sort $tmp_fq/list-files.lst -o $tmp_fq/list-files.lst)
 		proc_b= $(sort $tmp_fq/list-finished.lst -o $tmp_fq/list-finished.lst)
 		proc_c= $(comm -23 $tmp_fq/list-files.lst $tmp_fq/list-finished.lst > $tmp_fq/tmp.lst)
@@ -20,7 +20,7 @@ if [ -f $tmp_fq/list-finished.lst ]
 				arr+=("$line")
 			done < $input;
 	else
-		echo "Starting Trimmomatic ..."
+		echo -e "\n Starting Trimmomatic ..."
 		input="$tmp_fq/list-files.lst"
 		while read line
 		do
@@ -47,7 +47,7 @@ if $parallel_mode; then
 		}
 	export -f doit
 	par=$(echo $curr_dir/tmp.conf) 
-	cat "$input"  | parallel -j $npar doit "$par"
+	cat "$input"  | parallel -j $npar --lb doit "$par"
 	runtime=$((($(date +%s)-$start)/60)) 
 	echo "Trimmomatic finished. Duration $runtime Minutes." 2>&1 | tee -a $tmp_clog/trimmomatic.log;
 						

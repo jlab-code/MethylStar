@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-rm(list=ls())
 options(warn=-1)
 source("./src/bash/r-lib.R")
 
@@ -16,12 +15,15 @@ rdata=(args[4])       # file for genes/TEs/etc.(annotation files)
 intermediate<-as.logical(toupper((args[5])))
 fit_output=as.logical(toupper((args[6])))
 enrichment_plot=as.logical(toupper((args[7])))
-TES_report=as.logical(toupper((args[8])))
-genes_report=as.logical(toupper((args[9]))) 
-minCov=as.numeric(as.character(((args[10]))))
+full_report=as.logical(toupper((args[8])))
+minCov=as.numeric(as.character(((args[9]))))
+intermediate_mode=(args[10])
 
-try(system("ls -1v ../bismark-deduplicate/*.bam > list-files.lst" ,intern = TRUE))
-fileName <-fread("list-files.lst",skip = 0,header = FALSE)
+file<-(args[15])
+
+
+#try(system("ls -1v ../bismark-deduplicate/*.bam > list-files.lst" ,intern = TRUE))
+#fileName <-fread("list-files.lst",skip = 0,header = FALSE)
 
 #------------------------------------------------------------------
 # parallel function to extract cytosine
@@ -130,16 +132,16 @@ modifiedexportMethylome <- function( model, filename) {
   rm(data,df)
 }
 #-------------------------------------------------------------------
-files_to_go <-NULL
-file_processed<-"file-processed.lst"
-if (!file.exists(file_processed)){
-  cat("It's first time you are running Methimpute for this data-set!\n")
-  files_to_go <- fileName
-} else {
-  file_processed <-fread("file-processed.lst",skip = 0,header = FALSE)
-  files_to_go <- as.data.table(anti_join (fileName , file_processed, by = c("V1")))
-  cat("Resuming the job...\n")
-}
+# files_to_go <-NULL
+# file_processed<-"file-processed.lst"
+# if (!file.exists(file_processed)){
+#   cat("It's first time you are running Methimpute for this data-set!\n")
+#   files_to_go <- fileName
+# } else {
+#   file_processed <-fread("file-processed.lst",skip = 0,header = FALSE)
+#   files_to_go <- as.data.table(anti_join (fileName , file_processed, by = c("V1")))
+#   cat("Resuming the job...\n")
+# }
 # Rdata import
 list<- list.files(path = rdata, pattern = "*.RData")
 for (i in 1:length(list)){
@@ -149,17 +151,17 @@ for (i in 1:length(list)){
 fasta.file <-paste0(genome_ref,"/",name_genome)
 cytosine.positions <-extractCytosinesFromFASTA(fasta.file, contexts = c('CG', 'CHG', 'CHH'))
 
-startCompute <- function(files_to_go) {
+startCompute <- function(file) {
   # storing the file which is done
   going_file <- NULL
   
-  for (i in 1:length(files_to_go$V1)){
     tryCatch({
       ptm <- proc.time()
-      going_file <- files_to_go$V1[i:i]
+      going_file <- file
       
       #----------------------------------------------------------------------------
-      name <- gsub(pattern = "\\-sorted.bam$", "", basename(going_file))
+      name <- gsub(pattern = "\\.bam$", "", basename(going_file))
+      name <-gsub(pattern = "sorted-", "", basename(name))
       cat(paste0("Running...", name),"\n")
       cat("Preparing Alignments... \n")
       methylome.data <- import_aln(going_file, chrom.lengths = Ref_Chr)
@@ -167,7 +169,13 @@ startCompute <- function(files_to_go) {
       rm(methylome.data)
       distcor <- distanceCorrelation(methylome)
       fit <- estimateTransDist(distcor)
-      model <- callMethylation(data = methylome, transDist = fit$transDist, include.intermediate=intermediate)
+
+      if (intermediate==TRUE){
+        model <- callMethylation(data = methylome, transDist = fit$transDist, include.intermediate=intermediate , update=intermediate_mode)
+        }else{
+        model <- callMethylation(data = methylome, transDist = fit$transDist, include.intermediate=intermediate)    
+      }
+
       modifiedexportMethylome(model, filename = paste0("methylome_", name, ".txt"))
       
       #---------------------------------------------------------------------------
@@ -196,12 +204,10 @@ startCompute <- function(files_to_go) {
         print(B1)
         dev.off()
       }
-      if (TES_report==TRUE){
+      if (full_report==TRUE){
         print(paste0("Generating TEs reports...", name))
         A2 <- plotEnrichment(model$data, annotation=TEs, range = 2000, category.column='category', plot = FALSE)  
         write.table(A2, paste0(wd,"/tes-reports/TEs_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
-      }
-      if(genes_report==TRUE){
         print(paste0("Generating genes reports...", name))
         B2 <- plotEnrichment(model$data, annotation=genes, range = 2000, category.column='category', plot = FALSE)
         write.table(B2, paste0(wd,"/gene-reports/genes_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
@@ -213,10 +219,9 @@ startCompute <- function(files_to_go) {
       rm(model,methylome,going_file)
       print(proc.time() - ptm)
     },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-  }
+  
   
 }
       
-startCompute(files_to_go)
-rm(list=ls())
+startCompute(file)
 

@@ -1,8 +1,9 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
+orgPip=$(pwd)
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf
-. $curr_dir/detect.sh  $genome_type  bismap;
+. $curr_dir/detect.sh  $genome_type  bismap $npar;
 . $curr_dir/tmp.conf
 
 
@@ -33,12 +34,12 @@ if $run_pair_bismark; then
 			file3=$label"_paired$secnd_pattern"
 			file4=$label"_unpaired$secnd_pattern"
 			if $nucleotide; then
-				echo "Nucleotide coverage is enabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log  
-				echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+				echo "-- Nucleotide coverage is enabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log  
+				echo "-- Running bismark for $file1 , $file2 and $file3 , $file4 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 				result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel -p $Nthreads  --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
 			else
-				echo "Nucleotide coverage is disabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-				echo "Running bismark for $file1 , $file2 and $file3 , $file4 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+				echo "-- Nucleotide coverage is disabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+				echo "-- Running bismark for $file1 , $file2 and $file3 , $file4 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 				result=$($bismark_path/bismark -s 0 -u 0 -n 0 -l 20 --parallel $bis_parallel  -p $Nthreads --genome $genome_ref -1 $tmp_fq/$file1 $tmp_fq/$file2 -2 $tmp_fq/$file3 $tmp_fq/$file4 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 			fi	
 			echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
@@ -47,7 +48,8 @@ if $run_pair_bismark; then
 			echo $tmp_fq/$file4 >> $tmp_bismap/list-finished.lst;
 			echo "Bismark for $file1 , $file2 , $file3 , $file4 finished." 
 			runtime=$((($(date +%s)-$start)/60)) 
-			echo "Bismark for $file1 , $file2 , $file3 , $file4 finished. Duration time $runtime Minutes." >> $tmp_clog/bismark-mapper.log
+			echo "-- Bismark for $file1 , $file2 , $file3 , $file4 finished. Duration time $runtime Minutes." >> $tmp_clog/bismark-mapper.log
+			echo -e "-------------------------------------------- \n"
 			totaltime=$(($runtime + $totaltime))
 		done
 		echo "Bismark Mapper finished. Total time $totaltime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
@@ -62,12 +64,12 @@ else
 			file1=$label"$first_pattern"
 			file2=$label"$secnd_pattern"
 			if $nucleotide; then
-				echo "Nucleotide coverage is enabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log 
-				echo "Running bismark for $file1 and $file2 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+				echo "-- Nucleotide coverage is enabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log 
+				echo "-- Running bismark for $file1 and $file2 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 				result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel  -p $Nthreads --nucleotide_coverage --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log ) 
 			else
-				echo "Nucleotide coverage is disabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-				echo "Running bismark for $file1 and $file2 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+				echo "-- Nucleotide coverage is disabled." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+				echo "-- Running bismark for $file1 and $file2 ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 				result=$($bismark_path/bismark -N 1 -L 32 --parallel $bis_parallel -p $Nthreads --genome $genome_ref -1 $tmp_fq/$file1 -2 $tmp_fq/$file2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 			fi
 			echo $tmp_fq/$file1 >> $tmp_bismap/list-finished.lst;
@@ -75,6 +77,7 @@ else
 			runtime=$((($(date +%s)-$start)/60))
 			echo "Bismark for $file1 and $file2 finished. Duration time $runtime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 			totaltime=$(($runtime + $totaltime))
+			echo -e "-------------------------------------------- \n"
 		done
 		echo "Bismark Mapper done. Total running time $totaltime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 
@@ -85,9 +88,6 @@ if [ -f $tmp_bismap/tmp.lst ]
 then 
 	remove=$(rm $tmp_bismap/tmp.lst)
 fi
-
-echo "Bismark part finished. Please check the $tmp_bismap directory for logs." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-
 
 
 #------------------------------------ Renaming
@@ -114,8 +114,10 @@ for file in $(ls -1v $tmp_bismap/*nucleotide_stats.txt)
                 mv $file $tmp_bismap/$label_ns.txt
         done
 
-#--------------------------------------
-cd -
+
+
+cd $orgPip
+
 if [ -f $tmp_bismap/tmp.lst ]
 then 
 	remove=$(rm $tmp_bismap/tmp.lst)

@@ -2,7 +2,7 @@
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf
-. $curr_dir/detect.sh  $genome_type  qcFast;
+. $curr_dir/detect.sh  $genome_type  qcFast $npar;
 . $curr_dir/tmp.conf
 
 : '
@@ -14,7 +14,7 @@ gen=$(ls -1v $tmp_fq/*.gz > $tmp_qcfast/list-files.lst)
 
 if [ -f $tmp_qcfast/list-finished.lst ]
 	then
-		echo "Resuming process ..." 
+		echo -e "\nResuming process ..." 
 		a_proc= $(sort $tmp_qcfast/list-files.lst -o $tmp_qcfast/list-files.lst)
 		b_proc= $(sort $tmp_qcfast/list-finished.lst -o $tmp_qcfast/list-finished.lst)
 		c_proc= $(comm -23 $tmp_qcfast/list-files.lst $tmp_qcfast/list-finished.lst > $tmp_qcfast/tmp.lst)
@@ -25,7 +25,7 @@ if [ -f $tmp_qcfast/list-finished.lst ]
 				arr+=("$line")
 			done < $input;
 	else
-		echo "Starting Fasqc-report ..." 
+		echo -e "\nStarting Fasqc-report ..." 
 		input="$tmp_qcfast/list-files.lst"
 		while read line
 		do
@@ -52,11 +52,11 @@ if $parallel_mode; then
 	end=$(date +%s)
 	runtime=$((($(date +%s)-$start)/60))
 	echo "FastqC report finished. Duration $runtime Minutes." 2>&1 | tee -a $tmp_clog/qc-fastq.log;
-	echo "You can find the results in $tmp_qcfast folder."
+	echo -e "You can find the results in $tmp_qcfast folder. \n"
 
 else
 #running in single mode
-	echo "Running in single mode. (parallel mode disabled.)"
+	echo -e "Running in single mode. (parallel mode disabled.) \n"
 	start=$(date +%s)
 	for fq in "${arr[@]}"
 		do
@@ -65,11 +65,12 @@ else
 		echo "Running fastQC report for $label ..." 2>&1 | tee -a $tmp_clog/qc-fastq.log
 		fast=$($fastq_path --noextract -f fastq $fq -o $tmp_qcfast)
 		echo $fq >> $tmp_qcfast/list-finished.lst
+		echo -e "\n"
 		done
 	end=$(date +%s)
 	runtime=$((($(date +%s)-$start)/60))
 	echo "QC report finished in $runtime minutes." 2>&1 | tee -a $tmp_clog/qc-fastq.log
-	echo "You can find the results in $tmp_qcfast folder."
+	echo -e "You can find the results in $tmp_qcfast folder. \n "
 	
 
 fi

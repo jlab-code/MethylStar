@@ -11,19 +11,19 @@ gen=$(ls -1v $tmp_fq/*.gz > $tmp_bismap/list-files.lst)
 
 if [ -f $tmp_bismap/list-finished.lst ]
 	then
-		echo "Resuming process ..." 
+		echo -e "Resuming process ...\n" 
 		proc_a= $(sort $tmp_bismap/list-files.lst -o $tmp_bismap/list-files.lst)
 		proc_b= $(sort $tmp_bismap/list-finished.lst -o $tmp_bismap/list-finished.lst)
 		proc_c= $(comm -23 $tmp_bismap/list-files.lst $tmp_bismap/list-finished.lst > $tmp_bismap/tmp.lst)
 	else
-		echo "Starting Bismark mapper ..." 
+		echo -e "Starting Bismark mapper ...\n" 
 		gen=$(cp $tmp_bismap/list-files.lst  $tmp_bismap/tmp.lst)
 	fi
 #-------------------------------------------------------------------------------
 ## Creating reference genome folders FOR FIRST TIME
 
 if [ ! -d $genome_ref/Bisulfite_Genome ]; then
-	echo "Preparing reference genome ...."
+	echo -e "Preparing reference genome .... \n"
 	gen=$($bismark_path/bismark_genome_preparation --verbose $genome_ref/)
 	current_modified=$(stat -c "%Y" $genome_ref/$genome_name)
 	sed -i "s/modified_time=.*/modified_time=$current_modified/g" config/pipeline.conf

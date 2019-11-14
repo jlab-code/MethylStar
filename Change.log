@@ -1,9 +1,18 @@
+Ver. 1.4
+  - Added data-set options.
+  - fixed parallel issues.
+  - Added genome coverage and sequencing reports.
+  - worked on performance
+  - fixed some bugs.
+  - interface chaged
+
 Ver. 1.3
   - added maize, human genome support
   - fixed parallel issues
   - Added genome configuration
   - worked on performance
   - fixed some bugs.
+
 ver. 1.2
   - added te-report, gen-report, 
 
@@ -14,8 +23,10 @@ ver. 1.1
   - checking installed  path for programs
   - folder for .RData file for genes/TEs/etc.(annotation files)
   - converted factors to numbers for joining "methimputemodifiedexport" function
+
 Ver. 1.2.1
   - fixed some bugs.
+
 ver. 1.2
   - added te-report, gen-report, 
 

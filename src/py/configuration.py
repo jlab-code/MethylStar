@@ -31,10 +31,11 @@ class bcolors:
     WARNING = '\033[1;33m'
     UPDATE = '\033[0;36m'
     FAIL = '\033[91m'
-    QUES = '\033[1;96m'
+    QUES = '\033[1;92m'
     RED = '\033[1;31m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
+    GRAY = '\033[90m'
     UNDERLINE = '\033[4m'
 
 
@@ -90,7 +91,7 @@ def query_yes_no(question, default):
     valid = {"yes": True, "y": True, "ye": True,
              "no": False, "n": False}
     if default is None:
-        prompt = " [y/n] "
+        prompt = qucolor(" [y/n] ")
     elif default == "yes":
         prompt = " [Y/n] "
     elif default == "no":
@@ -99,7 +100,7 @@ def query_yes_no(question, default):
         raise ValueError("invalid default answer: '%s'" % default)
 
     while True:
-        sys.stdout.write(qucolor(question) + prompt)
+        sys.stdout.write(question + prompt)
         choice = raw_input().lower()
         if default is not None and choice == '':
             return valid[default]
@@ -134,10 +135,15 @@ def message(msg_code, msg):
         print bcolors.WARNING + msg + bcolors.ENDC+"\n"
         raw_input("Please, press ENTER to continue ...")
         exec_menu('')
-    elif msg_code == 3:
-        print bcolors.OKGREEN + msg + bcolors.ENDC+"\n"
     elif msg_code == 4:
-        print bcolors.NOTE + msg + bcolors.ENDC+"\n"
+        print bcolors.OKBLUE + msg + bcolors.ENDC+"\n"
+    elif msg_code == 3:
+        print (bcolors.GRAY + msg + bcolors.ENDC)
+    elif msg_code == 5:
+        print "\n"+bcolors.GRAY + msg + bcolors.ENDC+"\n"
+        raw_input("Please, press ENTER to continue ...")
+        exec_menu('')
+
     return
 
 
@@ -163,6 +169,10 @@ def qucolor(txt):
     return bcolors.QUES + str(txt) + bcolors.ENDC
 
 
+def title(txt):
+    print gcolor("---"*25)
+    print gcolor("\t*** " + txt + " ***\n")
+
 def find_file_pattern(path, pattern):
 
     listOfFiles = list()
@@ -177,32 +187,33 @@ def find_file_pattern(path, pattern):
     return list_dataset
 
 
-
 def confirm(config_section, config_value, mcode):
     str_conf = read_config(config_section, config_value)
     if not str_conf == '':
         if int(mcode == 33):
             if str_conf != "true":
-                str_conf = "Currently your files are 'Single-end'."
+                str_conf = "'Single-end'."
                 mcode = 3
             else:
-                str_conf = "Currently your files are 'Paired-end'."
+                str_conf = "'Paired-end'."
                 mcode = 3
-
-        print "You set the value to: " + mcolor(str_conf)+"\n"
+        outtxt = true_false_fields_config(str_conf)
+        if outtxt == "":
+            outtxt = str_conf
+        print "The current status is: " + mcolor(outtxt)
         # it seems user configured before so asking again to re-config.
         answer = query_yes_no("Do you want to re-config this part?", None)
         if answer:
             return True
         else:
-            message(mcode, "Keeping the default value.")
+            message(mcode, "--> Keeping the default value.")
     else:
         print "Please config parameter ..."
         return True
 
 
 def raw_dataset():
-    print "\nIn this part you can specify your data-set location."
+    title("In this part you can specify your data-set location")
     print "If you have data-set in pair-end mode, you have to give the pattern of extension.\n"
     try:
         if confirm("GENERAL", "raw_dataset", 3):
@@ -220,65 +231,86 @@ def raw_dataset():
                 replace_config("GENERAL", "raw_dataset", response)
                 replace_config("GENERAL", "number_of_dataset", len(list_dataset))
                 print "\nAlso, the size of your data-set almost: "+mcolor(raw_size)
-                message(4, "Configuration for Raw files location updated!")
+                message(4, "--> Configuration updated!")
         else:
             pass
         # detect the pattern if there is pairs file
-        print gcolor("--Configuration part for file Pattern--\n")
-
+        title("Configuration part for file Pattern")
+        pairStatus = False
         if confirm("GENERAL", "pairs_mode", 33):
             # asking for enable /disable
+            pairStatus = True
             print "\nYou can change the default value for your files pattern."
             if read_config("GENERAL", "pairs_mode") == "true":
-                print "Currently you have files in "+ ycolor("Pair-end case.\n")
+
+                print "Currently you have files in " + ycolor("Pair-end case.\n")
             else:
-                print "Currently you have files in "+ycolor("Single-end case.\n")
+                print "Currently you have files in " + ycolor("Single-end case.\n")
 
             # pring ask enable or disable it
-            sys.stdout.write(ycolor("1") + " -You have files in Single-end case.\n")
-            sys.stdout.write(ycolor("2") + " -You have files in Pairs-end case.\n")
+            sys.stdout.write(ycolor("1") + "- You have files in Single-end case.\n")
+            sys.stdout.write(ycolor("2") + "- You have files in Pairs-end case.\n")
             file_mode = inputNumber("\nPlease enter the number to select:")
             while not int(file_mode) in range(1, 3):
                 file_mode = inputNumber("Please enter the valid number:")
 
             if int(file_mode) == 1:
+                pairStatus=False
                 replace_config("GENERAL", "pairs_mode", "false")
                 replace_config("GENERAL", "first_pattern", "")
                 replace_config("GENERAL", "secnd_pattern", "")
+
+        if pairStatus:
+            print "--" * 30
+            print(mcolor("Please specify your data-set pattern. For ex:"))
+            print(gcolor("XXX_1.fq.gz,\nXXX_2.fq.gz"))
+            print("First pattern will be: "+mcolor("_1.fq.gz"))
+            print("And the second pattern is: "+mcolor("_2.fq.gz"))
+            print "--" * 30
+            print(mcolor("You can select from default options: "))
+            sys.stdout.write(ycolor("1- ") + "XXX"+ycolor("_[1-2].fq.gz")+" format.\n")
+            sys.stdout.write(ycolor("2- ") + "XXX"+ycolor("_[1-2].fastq.gz")+" format.\n")
+            answer = query_yes_no("Do you want to choice from menu above?", None)
+
+            if answer:
+                response = inputNumber("\nPlease enter the number to select: ")
+                while not int(response) in range(1, 3):
+                    response = inputNumber("Please enter the valid number: ")
+
+                if int(response) == 1:
+                    pattern_one ="_1.fq.gz"
+                    pattern_two ="_2.fq.gz"
+                else:
+                    pattern_one ="_1.fastq.gz"
+                    pattern_two ="_2.fastq.gz"
+
             else:
-                print "--" * 30
-                print(mcolor("Please specify your data-set pattern."))
-                print(mcolor("For ex: "))
-                print(gcolor("XXXXX_1.fq.gz,\nXXXXX_2.fq.gz"))
-                print("First pattern will be: "+mcolor("_1.fq.gz"))
-                print("And the second pattern is: "+mcolor("_2.fq.gz"))
-                print "--" * 30
                 pattern_one = raw_input("\nPlease enter the pattern for First pair: ")
                 pattern_two = raw_input("\nPlease enter the pattern for Second pair: ")
-                replace_config("GENERAL", "pairs_mode", "true")
-                replace_config("GENERAL", "first_pattern", pattern_one)
-                replace_config("GENERAL", "secnd_pattern", pattern_two)
-                # print list of files that we detected by pattern
-                print("\nFirst pair"+"\t\t"+"Second pair")
-                print "---"*10
-                first_pairs = []
-                secd_pairs = []
-                for file_one in find_file_pattern(read_config("GENERAL", "raw_dataset"), "*"+pattern_one):
-                    first_pairs.append(file_one)
-                for file_two in find_file_pattern(read_config("GENERAL", "raw_dataset"), "*" + pattern_two):
-                    secd_pairs.append(file_two)
-                first_pairs=sorted(first_pairs)
-                secd_pairs=sorted(secd_pairs)
-                for item in range(len(first_pairs)):
-                    print first_pairs[item] + "\t\t" + secd_pairs[item]
-                print ycolor("\nPlease check the pairs that listed correctly, otherwise give the different pattern.")
+
+            replace_config("GENERAL", "pairs_mode", "true")
+            replace_config("GENERAL", "first_pattern", pattern_one)
+            replace_config("GENERAL", "secnd_pattern", pattern_two)
+            # print list of files that we detected by pattern
+            print("\nFirst pair"+"\t\t"+"Second pair")
+            print "---"*10
+            first_pairs = []
+            secd_pairs = []
+            for file_one in find_file_pattern(read_config("GENERAL", "raw_dataset"), "*"+pattern_one):
+                first_pairs.append(file_one)
+            for file_two in find_file_pattern(read_config("GENERAL", "raw_dataset"), "*" + pattern_two):
+                secd_pairs.append(file_two)
+            first_pairs=sorted(first_pairs)
+            secd_pairs=sorted(secd_pairs)
+            for item in range(len(first_pairs)):
+                print first_pairs[item] + "\t\t" + secd_pairs[item]
+            print ycolor("\nPlease check the pairs that listed correctly, otherwise give the different pattern.")
 
 
         else:
             # skip configuration
-
             pass
-        message(0, "Configuration updated!")
+        message(0, "--> Configuration updated!")
     except subprocess.CalledProcessError:
             message(2, "It seems you don't have permission, please change the directory.")
     except Exception as e:
@@ -288,7 +320,7 @@ def raw_dataset():
 
 def result_pipeline():
     try:
-        if confirm("GENERAL", "result_pipeline",0):
+        if confirm("GENERAL", "result_pipeline", 5):
             response = raw_input("\nPlease enter the result directory."
                                  "\n(we will write all the results inside this folder)"
                                  "\n>> ")
@@ -336,7 +368,7 @@ def result_pipeline():
             replace_config("CONFIGPART", "resultdir", "true")
             print "creating folders "
             subprocess.call(['./src/bash/preparing.sh'])
-            message(0, "Configuration updated! ")
+            message(0, "--> Configuration updated! ")
         else:
             pass
     except Exception as e:
@@ -349,7 +381,7 @@ def genome_ref():
     genome_type()
 
     try:
-        if confirm("GENERAL", "genome_ref", 0):
+        if confirm("GENERAL", "genome_ref", 5):
             print "Please specify a reference genome location.\n"
             print "(We will generate the Bisulfite_Genome folder inside this folder.)\n"
             response = raw_input(">> ")
@@ -359,7 +391,6 @@ def genome_ref():
             stored_place['genome_ref'] = response
             # call immediately after folder to ask file
             genome_name()
-
         else:
             pass
     except Exception as e:
@@ -393,7 +424,8 @@ def genome_name():
         replace_config("GENERAL", "genome_ref", di_tosearch)
         replace_config("GENERAL", "genome_name", response)
         replace_config("CONFIGPART", "genomref", "true")
-        message(0, "Configuration updated!")
+        message(0, "--> Configuration updated!")
+
 
 def genome_type():
     print("Enter the Genome type from the list: \n")
@@ -407,15 +439,16 @@ def genome_type():
 
     response = list_gen[int(response)]
     replace_config("GENERAL", "genome_type", response)
-    print(mcolor("Configuration updated!\n"))
+    print(mcolor("--> Configuration updated!\n"))
+
 
 def trimmomatic():
     # checking for java
     java_check()
     #
     try:
-        if confirm("Trimmomatic", "trim_path",3):
-
+        title("Configuration part for Trimmomatic location (location folder)")
+        if confirm("Trimmomatic", "trim_path", 3):
             response = raw_input("Please enter the Trimmomatic location: ")
             while not (os.path.isdir(response)):
                 message(1, "The directory is not exist!.")
@@ -437,8 +470,7 @@ def trimmomatic():
         else:
             pass
             # find all fasta file from adaptor folder
-
-        print gcolor("--Configuration part for Adapter--")
+        title("Configuration part for Adapter")
         if confirm("Trimmomatic", "name_adap",3):
             adap_tosearch=read_config("Trimmomatic", "trim_path")
             list_adaptors = []
@@ -461,12 +493,12 @@ def trimmomatic():
                 response = list_adaptors[int(response)]
 
                 replace_config("Trimmomatic","name_adap", response)
-                message(4, "Configuration updated!")
+                message(4, "--> Configuration updated!")
 
         else:
             pass
 
-        print gcolor("--Configuration part for running mode--")
+        title("Configuration part for running mode")
         if confirm("Trimmomatic", "end_mode",3):
                 '''
                  Paired End or Single End?
@@ -482,11 +514,11 @@ def trimmomatic():
                 else:
                     mode = "PE"
                 replace_config("Trimmomatic", "end_mode", mode)
-                message(4, "Configuration updated!")
+                message(4, "--> Configuration updated!")
         else:
             pass
 
-        print gcolor("--Configuration part for ILLUMINACLIP--")
+        title("Configuration part for ILLUMINACLIP")
         if confirm("Trimmomatic", "ill_clip", 3):
                 '''
                  ILLUMINACLIP parameters 
@@ -495,23 +527,23 @@ def trimmomatic():
                 user_input = raw_input("\nPlease enter the number of ILLUMINACLIP[ "+
                                        read_config("Trimmomatic", "name_adap")+" ]: ")
                 replace_config("Trimmomatic", "ill_clip", user_input)
-                message(4, "Configuration updated!")
+                message(4, "--> Configuration updated!")
 
         else:
             pass
 
-        print gcolor("--Configuration part for LEADING--")
+        title("Configuration part for LEADING")
         if confirm("Trimmomatic", "LEADING", 3):
                 '''
                  LEADING parameters 
                 '''
                 user_input = inputNumber("\nPlease enter the value of LEADING: ")
                 replace_config("Trimmomatic", "LEADING", user_input)
-                message(4, "Configuration updated!")
+                message(4, "--> Configuration updated!")
         else:
             pass
 
-        print gcolor("--Configuration part for TRAILING--")
+        title("Configuration part for TRAILING")
         if confirm("Trimmomatic", "TRAILING", 3):
                 '''
                  TRAILING parameters 
@@ -519,11 +551,11 @@ def trimmomatic():
 
                 user_input = inputNumber("\nPlease enter the value of TRAILING: ")
                 replace_config("Trimmomatic", "TRAILING", user_input)
-                message(4, "Configuration updated!")
+                message(4, "--> Configuration updated!")
         else:
             pass
 
-        print gcolor("--Configuration part for SLIDINGWINDOW--")
+        title("Configuration part for SLIDINGWINDOW")
         if confirm("Trimmomatic", "SLIDINGWINDOW", 3):
                 '''
                  SLIDINGWINDOW parameters 
@@ -534,7 +566,7 @@ def trimmomatic():
         else:
             pass
 
-        print gcolor("--Configuration part for MINLEN--")
+        title("Configuration part for MINLEN")
         if confirm("Trimmomatic", "MINLEN", 3):
                 '''
                  MINLEN parameters 
@@ -545,7 +577,7 @@ def trimmomatic():
         else:
             pass
 
-        print gcolor("--Configuration part for Threading--")
+        title("Configuration part for Threading")
         if confirm("Trimmomatic", "n_th", 3):
                 '''
                 Number of thread to process. there is a default value.
@@ -558,7 +590,7 @@ def trimmomatic():
 
         message(0, "Configuration Updated!")
     except Exception as e:
-        logging.error(traceback.format_exc())
+        logging.error(traceback.format_exc(e.message))
         message(2, "Something is going wrong... please run again. ")
 
 
@@ -595,17 +627,18 @@ def java_check():
 def fastq_path():
 
     try:
+        title("Please specify the FastQC location")
         if read_config("GENERAL", "fastq_path").replace(" ", "") == '':
             location = subprocess.check_output(['which', 'fastqc'])
             detected = True
         else:
-            location=read_config("GENERAL", "fastq_path")
+            location = read_config("GENERAL", "fastq_path")
             print "You set the location to: " + mcolor(location)
             detected = False
 
         if location != None:
             if detected:
-               print "Detected FastQC program in location: "+ mcolor(location)
+               print "Detected FastQC program in location: " + mcolor(location)
 
             answer = query_yes_no("Do you want to change the location?", None)
             if answer:
@@ -630,12 +663,13 @@ def fastq_path():
         logging.error(traceback.format_exc())
         message(2, "Something is going wrong... please run again. ")
 
-    message(0, "Configuration updated for FastQC!")
+    message(0, "Configuration updated!")
 
 
 def bismark_path():
 
     try:
+        title("Alignment parameters (Bismark mapper)")
         if read_config("Bismark", "bismark_path").replace(" ", "") == '':
 
             location_bis = subprocess.check_output(['which', 'bismark'])
@@ -657,11 +691,10 @@ def bismark_path():
                     message(1, "The directory is not exist!.")
                     location_bis = raw_input("Please try again: ")
                 replace_config("Bismark", "bismark_path", location_bis)
-                message(4, "Configuration updated!")
+                message(4, "--> Configuration updated!")
             else:
                 replace_config("Bismark", "bismark_path", location_bis)
                 message(3, "We will keep the default value!")
-
     except subprocess.CalledProcessError:
         message(1, "It seems you don't have Bismark in your PATH")
         bismark = raw_input("Please enter the Bismark location: ")
@@ -669,8 +702,7 @@ def bismark_path():
             message(1, "The directory is not exist!.")
             bismark = raw_input("Please try again: ")
         replace_config("Bismark", "bismark_path", bismark)
-        message(4, "Configuration updated!")
-
+        message(4, "--> Configuration updated!")
     except Exception as e:
         logging.error(traceback.format_exc())
         message(2, "Something is going wrong... please run again. ")
@@ -678,11 +710,11 @@ def bismark_path():
     '''
         Sets the number of parallel instances of Bismark to be run concurrently
     '''
-    print gcolor("--Configuration part for Bismark Parallel--")
+    title("Configuration part for Bismark Parallel")
     if confirm("Bismark", "bis_parallel", 3):
         user_input = inputNumber("\nPlease set the number of parallel: ")
         replace_config("Bismark", "bis_parallel", user_input)
-        message(4, "Configuration updated!")
+        message(4, "--> Configuration updated!")
 
     else:
         pass
@@ -690,11 +722,11 @@ def bismark_path():
     '''
         Sets buffer size!
     '''
-    print gcolor("--Configuration part for Bismark buffer Size--")
+    title("Configuration part for Bismark buffer Size")
     if confirm("Bismark", "buf_size", 3):
         user_input = inputNumber("\nPlease set the size of buffer (Gigabyte): ")
         replace_config("Bismark", "buf_size", user_input)
-        message(4, "Configuration updated!")
+        message(4, "--> Configuration updated!")
 
     else:
         pass
@@ -702,8 +734,8 @@ def bismark_path():
     '''
         Sets nucleotide !
     '''
-    print gcolor("--Configuration part for Bismark Nucleotide--")
-    print ycolor("To change the Nucleotide report option please Enable it.")
+    title("Configuration part for Bismark Nucleotide")
+    message(4, "\t**** To change the Nucleotide report option please Enable it.***")
     if confirm("Bismark", "nucleotide", 3):
         sys.stdout.write(ycolor("\n1")+"-Enable this option.\n")
         sys.stdout.write(ycolor("2")+"-Disable this option.\n")
@@ -716,17 +748,57 @@ def bismark_path():
         else:
             mode="false"
         replace_config("Bismark", "nucleotide", mode)
-        message(4, "Configuration updated!")
+        message(4, "--> Configuration updated!")
 
     else:
         pass
 
+    bedtoolsCheck()
+
     message(0, "Configuration updated for Bismark Mapper!")
+
+
+def bedtoolsCheck():
+    try:
+        title("Please please specify the bedtools path")
+        if read_config("Bismark", "bedtools_path").replace(" ", "") == '':
+            location_bis = subprocess.check_output(['which', 'bedtools'])
+            detected = True
+        else:
+            location_bis = read_config("Bismark", "bedtools_path")
+            print "You set the location to: " + mcolor(location_bis)
+            detected = False
+        if location_bis != None:
+            if detected:
+                print "Detected Bedtools program in location: " + mcolor(location_bis)
+            answer = query_yes_no("Do you want to change the location?", None)
+            if answer:
+                location_bis = raw_input("Please enter the bedtools file location: ")
+                while not (os.path.isfile(location_bis)):
+                    message(1, "The file is not exist!.")
+                    location_bis = raw_input("Please try again: ")
+                replace_config("Bismark", "bedtools_path", location_bis)
+                message(4, "--> Configuration updated!")
+            else:
+                replace_config("Bismark", "bedtools_path", location_bis)
+                message(3, "We will keep the default value!")
+    except subprocess.CalledProcessError:
+        message(1, "It seems you don't have Bedtools in your PATH")
+        bismark = raw_input("Please enter the Bedtools file location: ")
+        while not (os.path.isfile(bismark)):
+            message(1, "The file is not exist!.")
+            bismark = raw_input("Please try again: ")
+        replace_config("Bismark", "bedtools_path", bismark)
+        message(4, "--> Configuration updated!")
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        message(2, "Something is going wrong... please run again. ")
+
 
 def en_di():
 
-    sys.stdout.write(ycolor("\n1") + "-Enable this option.\n")
-    sys.stdout.write(ycolor("2") + "-Disable this option.\n")
+    sys.stdout.write(ycolor("\n1") + "- Enable this option.\n")
+    sys.stdout.write(ycolor("2") + "- Disable this option.\n")
     nu_mode = inputNumber("Please enter the number to select:")
     while not int(nu_mode) in range(1, 3):
         nu_mode = inputNumber("Please enter the valid number:")
@@ -738,56 +810,90 @@ def en_di():
 
     return mode
 
+
 def methimpute():
     try:
-        print gcolor("--Running with intermediate status--")
+        title("Include Intermediate status")
         if confirm("Methimpute", "intermediate", 3):
             val = en_di()
             replace_config("Methimpute", "intermediate", val)
-            message(4, "Configuration updated!")
+            if val=='true':
+                print gcolor("Please specify: independent or constrained ")
+                sys.stdout.write(ycolor("1") + " - Independent\n")
+                sys.stdout.write(ycolor("2") + " - Constrained\n")
+
+                val = inputNumber("\nPlease enter the number to select:")
+                while not int(val) in range(1, 3):
+                    val = inputNumber("Please enter the valid number:")
+
+                if int(val) == 1:
+                    val = "independent"
+                elif int(val) == 2:
+                    val = "constrained"
+                replace_config("Methimpute", "intermediate_mode", val)
+            else:
+                replace_config("Methimpute", "intermediate_mode", "false")
+
+            message(4, "--> Configuration updated!")
         else:
             pass
 
-        print gcolor("--Generating quality reports (fit, model convergence, histogram,etc.)--")
+        title("Model Fit reports")
         if confirm("Methimpute", "fit_output", 3):
             val = en_di()
             replace_config("Methimpute", "fit_output", val)
-            message(4, "Configuration updated!")
+            message(4, "--> Configuration updated!")
         else:
             pass
 
-        print gcolor("--Generating enrichment reports( pdf files )--")
+        title("Plot Enrichment (Genes, TEs)")
         if confirm("Methimpute", "enrichment_plot", 3):
             val = en_di()
             replace_config("Methimpute", "enrichment_plot", val)
-            message(4, "Configuration updated!")
+            message(4, "--> Configuration updated!")
 
         else:
             pass
 
-        print gcolor("--Generating TEs reports--")
-        if confirm("Methimpute", "TES_report", 3):
+        title("Output full report (Genes,TEs)")
+        if confirm("Methimpute", "full_report", 3):
             val = en_di()
-            replace_config("Methimpute", "TES_report", val)
-            message(4, "Configuration updated!")
+            replace_config("Methimpute", "full_report", val)
+            message(4, "--> Configuration updated!")
 
         else:
             pass
 
-        print gcolor("--Generating genes reports--")
-        if confirm("Methimpute", "genes_report", 3):
-            val = en_di()
-            replace_config("Methimpute", "genes_report", val)
-            message(4, "Configuration updated!")
+        title("Run Context: All/ CG| CHG| CHH ")
+        if confirm("Methimpute", "context_report", 3):
+
+            sys.stdout.write(ycolor("1") + " - All\n")
+            sys.stdout.write(ycolor("2") + " - CG\n")
+            sys.stdout.write(ycolor("3") + " - CHG\n")
+            sys.stdout.write(ycolor("4") + " - CHH\n")
+            val = inputNumber("\nPlease enter the number to select:")
+            while not int(val) in range(1, 5):
+                val = inputNumber("Please enter the valid number:")
+
+            if int(val) == 1:
+                val="All"
+            elif int(val) == 2:
+                val="CG"
+            elif int(val) == 3:
+                val = "CHG"
+            elif int(val) == 4:
+                val = "CHH"
+            replace_config("Methimpute", "context_report", val)
+            message(4, "--> Configuration updated!")
 
         else:
             pass
 
-        print gcolor("--Minimum read coverage value (for quick run)--")
+        title("Minimum read coverage value (just for quick run)")
         if confirm("Methimpute", "mincov", 3):
             user_input = raw_input("\nPlease enter the value of min.coverage: ")
             replace_config("Methimpute", "mincov", user_input)
-            message(4, "Configuration updated!")
+            message(4, "--> Configuration updated!")
         else:
             pass
 
@@ -798,23 +904,40 @@ def methimpute():
         print(rcolor(e.message))
         message(2, "Something is going wrong... please run again. ")
 
+
 def parallel_mode():
 
     '''
         Set Parallel mode!
     '''
     try:
-        print gcolor("Configuration part for running in Parallel mode")
+        title("Configuration part for running in Parallel mode")
         if confirm("GENERAL", "parallel_mode", 3):
                 location = subprocess.check_output(['which', 'parallel'])
                 print "Detected Parallel program in location: " + mcolor(location)
-                answer = query_yes_no("Do you want to use Parallel mode?", None)
-                if answer:
-                    par = "true"
-                    user_input = inputNumber("\nPlease set the number of Jobs:")
-                    replace_config("GENERAL", "npar", user_input)
-                else:
+
+                sys.stdout.write(ycolor("1") + "- Automatic optimize parallel based on system resources (Recommended)\n")
+                sys.stdout.write(ycolor("2") + "- Manually set number of parallel \n")
+                sys.stdout.write(ycolor("3") + "- Disable parallel mode \n")
+
+                pa_mode = inputNumber("\nPlease enter the number to select: ")
+                while not int(pa_mode) in range(1, 4):
+                    pa_mode = inputNumber("Please enter the valid number: ")
+
+                user_input = 0
+                if pa_mode == 1:
+                    print "Selected Auto parallel optimization mode."
+                elif pa_mode == 2:
+                     print(ycolor("\nWARNING: large Number of Parallel it would be crash the processing.\n"))
+                     print(ycolor("Please read the documentation before using Parallel manually.\n"))
+                     user_input = inputNumber("\nPlease set the number of Jobs: ")
+
+                if pa_mode == 3:
                     par = "false"
+                else:
+                    par = "true"
+
+                replace_config("GENERAL", "npar", user_input)
                 replace_config("GENERAL", "parallel_mode", par)
         else:
             pass
@@ -826,13 +949,14 @@ def parallel_mode():
         logging.error(traceback.format_exc())
         message(2, "Something is going wrong... please run again. ")
 
+
 def email():
     try:
-        print gcolor("--Configuration part for E-mail notifications--")
+        title("Configuration part for E-mail notifications")
         if confirm("EMAIL", "active", 3):
-            sys.stdout.write(ycolor("\n1")+"-Enable email notification.\n")
-            sys.stdout.write(ycolor("2")+"-Disable email notification.\n")
-            nu_mode = inputNumber("Please enter the number to select:")
+            sys.stdout.write(ycolor("\n1")+"- Enable email notification.\n")
+            sys.stdout.write(ycolor("2")+"- Disable email notification.\n")
+            nu_mode = inputNumber("\nPlease enter the number to select:")
             while not int(nu_mode) in range(1, 3):
                 nu_mode = inputNumber("Please enter the valid number:")
             if int(nu_mode)==1:
@@ -840,29 +964,30 @@ def email():
             else:
                 mode="false"
             replace_config("EMAIL", "active", mode)
-            message(4, "Configuration updated!")
+            message(4, "--> Configuration updated!")
+            if nu_mode == 1:
 
-        if confirm("EMAIL", "email_rec", 3):
-                '''
-                 Email sender
-                '''
-                user_input = raw_input("\nPlease enter your email address: ")
-                replace_config("EMAIL", "email_rec", user_input)
-                message(4, "Configuration updated!")
-        else:
-            pass
+                if confirm("EMAIL", "email_rec", 3):
+                        '''
+                         Email sender
+                        '''
+                        user_input = raw_input("\nPlease enter your email address: ")
+                        replace_config("EMAIL", "email_rec", user_input)
+                        message(4, "--> Configuration updated!")
+                else:
+                    pass
 
-        print rcolor("ATTENTION: For more security please setup 'App Passwords' from your Google account. ")
+                print rcolor("ATTENTION: For more security please setup 'App Passwords' from your Google account. ")
 
-        if confirm("EMAIL", "password", 3):
-                '''
-                 Email sender
-                '''
-                user_input = raw_input("\nPlease enter your password: ")
-                replace_config("EMAIL", "password", user_input)
-                message(4, "Configuration updated!")
-        else:
-            pass
+                if confirm("EMAIL", "password", 3):
+                        '''
+                         Email sender
+                        '''
+                        user_input = raw_input("\nPlease enter your password: ")
+                        replace_config("EMAIL", "password", user_input)
+                        message(4, "--> Configuration updated!")
+                else:
+                    pass
 
         message(0, "Configuration updated!")
 
@@ -870,6 +995,7 @@ def email():
         logging.error(traceback.format_exc())
         print(rcolor(e.message))
         message(2, "Something is going wrong... please run again. ")
+
 
 def show_config():
     print "\n"+"=="*30
@@ -881,7 +1007,7 @@ def show_config():
     print "- Genome type: " + mcolor(read_config("GENERAL", "genome_type"))
     print "- Genome folder location: " + mcolor(read_config("GENERAL", "genome_ref"))
     print "     -- Genome Reference name: " + mcolor(read_config("GENERAL", "genome_name"))
-    print "- Paired End: " + mcolor(true_false_fields_config(read_config("GENERAL", "pairs_mode"),""))
+    print "- Paired End: " + mcolor(true_false_fields_config(read_config("GENERAL", "pairs_mode")))
     print "- Trimmomatic location: "+ mcolor(read_config("Trimmomatic", "trim_path"))
     print "     -- JAVA path: " + mcolor(read_config("Trimmomatic", "java_path"))
     print "     -- ILLUMINACLIP: " + mcolor(read_config("Trimmomatic", "name_adap"))\
@@ -899,23 +1025,26 @@ def show_config():
     print "     -- Number of Parallel: " + mcolor(read_config("Bismark", "bis_parallel"))+" Threads."
     print "     -- Buffer size: " + mcolor(read_config("Bismark", "buf_size"))+" Gigabyte."
     print "     -- Samtools Path: " + mcolor(read_config("Bismark", "samtools_path"))
-    print "     -- Intermediate for MethExtractor: " +mcolor(true_false_fields_config(read_config("Bismark", "intermediate_files"),""))
+    print "     -- Intermediate for MethExtractor: " +mcolor(true_false_fields_config(read_config("Bismark", "intermediate_files")))
     print "- Methylation extraction parameters( Only for quick run)"
     print "     -- Minimum read coverage: " + mcolor(read_config("Methimpute", "mincov"))
     print "- Methimpute Part:"
-    print "     -- Methimpute Intermediate : " + mcolor(true_false_fields_config(read_config("Methimpute", "intermediate"), ""))
-    print "     -- Methimpute Fit reports: " + mcolor(true_false_fields_config(read_config("Methimpute", "fit_output"), ""))
-    print "     -- Methimpute Enrichment plots: " + mcolor(true_false_fields_config(read_config("Methimpute", "enrichment_plot"), ""))
-    print "     -- Methimpute TEs reports: " + mcolor(true_false_fields_config(read_config("Methimpute", "TES_report"), ""))
-    print "     -- Methimpute genes reports: " + mcolor(true_false_fields_config(read_config("Methimpute", "genes_report"), ""))
-    print "     -- Methimpute Context: " + mcolor("All/CHG|CHH|CG")
-    print "- Parallel mode is: " +mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"),""))
-    print "     -- Number of Parallel: " + mcolor(read_config("GENERAL", "npar"))+" Cores."
-    print "- E-mail notification: " + mcolor(true_false_fields_config(read_config("EMAIL", "active"), ""))
-    print "     -- E-mail address: " + mcolor(read_config("EMAIL", "email_rec"))
+    print "     -- Methimpute Intermediate : " + mcolor(true_false_fields_config(read_config("Methimpute", "intermediate")))
+    if (read_config("Methimpute", "intermediate") == "true"):
+        print "     -- Methimpute Context: " + mcolor(read_config("Methimpute", "intermediate_mode"))
+
+    print "     -- Methimpute Fit reports: " + mcolor(true_false_fields_config(read_config("Methimpute", "fit_output")))
+    print "     -- Methimpute Enrichment plots: " + mcolor(true_false_fields_config(read_config("Methimpute", "enrichment_plot")))
+    print "     -- Methimpute Full report: " + mcolor(true_false_fields_config(read_config("Methimpute", "full_report")))
+    print "     -- Methimpute Context: " + mcolor(read_config("Methimpute", "context_report"))
+    print "- Parallel mode is: " +mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode")))
+    if (read_config("GENERAL", "parallel_mode")== "true"):
+        print "     -- Number of Parallel: " + mcolor(read_config("GENERAL", "npar"))+" Cores."
+    print "- E-mail notification: " + mcolor(true_false_fields_config(read_config("EMAIL", "active")))
+    if (read_config("EMAIL", "active") == "true"):
+        print "     -- E-mail address: " + mcolor(read_config("EMAIL", "email_rec"))
 
     message(0, "...")
-
 
 
 

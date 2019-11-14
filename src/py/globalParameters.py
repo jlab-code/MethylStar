@@ -19,7 +19,6 @@ import smtplib, ssl, time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -28,10 +27,11 @@ class bcolors:
     WARNING = '\033[1;33m'
     UPDATE = '\033[0;36m'
     FAIL = '\033[91m'
-    QUES = '\033[1;96m'
+    QUES = '\033[1;92m'
     RED = '\033[1;31m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
+    GRAY = '\033[90m'
     UNDERLINE = '\033[4m'
 
 
@@ -131,8 +131,9 @@ def check_empty_dir(path, pattern):
         print(e.message, e.args)
 
 
-def true_false_fields_config(read_config_str, negated_bool):
-    val_true_false = "unset"
+def true_false_fields_config(read_config_str):
+    val_true_false = ""
+    '''
     try:
         if str(bool(strtobool(read_config_str))):
             if negated_bool:
@@ -141,9 +142,10 @@ def true_false_fields_config(read_config_str, negated_bool):
                 val_true_false = str(bool(strtobool(read_config_str)))
     except ValueError:
         pass
-    if val_true_false == "True":
+    '''
+    if read_config_str == "true":
         val_true_false = "Enabled"
-    elif val_true_false == "False":
+    elif read_config_str == "false":
         val_true_false = "Disabled"
     return val_true_false
 
@@ -163,7 +165,7 @@ def query_yes_no(question, default):
     valid = {"yes": True, "y": True, "ye": True,
              "no": False, "n": False}
     if default is None:
-        prompt = " [y/n] "
+        prompt = qucolor(" [y/n] ")
     elif default == "yes":
         prompt = " [Y/n] "
     elif default == "no":
@@ -172,7 +174,7 @@ def query_yes_no(question, default):
         raise ValueError("invalid default answer: '%s'" % default)
 
     while True:
-        sys.stdout.write(qucolor(question) + prompt)
+        sys.stdout.write(question + prompt)
         choice = raw_input().lower()
         if default is not None and choice == '':
             return valid[default]
@@ -183,17 +185,23 @@ def query_yes_no(question, default):
                              "(or 'y' or 'n').\n")
 
 
+def title(txt):
+    print gcolor("---"*25)
+    print gcolor("\t*** " + txt + " ***")
+
+
 def confirm_run():
     answer = query_yes_no("\nDo you want continue to run?", None)
     if answer:
         return True
     else:
-        message(2, "Canceled!")
+        message(2, "--> Operation canceled!")
 
 
 def message(msg_code, msg):
     from pipeline import exec_menu
     if msg_code == 0:
+
         print "\n"+bcolors.OKBLUE + msg + bcolors.ENDC+"\n"
         raw_input("Please, press ENTER to continue ...")
         #exec_menu('')
@@ -212,7 +220,7 @@ def message(msg_code, msg):
 
 def preparing_part():
     subprocess.call(['./src/bash/preparing.sh'])
-    print(gcolor("Preparing to run..."))
+    #print(qucolor("Preparing to run ..."))
 
 
 def parmEmail(textMSG):

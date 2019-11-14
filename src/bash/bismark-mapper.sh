@@ -1,8 +1,9 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
+orgPip=$(pwd)
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf
-. $curr_dir/detect.sh  $genome_type  bismap;
+. $curr_dir/detect.sh  $genome_type  bismap $npar;
 . $curr_dir/tmp.conf
 
 
@@ -33,21 +34,22 @@ for fq in "${arr[@]}"
 		start=$(date +%s)
 		label=$(echo ${fq%%.*} |sed 's/.*\///')
 		if $nucleotide; then
-			echo "Nucleotide coverage is enabled." 
-			echo "Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+			echo "-- Nucleotide coverage is enabled." 
+			echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 			result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
 		else
-			echo "Nucleotide coverage is disabled." 
-			echo "Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+			echo "-- Nucleotide coverage is disabled." 
+			echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 			result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 		fi
 		#---------------------------------------------------------------------------
 		echo $fq >> $tmp_bismap/list-finished.lst;
 		runtime=$((($(date +%s)-$start)/60))
-		echo "Bismark for $label finished. Duration time $runtime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+		echo "-- Bismark for $label finished. Duration time $runtime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 		totaltime=$(($runtime + $totaltime))
+		echo -e "-------------------------------------------- \n"
 	done
-	echo "Bismark Mapper done. Total running time $totaltime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
+	echo "-- Bismark Mapper done. Total running time $totaltime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 	echo "Bismark part finished. Please check the $tmp_bismap directory for logs." 
 #------------------------------------ Renaming
 for file in $(ls -1v $tmp_bismap/*.bam)
@@ -65,8 +67,9 @@ for file in $(ls -1v $tmp_bismap/*.txt)
 		#tmp=$(echo $label | sed "s/_paired_.//g")
 		mv $file $tmp_bismap/$label.txt
 	done
-#--------------------------------------
-cd -
+
+
+cd $orgPip
 
 if [ -f $tmp_bismap/tmp.lst ]
 then 

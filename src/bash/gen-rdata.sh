@@ -11,7 +11,7 @@ Generating Rdata file
 
 if [ ! -f $tmp_rdata/Ref_Chr.RData ]
 	then
-		echo "generating reference chromosome process ..."
+		echo "Generating reference chromosome from Ref.genome  ..."
 		#copy genome_ref  to result directory because of reading/writing probabaly. 
 		pre_proc=$(cp $genome_ref/$genome_name $result_pipeline/rdata/)
 		a_proc= $(samtools faidx $tmp_rdata/$genome_name)
@@ -27,7 +27,7 @@ if [ ! -f $tmp_rdata/Ref_Chr.RData ]
 				#del=$(rm $tmp_rdata/*.txt)
 		fi	
 	else
-	echo "There is a reference chromosome!"
+	echo -e "Found reference chromosome file.\n"
 
 fi
 

@@ -10,22 +10,24 @@ from globalParameters import *
 
 
 def info_cx():
-    s = gcolor("* If you need to change please back to the configuration part. ")+\
-        "" + gcolor("* You can run Methimpute after Cx-report.") + "\n\n"\
-    "- Bismark location: " + read_config("Bismark", "bismark_path") + "\n" \
+    title("Generating Cytosine Calls")
+    s = gcolor("Configuration Summary:\n")+\
+        ""+"\n"\
+    "- Bismark location: " + mcolor(read_config("Bismark", "bismark_path")) + "\n" \
+    "- Parallel mode: " + mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"))) + "\n" \
 
     status = int(read_config("STATUS", "st_cx"))
 
     if status == 1:
-        s += "\nIt seems last time got problem during running..."
+        s += "\n--> Please ensure that folder is empty, otherwise it will overwrite the files ..."
 
     if status == 2:
-        if len(check_empty_dir("bismark-meth-extractor", "*.cov.gz")) > 0:
-            s += "\nIt seems you have results for Bismark-aligned bam files."
+        if len(check_empty_dir("cx-reports", "*.txt")) > 0:
+            s += "\nIt seems you have results for Generate Cytosine Calls."
             s += "You can re-run this part, but we recommend move the files to another folder and run again. \n"
             s += "WARNING: The directory is not empty,re-running this part might loosing the existing data!"
         else:
-            s += "Couldn't find any coverage file starting to run the bismark meth extractor .. "
+            s += "Couldn't find any CX file starting to run the CX reports... "
 
     return s
 
@@ -37,6 +39,7 @@ def run_cx():
         print(info_cx())
         txt = "Cx generator Part finished."
         if confirm_run():
+            print qucolor("\nRunning CX Reports ...")
             subprocess.call(['./src/bash/cx-generator.sh'])
             # running methimpute
             # email part

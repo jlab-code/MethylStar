@@ -13,8 +13,11 @@ rdata=(args[4])       # file for genes/TEs/etc.(annotation files)
 intermediate<-as.logical(toupper((args[5])))
 fit_output=as.logical(toupper((args[6])))
 enrichment_plot=as.logical(toupper((args[7])))
-TES_report=as.logical(toupper((args[8])))
-genes_report=as.logical(toupper((args[9]))) 
+full_report=as.logical(toupper((args[8])))
+context_report=(args[9])
+intermediate_mode=(args[10])
+
+
 
 #regenerating new list of CX files to process
 #system('chmod a+x list-files.txt')
@@ -74,7 +77,13 @@ for (i in 1:length(list)){
 }
 
 fasta.file <-paste0(genome_ref,"/",name_genome)
-cytosine.positions <-extractCytosinesFromFASTA(fasta.file, contexts = c('CG', 'CHG', 'CHH'))
+
+if (context_report=="All"){
+  cytosine.positions <-extractCytosinesFromFASTA(fasta.file, contexts = c('CG', 'CHG', 'CHH'))
+}else{
+  cytosine.positions <-extractCytosinesFromFASTA(fasta.file, contexts = paste0(context_report))
+}
+
 
 startCompute <- function(files_to_go) {
   # storing the file which is done
@@ -87,11 +96,18 @@ startCompute <- function(files_to_go) {
     #----------------------------------------------------------------------------
     # meth impute part
     name <- gsub(pattern = "\\.CX_report.txt$", "", basename(going_file))
+    name <- paste0(name,"_",context_report)
     bismark.data <-importBismark(going_file, chrom.lengths = Ref_Chr)      # change here 
     methylome <- inflateMethylome(bismark.data, cytosine.positions)
     distcor <- distanceCorrelation(methylome)
     fit <- estimateTransDist(distcor)
-    model <- callMethylation(data = methylome, transDist = fit$transDist, include.intermediate=intermediate)
+
+    if (intermediate==TRUE){
+      model <- callMethylation(data = methylome, transDist = fit$transDist, include.intermediate=intermediate , update=intermediate_mode)
+      }else{
+      model <- callMethylation(data = methylome, transDist = fit$transDist, include.intermediate=intermediate)    
+    }
+    
     modifiedexportMethylome(model, filename = paste0("methylome_", name, ".txt"),going_file)
     #---------------------------------------------------------------------------
     # generating reports
@@ -110,25 +126,24 @@ startCompute <- function(files_to_go) {
       	print(paste0("Generating enrichment plot for TEs...", name))
         A1 <- plotEnrichment(model$data, annotation=TEs, range = 2000, category.column='category', plot = TRUE, df.list = NULL)
         pdf(paste0(wd, "/tes-reports/TEs_", name, ".pdf", sep = "")) 
-    	print(A1)
-    	dev.off()
+      	print(A1)
+      	dev.off()
 
-    	print(paste0("Generating enrichment plot for genes...", name))
+    	  print(paste0("Generating enrichment plot for genes...", name))
         B1 <- plotEnrichment(model$data, annotation=genes, range = 2000, category.column='category', plot = TRUE, df.list = NULL)
-    	pdf(paste0(wd, "/gene-reports/gene_", name, ".pdf", sep = "")) 
-    	print(B1)
-    	dev.off()
+      	pdf(paste0(wd, "/gene-reports/gene_", name, ".pdf", sep = "")) 
+      	print(B1)
+      	dev.off()
       }
-      if (TES_report==TRUE){
+      if (full_report==TRUE){
       	print(paste0("Generating TEs reports...", name))
         A2 <- plotEnrichment(model$data, annotation=TEs, range = 2000, category.column='category', plot = FALSE)  
         write.table(A2, paste0(wd,"/tes-reports/TEs_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
+        print(paste0("Generating genes reports...", name))
+        B2 <- plotEnrichment(model$data, annotation=genes, range = 2000, category.column='category', plot = FALSE)
+        write.table(B2, paste0(wd,"/gene-reports/genes_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
       }
-      if(genes_report==TRUE){
-      	print(paste0("Generating genes reports...", name))
-      	B2 <- plotEnrichment(model$data, annotation=genes, range = 2000, category.column='category', plot = FALSE)
-      	write.table(B2, paste0(wd,"/gene-reports/genes_",name,".txt"), row.names=FALSE, sep="\t", quote=FALSE)
-      }
+
     #---------------------------------------------------------------------------
     fileConn<-"file-processed.lst"
     cat(going_file, file = fileConn, append = TRUE, sep = "\n" )

@@ -2,7 +2,7 @@
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf
-. $curr_dir/detect.sh  $genome_type  qcFast;
+. $curr_dir/detect.sh  $genome_type  qcFast $npar;
 . $curr_dir/tmp.conf
 
 : '
@@ -18,7 +18,7 @@ gen=$(ls -1v $tmp_bismap/*.bam > $tmp_qcbam/list-files.lst)
 
 if [ -f $tmp_qcbam/list-finished.lst ]
 	then
-		echo "Resuming QC-Bam-report ..." 
+		echo -e "\n Resuming QC-Bam-report ..." 
 		a_proc= $(sort $tmp_qcbam/list-files.lst -o $tmp_qcbam/list-files.lst)
 		b_proc= $(sort $tmp_qcbam/list-finished.lst -o $tmp_qcbam/list-finished.lst)
 		c_proc= $(comm -23 $tmp_qcbam/list-files.lst $tmp_qcbam/list-finished.lst > $tmp_qcbam/tmp.lst)
@@ -29,7 +29,7 @@ if [ -f $tmp_qcbam/list-finished.lst ]
 				arr+=("$line")
 			done < $input;
 	else
-		echo "Starting QC-Bam-report ..." 
+		echo -e "\n Starting QC-Bam-report ..." 
 		input="$tmp_qcbam/list-files.lst"
 		while read line
 		do
@@ -42,7 +42,7 @@ fi
 #--------------------------------------------------------
 if $parallel_mode; then
 	#running in parallel mode
-	echo "Running in Parallel mode, number of jobs: $npar ." 
+	echo -e "Running in Parallel mode, number of jobs: $npar . \n" 
 	start=$(date +%s)
 	doit() {
 		. "$1"
@@ -56,10 +56,10 @@ if $parallel_mode; then
 	cat  "$input"  | parallel -j $npar doit "$par"
 	runtime=$((($(date +%s)-$start)/60))
 	echo "QC reports finished. Total time $runtime minutes." 2>&1 | tee -a $tmp_clog/qc-bam.log
-	echo "You can find the result in $tmp_qcbam folder."
+	echo -e "You can find the result in $tmp_qcbam folder. \n"
 else
 #running in single mode
-	echo "Running in single mode!(parallel disabled.)"  
+	echo -e "Running in single mode!(parallel disabled.) \n"  
 	totaltime=0
 	for fq in "${arr[@]}"
 		do

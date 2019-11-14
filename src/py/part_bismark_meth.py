@@ -11,14 +11,16 @@ from globalParameters import *
 
 
 def info_bismark_meth():
-    s = gcolor("* If you need to change please back to the configuration part. ")+\
-        "" + gcolor("* Methimpute will be start after Cx-report.") + "\n\n"\
+    title("Running Bismark Methylation Extractor")
+    s = gcolor("Configuration Summary: \n ")+\
+        ""+ "\n"\
     "- Bismark location: " + read_config("Bismark", "bismark_path") + "\n" \
+    + gcolor("Note: Cytosine Calls (cx-reports) will start automatically after Methylation Extractor")
 
     status = int(read_config("STATUS", "st_bismeth"))
 
     if status == 1:
-        s += "\nIt seems last time got problem during running..."
+        s += "\n--> Please ensure that folder is empty, otherwise it will overwrite the files ..."
 
     if status == 2:
         if len(check_empty_dir("bismark-meth-extractor", "*.cov.gz")) > 0:
@@ -48,6 +50,7 @@ def run_bimark_meth():
             replace_config("Bismark", "methextractor", "-s")
 
         if confirm_run():
+            print qucolor("\nRunning Bismark Meth Extractor ...")
             subprocess.call(['./src/bash/path-export.sh'])
             subprocess.call(['./src/bash/bismark-meth-extractor.sh'])
             if read_config("EMAIL", "active") == "true":

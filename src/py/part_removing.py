@@ -74,7 +74,7 @@ def removeRef(str_dir, str_status):
         if confirm_run():
             purge(directory, "*")
             replace_config("STATUS", str_status, "0")
-            message(0, "Removed all the files!")
+            message(0, "--> Removed all the files!")
     except Exception as e:
         logging.error(traceback.format_exc())
         print(rcolor(e.message))
@@ -106,6 +106,7 @@ def remQcbam():
 
 def remBismarkdedup():
     removeRef("/bismark-deduplicate/", "st_bisdedup")
+    removeRef("/bismark-deduplicate/", "st_bissort")
     exec_menu('')
 
 
@@ -143,7 +144,7 @@ def remMethkit():
 
 
 def remBigwig():
-    removeRef("/bigwig-fromat/", "st_bigwig")
+    removeRef("/bigwig-format/", "st_bigwig")
     exec_menu('')
 
 

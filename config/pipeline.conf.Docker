@@ -1,5 +1,5 @@
 [GENERAL]
-firstRun=false
+firstRun=true
 raw_dataset=/data
 result_pipeline=/results
 genome_ref=/home/shared/reference_genome
@@ -7,13 +7,13 @@ genome_name=TAIR10_chr_all.fa
 genome_type=Arabidopsis
 docker_mode=true
 parallel_mode=false
-npar=3
+npar=4
 fastq_path=/home/software/FastQC/fastqc
 number_of_dataset=8
 dataset_size=8.7
 pairs_mode=false
-first_pattern=_1.fastq.gz
-secnd_pattern=_2.fastq.gz
+first_pattern=
+secnd_pattern=
 
 [Trimmomatic]
 java_path=/usr/bin/java
@@ -32,6 +32,7 @@ n_th=16
 [Bismark]
 bismark_path=/home/software/Bismark-0.20.1
 samtools_path=/home/software/samtools/bin/samtools
+bedtools_path=/bin/bedtools
 modified_time=1539787258
 bis_parallel=4
 Nthreads=1
@@ -44,13 +45,16 @@ methextractor=-p
 del_inter_file=true
 
 [STATUS]
+quickrun=0
 st_prep=0
 st_trim=0
 st_fastq=0
 st_bismark=0
+st_bissort=0
+st_coreport=0
 st_fastqbam=0
 st_bisdedup=0
-st_bissort=0
+st_dedsort=0
 st_bismeth=0
 st_cx=0
 st_methimpute=0
@@ -59,13 +63,14 @@ st_bigwig=0
 st_bedgraph=0
 st_methykit=0
 
+
 [Methimpute]
 intermediate=true
-genome_type=maize
+intermediate_mode=constrained
 fit_output=true
 enrichment_plot=true
-TES_report=true
-genes_report=true
+full_report=true
+context_report=All
 mincov=1
 
 [DMR]
@@ -88,6 +93,7 @@ tmp_fq=$result_pipeline/trimmomatic-files
 tmp_log=$result_pipeline/trimmomatic-logs
 tmp_qcfast=$result_pipeline/qc-fastq-reports
 tmp_bismap=$result_pipeline/bismark-mappers
+tmp_covseq=$result_pipeline/cov-seq-reports
 tmp_qcbam=$result_pipeline/qc-bam-reports
 tmp_dide=$result_pipeline/bismark-deduplicate
 tmp_dme=$result_pipeline/bismark-meth-extractor

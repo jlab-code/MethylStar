@@ -1,8 +1,9 @@
 #!/bin/bash
 curr_dir="$(dirname "$0")"
+orgPip=$(pwd)
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf;
-. $curr_dir/detect.sh  $genome_type  bismap;
+. $curr_dir/detect.sh  $genome_type  bismap $npar;
 . $curr_dir/tmp.conf;
 
 ## Bismark Mapper - pair mode parallel 
@@ -24,7 +25,7 @@ if $run_pair_bismark; then
 
 	# start to run bismark default -- 4 pairs --> pair_1,unpaired_1 & paired_2, unpaired_2
 	# parallel mode
-	echo "Running Bismark Mapper in Parallel mode, number of jobs that proccessing at same time: $npar ." 
+	echo -e "Running Bismark Mapper in Parallel mode, number of jobs that proccessing at same time: $npar . \n" 
 	start=$(date +%s)
 	doit() {
 		. "$1"
@@ -57,12 +58,12 @@ if $run_pair_bismark; then
 
 	export -f doit
 	par=$(echo $curr_dir/tmp.conf) 
-	grep "_paired$first_pattern" "$input"  | parallel -j $npar doit "$par"
+	grep "_paired$first_pattern" "$input"  | parallel -j $npar --lb doit "$par"
 	runtime=$((($(date +%s)-$start)/60))
 	echo "Bismark Mapper finished. Duration $runtime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log	
 
 else
-	echo "Running Bismark Mapper in Parallel mode, number of jobs that proccessing at same time: $npar ." 
+	echo -e "Running Bismark Mapper in Parallel mode, number of jobs that proccessing at same time: $npar .\n " 
 	start=$(date +%s)
 	doit() {
 		. "$1"
@@ -88,15 +89,14 @@ else
 	}
 	export -f doit
 	par=$(echo $curr_dir/tmp.conf) 
-	grep "_paired$first_pattern" "$input"  | parallel -j $npar doit "$par"
+	grep "_paired$first_pattern" "$input"  | parallel -j $npar --lb doit "$par"
 	runtime=$((($(date +%s)-$start)/60))
 	echo "Bismark for $file1 and $file2 finished. Duration time $runtime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
 
 fi		
 
 
-echo "Bismark part finished. Please check the $tmp_bismap directory for logs." 
-
+echo -e  "Bismark part finished. Please check the $tmp_bismap directory for logs. \n" 
 
 
 #------------------------------------ Renaming
@@ -123,8 +123,8 @@ for file in $(ls -1v $tmp_bismap/*nucleotide_stats.txt)
                 mv $file $tmp_bismap/$label_ns.txt
         done
 
-#--------------------------------------
-cd -
+
+cd $orgPip
 
 if [ -f $tmp_bismap/tmp.lst ]
 then 

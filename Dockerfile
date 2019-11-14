@@ -36,12 +36,9 @@ RUN apt-get install -y vim
 RUN apt-get install -y tmux
 RUN apt-get install -y screen
 RUN apt-get install -y htop
+RUN apt-get install -y bedtools
 # cleanup
 RUN apt-get -y autoremove
-
-#RUN pip install --upgrade pip
-#RUN pip install npyscreen
-
 #---------------------------------------------
 # preparing directories 
 RUN mkdir -p /home/software

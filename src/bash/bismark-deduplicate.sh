@@ -2,7 +2,7 @@
 curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf
-. $curr_dir/detect.sh  $genome_type  bisdedu;
+. $curr_dir/detect.sh  $genome_type  bisdedu $npar;
 . $curr_dir/tmp.conf
 
 
@@ -11,8 +11,6 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 run bismark deduplicate &
 run bismark_methylation_extractor: atypical command to extract context-dependent (CpG/CHG/CHH) methylation
 '
-
-#-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 
@@ -52,10 +50,11 @@ if $parallel_mode; then
 				ded=$($bismark_path/deduplicate_bismark $deduplicate --bam  "$2" --output_dir $tmp_dide/ 2>&1 | tee -a $tmp_dide/$label.log )
 				echo $2 >> $tmp_dide/list-finished.lst;   
 				sed -n -e 15p  -e 18,22p $tmp_dide/$label.log
+				echo "---------------------------------------------------------------"
 		}
 		export -f doit
 		par=$(echo $curr_dir/tmp.conf) 
-		cat  "$input"  | parallel -j $npar doit "$par"
+		cat  "$input"  | parallel -j $npar --lb doit "$par"
 		runtime=$((($(date +%s)-$start)/60))
 		echo "Bismark Deduplication finished. Total time $runtime minutes." 2>&1 | tee -a $tmp_clog/bismark-deduplicate.log
 		echo "You can find the result in $tmp_dide folder."
@@ -75,6 +74,7 @@ else
 				echo $bamfile >> $tmp_dide/list-finished.lst;
 				sed -n -e 15p  -e 18,22p $tmp_dide/$label.log;
 				echo "Bismark Deduplication for $label finished in $runtime minutes." 2>&1 | tee -a $tmp_clog/bismark-deduplicate.log
+				echo "---------------------------------------------------------------"
 				totaltime=$(($runtime + $totaltime))
 			done
 	echo "Bismark Deduplication finished. Total time $totaltime minutes."  2>&1 | tee -a $tmp_clog/bismark-deduplicate.log

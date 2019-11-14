@@ -1,7 +1,7 @@
 Installation and Configuration MethylStar
 ================
 
-###### *last update: Oct-01-2019*
+###### *last update: NOV-15-2019*
 
 MethylStar is based on several softwares/tools therefore, it is necessary to have all dependencies to be pre-installed in your system and available in the PATH ( [A. Standard installation](#standard) ) or it can be installed as a docker image ( [B. Installation using docker](#docker) ). 
 
@@ -112,7 +112,7 @@ $ docker load < methylstar.tar.gz
 Running the methylstar docker file.
 
 ``` bash
-$ docker run -it -v /PATH/TO/RAW-FILES/:/data \
+$ docker run --rm -it --privileged -v /PATH/TO/RAW-FILES/:/data \
                  -v /PATH/TO/results/:/results \
                  methylstar:latest
 ```

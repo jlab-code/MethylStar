@@ -9,7 +9,7 @@ __email__ = "shahryary@gmail.com"
 from globalParameters import *
 
 def info_trimmomatic():
-    s = gcolor("* If you need to change the following Trimmomatic settings then please go back to configuration.")+"\n\n"\
+    s = gcolor("Configuration Summary: ")+"\n\n"\
     "Configured Java location: " + mcolor(read_config("Trimmomatic", "java_path")) + "\n" \
     "Trimmomatic path: " + mcolor(read_config("Trimmomatic", "trim_path")) + "\n" \
     "Trimmomatic Adapter: " + mcolor(read_config("Trimmomatic", "name_adap")) + "\n" \
@@ -20,13 +20,13 @@ def info_trimmomatic():
     "Trimmomatic SLIDINGWINDOW: " + mcolor(read_config("Trimmomatic", "SLIDINGWINDOW")) + "\n" \
     "Trimmomatic MINLEN: " + mcolor(read_config("Trimmomatic", "MINLEN")) + "\n" \
     "Trimmomatic Threading: " + mcolor(read_config("Trimmomatic", "n_th")) + "\n" \
-    "Parallel mode is: " + mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"), False)) + "\n\n" \
+    "Parallel mode is: " + mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"))) + "\n\n" \
 
     status = int(read_config("STATUS", "st_trim"))
     pairs_mode = read_config("GENERAL", "pairs_mode")
 
     if status == 1:
-        s += ycolor("It seems last time got problem during running...")
+        s += ycolor("--> Please ensure that folder is empty, otherwise it will overwrite the files ...")
     elif status == 2:
         if len(check_empty_dir("trimmomatic-files", "*.gz")) > 0:
             s += "\nIt seems you have results for Trimmomatic part."
@@ -37,8 +37,30 @@ def info_trimmomatic():
     if pairs_mode == "true" and read_config("Trimmomatic", "end_mode") == "SE":
         s += ycolor("WARNING: You're running Trimmomatic in 'Single End' mode, but you have pair file!")
 
-    #res_loc = read_config("GENERAL", "result_pipeline")
     return s
+
+
+def run(pairs_mode):
+    txt = "Trimmomatic Part finished."
+    try:
+        if pairs_mode == 'true':
+            subprocess.call(['./src/bash/trimmomatic_pair.sh'])
+        else:
+            subprocess.call(['./src/bash/trimmomatic.sh'])
+
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
+
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        print(rcolor(e.message))
+        txt = e.message
+        # email part
+        if read_config("EMAIL", "active") == "true":
+            parmEmail(txt)
+        message(2, "something is going wrong... please run again. ")
+        # set 1 to resuming
+        replace_config("STATUS", "st_trim", "1")
 
 
 def run_trimmomatic(status):
@@ -46,8 +68,6 @@ def run_trimmomatic(status):
     try:
         preparing_part()
         print(info_trimmomatic())
-
-        txt = "Trimmomatic Part finished."
         '''
         gen_type = read_config("GENERAL", "genome_type")
         if (gen_type in ["Human", "Maize"]):
@@ -68,31 +88,15 @@ def run_trimmomatic(status):
                 f.write('%s\n' % item)
 
         if status:
-            if pairs_mode == 'true':
-                subprocess.call(['./src/bash/trimmomatic_pair.sh'])
-                #replace_config("STATUS", "st_trim", "2")
-            else:
-                subprocess.call(['./src/bash/trimmomatic.sh'])
-
-            if read_config("EMAIL", "active") == "true":
-                parmEmail(txt)
+            run(pairs_mode)
         else:
             if confirm_run():
-                if pairs_mode == 'true':
-                    subprocess.call(['./src/bash/trimmomatic_pair.sh'])
-                    #replace_config("STATUS", "st_trim", "2")
-                else:
-                    subprocess.call(['./src/bash/trimmomatic.sh'])
-
-                if read_config("EMAIL", "active") == "true":
-                    parmEmail(txt)
-
+                print qucolor("\nRunning Trimmomatic Part...")
+                run(pairs_mode)
                 message(0, "Processing files is finished, You can check the log files in Menu, part 'Trimmomatic-log' ")
 
-
-
     except Exception as e:
-        #logging.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         print(rcolor(e.message))
         txt = e.message
         # email part

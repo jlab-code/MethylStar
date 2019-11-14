@@ -9,14 +9,14 @@ __email__ = "shahryary@gmail.com"
 from globalParameters import *
 
 def info_fastQC():
-    s = gcolor("* If you need to change please back to the configuration part.") + "\n\n" \
+    title("Running FastQC Report Part")
+    s = gcolor("Configuration Summary: \n") + "\n" \
     "- Fastq Path: " + mcolor(read_config("GENERAL", "fastq_path")) + " \n" \
-    "- Parallel mode is: " + mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"), False)) + "\n\n"
-    gcolor("You can access to the quality control reports under menu, 'Reports' part.")
+    "- Parallel mode is: " + mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"))) + "\n"
 
     status = int(read_config("STATUS", "st_fastq"))
     if status == 1:
-        s += ycolor("\n It seems last time got problem during running...")
+        s += ycolor("\n --> Please ensure that folder is empty, otherwise it will overwrite the files ...")
 
     if status == 2:
         if len(check_empty_dir("qc-fastq-reports", "*.html")) > 0:
@@ -34,6 +34,7 @@ def run_fastQC(status):
             subprocess.call(['./src/bash/qc-fastq-report.sh'])
         else:
             if confirm_run():
+                print qucolor("\nRunning FastQC reports ...")
                 subprocess.call(['./src/bash/qc-fastq-report.sh'])
                 #replace_config("STATUS", "fastq", "2")
                 txt = "FASTQC part finished."
@@ -41,7 +42,7 @@ def run_fastQC(status):
                 if read_config("EMAIL", "active") == "true":
                     parmEmail(txt)
 
-                message(0, "Task finished!")
+                message(0, "Processing files are finished.")
 
     except Exception as e:
         #logging.error(traceback.format_exc())
