@@ -2,7 +2,7 @@
 FROM ubuntu:18.04
 
 MAINTAINER Yadi Shahryary <shahryary@gmail.com>
-LABEL version="1.1"
+LABEL version="1.4"
 LABEL description="MethylStar Dockerfile."
 
 #---------------------------------------------
