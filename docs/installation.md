@@ -114,7 +114,7 @@ Running the methylstar docker file.
 ``` bash
 $ docker run --rm -it --privileged -v /PATH/TO/RAW-FILES/:/data \
                  -v /PATH/TO/results/:/results \
-                 methylstar:latest
+                 methylstar:ver.1.4
 ```
 
 NOTE 1: Please change the */PATH/TO/RAW-FILES/* according to the your raw files folder in your system.
