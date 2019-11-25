@@ -8,37 +8,36 @@ LABEL description="MethylStar Dockerfile."
 #---------------------------------------------
 # Update Ubuntu Software repository
 #---------------------------------------------
+RUN apt-get update && apt-get install -y build-essential \
+	openjdk-11-jdk \
+	openjdk-11-jre \
+	curl \
+	unzip \
+	bowtie2 \
+	gnupg2 \
+	software-properties-common \
+	aptitude \
+	libxml2-dev \
+	libgit2-dev \
+	libssl-dev \
+	git \
+	python \
+	python-pip \
+	libncurses-dev \
+	zlib1g-dev \
+	libbz2-dev \
+	liblzma-dev \
+	parallel \
+	wget \
+	vim \
+	tmux \
+	screen \
+	htop \
+	bedtools && apt-get -y autoremove
+
 RUN apt-get update
-RUN apt-get install -y build-essential
-RUN apt-get install -y openjdk-11-jdk
-RUN apt-get install -y openjdk-11-jre
-RUN apt-get install -y curl
-RUN apt-get install -y unzip
-RUN apt-get install -y bowtie2
-RUN apt-get install -y gnupg2
-RUN apt-get install -y software-properties-common
-RUN apt-get install -y aptitude
 RUN apt-get install -y libcurl4-openssl-dev
 RUN apt-get install -y libcurl4-gnutls-dev
-RUN apt-get install -y libxml2-dev
-RUN apt-get install -y libgit2-dev
-RUN apt-get install -y libssl-dev
-RUN apt-get install -y git
-RUN apt-get install -y python 
-RUN apt-get install -y python-pip
-RUN apt-get install -y libncurses-dev
-RUN apt-get install -y zlib1g-dev
-RUN apt-get install -y libbz2-dev
-RUN apt-get install -y liblzma-dev
-RUN apt-get install -y parallel
-RUN apt-get install -y wget
-RUN apt-get install -y vim
-RUN apt-get install -y tmux
-RUN apt-get install -y screen
-RUN apt-get install -y htop
-RUN apt-get install -y bedtools
-# cleanup
-RUN apt-get -y autoremove
 #---------------------------------------------
 # preparing directories 
 RUN mkdir -p /home/software
@@ -106,8 +105,7 @@ RUN unzip fastqc_v0.11.8.zip
 RUN chmod +x -R FastQC
 
 #--------------------------------
-RUN rm *.bz2
-RUN rm *.zip
+RUN rm *.bz2 && rm *.zip
 
 #--------------------------------
 # R and libraries V.0.11.8
