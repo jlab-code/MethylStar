@@ -429,7 +429,7 @@ def genome_name():
 
 def genome_type():
     print("Enter the Genome type from the list: \n")
-    list_gen=["Arabidopsis", "Human", "Maize", "Rice", "Others"]
+    list_gen=["Arabidopsis", "Human", "Maize", "Rice", "scBS-Seq", "Others"]
     for file in list_gen:
         sys.stdout.write(ycolor(str(list_gen.index(file))) + " : " + file + "\n")
 

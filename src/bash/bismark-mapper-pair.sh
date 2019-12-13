@@ -21,6 +21,8 @@ input="$tmp_bismap/tmp.lst"
 tmp_path=$tmp_bismap/
 cd "${tmp_path%/*}"
 
+echo -e "Genome Type: $genome_type \n"
+
 if $run_pair_bismark; then 
 
 	# start to run bismark default -- 4 pairs --> pair_1,unpaired_1 & paired_2, unpaired_2

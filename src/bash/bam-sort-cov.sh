@@ -24,7 +24,6 @@ else
 		st_status=st_bissort
 fi
 
-echo $tmp_dir
 gen=$(ls -1v $tmp_dir/*.bam > $tmp_covseq/list-files.lst)
 
 if [ -f $tmp_covseq/list-finished.lst ]

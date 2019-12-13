@@ -42,16 +42,19 @@ def run():
             replace_config("GENERAL", "parallel_mode", "false")
         '''
         pairs_mode = read_config("GENERAL", "pairs_mode")
-
         subprocess.call(['./src/bash/path-export.sh'])
         subprocess.call(['./src/bash/pre-bismark.sh'])
 
-        if pairs_mode == 'true' and read_config("GENERAL", "parallel_mode") == "true":
-            subprocess.call(['./src/bash/bismark-mapper-pair-parallel.sh'])
-        elif pairs_mode == 'true' and read_config("GENERAL", "parallel_mode") == "false":
-            subprocess.call(['./src/bash/bismark-mapper-pair.sh'])
+        if (read_config("GENERAL", "genome_type")=="scBS-Seq"):
+
+            subprocess.call(['./src/bash/bismark-mapper-scBS-Seq.sh'])
         else:
-            subprocess.call(['./src/bash/bismark-mapper.sh'])
+            if pairs_mode == 'true' and read_config("GENERAL", "parallel_mode") == "true":
+                subprocess.call(['./src/bash/bismark-mapper-pair-parallel.sh'])
+            elif pairs_mode == 'true' and read_config("GENERAL", "parallel_mode") == "false":
+                subprocess.call(['./src/bash/bismark-mapper-pair.sh'])
+            else:
+                subprocess.call(['./src/bash/bismark-mapper.sh'])
 
         #replace_config("GENERAL", "parallel_mode", "true")
         # start to run fastqc bam report

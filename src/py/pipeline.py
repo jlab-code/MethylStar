@@ -64,9 +64,13 @@ def exec_menu(choice):
 
 
 def quickRun():
-    from part_quick import run_quick
-    run_quick()
-    exec_menu('')
+    if (read_config("GENERAL", "genome_type") == "scBS-Seq"):
+        print ycolor("Unfortunately you can't run in 'Quick Run' when you have 'scBS-Seq' data .")
+        exec_menu('')
+    else:
+        from part_quick import run_quick
+        run_quick()
+        exec_menu('')
 
 
 def itemTrim():

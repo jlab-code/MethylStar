@@ -1,5 +1,5 @@
 [GENERAL]
-firstRun=true
+firstRun=false
 raw_dataset=/data
 result_pipeline=/results
 genome_ref=/home/shared/reference_genome

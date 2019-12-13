@@ -13,7 +13,7 @@ run bismark_methylation_extractor: atypical command to extract context-dependent
 '
 
 #-------------------------------------------------------------------------------
-
+echo -e "Genome Type: $genome_type \n"
 # check point
 gen=$(ls -1v $tmp_bismap/*.bam > $tmp_dide/list-files.lst)
 
