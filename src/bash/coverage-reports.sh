@@ -96,9 +96,10 @@ else
 			echo "file: " $label >> $tmp_covseq/$fileName-report.log
 			echo "# $cmd" >> $tmp_covseq/$fileName-report.log
 			echo "# $gencov "  >> $tmp_covseq/$fileName-report.log
+			runtime=$((($(date +%s)-$start)/60))
+			echo "# Running time: $runtime minutes."  >> $tmp_covseq/$fileName-report.log
 			echo "---------------------------------" >> $tmp_covseq/$fileName-report.log
 			echo $file >> $tmp_covseq/list-finished.lst;
-			runtime=$((($(date +%s)-$start)/60))
 			echo "Task finished for $label in $runtime minutes."  2>&1 | tee -a $tmp_clog/covseq.log
 			echo -e "---------------------------------"
 			totaltime=$(($runtime + $totaltime))

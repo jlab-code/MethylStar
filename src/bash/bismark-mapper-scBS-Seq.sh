@@ -38,8 +38,8 @@ if [ -f $tmp_bismap/list-finished.lst ]
 input="$tmp_bismap/tmp.lst"
 #-------------------------------------------------------------------------------
 #changing directory to write in folder path
-tmp_path=$tmp_bismap/
-cd "${tmp_path%/*}"
+#tmp_path=$tmp_bismap/
+#cd "${tmp_path%/*}"
 
 echo -e "Genome Type: $genome_type \n"
 if $parallel_mode; then 
