@@ -101,11 +101,15 @@ def run_output():
 
 def jbrowse():
     s = "\nAccess Jbrowse\n"
-    s += "Configure your parameters for running WGBS data analysis pipeline." \
-         "\nGuest users can create an account for the first time by signing up on this site:\n"
-    s += "http://jlabdata.org/signup\n"
-    s += "If you already have an account, please open the following URL in your web browser:\n"
+    s += "Please open the following URL in your web browser:\n"
     s += "http://jlabdata.org/jbrowse\n\n"
+    print(qucolor(s))
+    menu_actions['main_menu']()
+
+def help_doc():
+    s = "\nDocumentation:\n"
+    s += "Please open the following URL in your web browser:\n"
+    s += "https://github.com/jlab-code/MethylStar/blob/master/docs/runPipeline.md\n\n"
     print(qucolor(s))
     menu_actions['main_menu']()
 
@@ -143,6 +147,7 @@ menu_actions = {
     '2': run_output,
     '3': jbrowse,
     '4': run_remove,
+    '5': help_doc,
     '9': back,
     'c': config,
     'q': exit,

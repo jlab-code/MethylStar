@@ -42,17 +42,23 @@ Selecting ``option '1'`` will display the different options for running the pipe
 #### **1. Run Pipeline (WGBS)**
 
 ```
-A. Quick Run ...
-	0. Trimmomatic, QC-Fastq-report, Bismark(alignment, remove duplicates), Extract methylation calls, Methimpute.
+Please choose from the menu:
 
-B. Individual Run ...
+A. Quick Run: 
+
+	0. Trimmomatic,QC-Fastq-report,Bismark(alignment,remove duplicates),Extract methylation calls,Methimpute.
+
+B. Individual Run: 
+
 	1. Run Trimommatic
 	2. Run QC-Fastq-report
 	3. Run Bismark Mapper
-	4. Run Bismark deduplication
-	5. Run Bismark Methylation Extractor
-	6. Generate Cytosine Calls (cx-reports)
-	7. Run Methimpute
+	4. Run Genome coverage & Sequencing depth (After Mapping)
+	5. Run Bismark deduplication
+	6. Run Genome coverage & Sequencing depth (After deduplicate)
+	7. Run Bismark Methylation Extractor
+	8. Generate Cytosine Calls (cx-reports)
+	9. Run Methimpute
 
 B. Back to main Menu
 
@@ -60,13 +66,21 @@ B. Back to main Menu
 
 #### **2. Output/Reports**
 
-All outputs from the pipeline run will be available in Output/Reports. This option allows the user to convert Methimpute outputs into bedgraph, bigwig and for input into DMRcallers (e,g Methylkit, DMRcaller).
+All outputs from the pipeline will be available in Output/Reports. This option allows the user to convert Methimpute outputs into bedgraph, bigwig and for input into popular DMRcallers (e,g Methylkit, DMRcaller).
 
+```
+Please choose from the menu:
+
+	1. Convert Methimpute output to DMRCaller Format
+	2. Convert Methimpute output to Methylkit Format
+	3. Convert Methimpute output to bedGraph Format
+	4. Convert bedGraph to BigWig Format
+```
 #### **3. Access JBrowse**
-
+<!--
 Guest users can create an account for the first time by signing up on this site: 
 http://jlabdata.org/signup
-
+-->
 If you already have an account, please open the following URL in your web browser:
 http://jlabdata.org/jbrowse
 
@@ -90,7 +104,7 @@ Please choose the menu you want to remove:
 	11. Clean methylkit/log file(s).
 	12. Clean bigwig/log file(s).
 ```
-* * *
+
 #### **C. Configuration**
 ```
 1. Path: RAW files
@@ -101,17 +115,19 @@ Please choose the menu you want to remove:
 6. Alignment parameters
 7. Methimpute parameters
 8. Parallel mode
-9. See configured parameters
+9. E-mail notification
+10. See configured parameters
 
 B. Back to main Menu
 ```
 
 ##### **Setting correct paths**
-Ensure that specific PATHs to raw files ``option '1'``, output folders ``option '2'``, reference genome ``option '3'``, QC-FastQ path ``option '5'``exist.
+Ensure that specific PATHs to raw files ``option '1'``, output folders ``option '2'``, reference genome ``option '3'``, Trimmomatic software path ``option '4'``, QC-FastQ path ``option '5'``, Bismark & Samtools path ``option '6'`` exist.
 
 ##### **Read-trimming parameters**
 Configure read trimming parameters by specifying ``option '4'`` and then typing [y/n] to configure the settings.
 
+- Set software path correctly and select Adapter type 
 - By default the quality scores are converted to phred33.
 - specify SE for single-end reads and PE for paired-end reads
 - Remove leading low quality or N bases (below quality 20)
@@ -122,30 +138,56 @@ Configure read trimming parameters by specifying ``option '4'`` and then typing 
 ```
 4. Read-trimming parameters
 
-Parameters for trimming FASTQ reads. The following values are set as default.
---Configuration part for Adapter--
-You set the value to: software/Trimmomatic-0.38/adapters/TruSeq3-SE.fa
+Example parameters for trimming FASTQ reads.
+You set the location to: /usr/bin/java
+Detected Java program in location: /usr/bin/java
+Do you want to change the Java Path? [y/n] n
+---------------------------------------------------------------------------
+	*** Configuration part for Trimmomatic location (location folder) ***
 
---Configuration part for running mode--
-You set the value to: SE
-
---Configuration part for ILLUMINACLIP--
-You set the value to: 1:30:9
-
---Configuration part for LEADING--
-You set the value to: 20
-
---Configuration part for TRAILING--
-You set the value to: 20
-
---Configuration part for SLIDINGWINDOW--
-You set the value to: 4:20
-
---Configuration part for MINLEN--
-You set the value to: 36
-
---Configuration part for Threading--
-You set the value to: 8
+The current status is: /software/Trimmomatic-0.38
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for Adapter ***
+The current status is: /software/Trimmomatic-0.38/adapters/TruSeq3-PE.fa
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for running mode ***
+The current status is: SE
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for ILLUMINACLIP ***
+The current status is: 1:30:9
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for LEADING ***
+The current status is: 20
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for TRAILING ***
+The current status is: 20
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for SLIDINGWINDOW ***
+The current status is: 4:20
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for MINLEN ***
+The current status is: 36
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for Threading ***
+The current status is: 8
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
 
 ```
 ##### **Alignment parameters**
@@ -170,17 +212,28 @@ Bismark methylation extractor will extract Context-dependent (CpG/CHG/CHH) methy
 ```
 6. Alignment parameters
 
+Example parameters for aligning FASTQ reads.
+
+	*** Alignment parameters (Bismark mapper) ***
 You set the location to: /software/Bismark
-
---Configuration part for Bismark Parallel--
-You set the value to: 8
-
---Configuration part for Bismark buffer Size--
-You set the value to: 40
-
---Configuration part for Bismark Nucleotide--
-To run Bismark by Nucleotide option please Enable it.
-You set the value to: true
+Do you want to change the location? [y/n] n
+We will keep the default value!
+---------------------------------------------------------------------------
+	*** Configuration part for Bismark Parallel ***
+The current status is: 8
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for Bismark buffer Size ***
+The current status is: 40
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Configuration part for Bismark Nucleotide ***
+	**** To change the Nucleotide report option please Enable it.***
+The current status is: Disabled
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
 
 ```
 ##### **Imputation of missing cytosines using Methimpute**
@@ -196,30 +249,55 @@ The following settings can be edited by typing [y/n].
 ```
 7. Methimpute parameters
 
---Running with intermediate status--
-You set the value to: true
+Example parameters for running HMM model and generating Methimpute output files.
 
---Generating quality reports (fit, model convergence, histogram,etc.)--
-You set the value to: true
+	*** Include Intermediate status ***
 
---Generating enrichment reports( pdf files )--
-You set the value to: false
+The current status is: Enabled
+Do you want to re-config this part? [y/n] y
 
---Generating TEs reports--
-You set the value to: true
+1- Enable this option.
+2- Disable this option.
+Please enter the number to select:1
 
---Generating genes reports--
-You set the value to: true
+Please specify: independent or constrained 
+1 - Independent
+2 - Constrained
 
---Minimum read coverage value (for quick run)--
-You set the value to: 1
+Please enter the number to select:1
+--> Configuration updated!
+---------------------------------------------------------------------------
+	*** Model Fit reports ***
+The current status is: Enabled
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Plot Enrichment (Genes, TEs) ***
+The current status is: Enabled
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Output full report (Genes,TEs) ***
+The current status is: Enabled
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Run Context: All/ CG| CHG| CHH  ***
+The current status is: All
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
+---------------------------------------------------------------------------
+	*** Minimum read coverage value (just for quick run) ***
+The current status is: 1
+Do you want to re-config this part? [y/n] n
+--> Keeping the default value.
 
 ```
 ##### **Set Parallel mode**
-Set parallel mode for read trimming, alignment, bismark deduplicate, methylation calling steps
+Set parallel mode for Trimmomatic, Bismark-alignment, Bismark-deduplicate removal, Bismark-methylation calling steps. This parallel option works independently of inbuilt parallel processing used by the above tools.
 
 ##### **See configured parameters**
-Get an overview of configured parameters by selecting ``option '9'``.
+Get an overview of configured parameters by selecting ``option '10'``.
 
 ```
 9. See configured parameters
@@ -250,16 +328,16 @@ Here is summary of configuration parameters:
 - Methylation extraction parameters( Only for quick run)
      -- Minimum read coverage: 1
 - Methimpute Part:
-     -- Methimpute Intermediate : Enabled
+     -- Methimpute Intermediate: Enabled
+     -- Methimpute probability(Intermediate): constrained
      -- Methimpute Fit reports: Enabled
      -- Methimpute Enrichment plots: Disabled
      -- Methimpute TEs reports: Enabled
      -- Methimpute genes reports: Enabled
-     -- Methimpute Context: All/CHG|CHH|CG
-- Parallel mode is: Disabled
+     -- Methimpute Context: All
+- Parallel mode is: Enabled
      -- Number of Parallel: 4 Cores.
-
-Please, press ENTER to continue ...
+- E-mail notification: Disabled
 
 ```
 ``Return to main Menu``

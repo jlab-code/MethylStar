@@ -27,7 +27,7 @@ def dmr_menu():
     print ycolor("\t2.")+" Convert Methimpute output to Methylkit Format"
     print ycolor("\t3.") + " Convert Methimpute output to bedGraph Format"
     print ycolor("\t4.") + " Convert bedGraph to BigWig Format"
-    print ycolor("\t5.") + " Run jDMR Caller"
+    #print ycolor("\t5.") + " Run jDMR Caller"
     print rcolor("B.")+" Back to main Menu\n"
     choice = raw_input(">>  ")
     exec_menu(choice)
