@@ -1031,7 +1031,7 @@ def show_config():
     print "- Methimpute Part:"
     print "     -- Methimpute Intermediate : " + mcolor(true_false_fields_config(read_config("Methimpute", "intermediate")))
     if (read_config("Methimpute", "intermediate") == "true"):
-        print "     -- Methimpute Context: " + mcolor(read_config("Methimpute", "intermediate_mode"))
+        print "     -- Methimpute probability(Intermediate): " + mcolor(read_config("Methimpute", "intermediate_mode"))
 
     print "     -- Methimpute Fit reports: " + mcolor(true_false_fields_config(read_config("Methimpute", "fit_output")))
     print "     -- Methimpute Enrichment plots: " + mcolor(true_false_fields_config(read_config("Methimpute", "enrichment_plot")))

@@ -1,7 +1,7 @@
 Installation and Configuration MethylStar
 ================
 
-###### *last update: NOV-15-2019*
+###### *last update: Dec-18-2019*
 
 MethylStar is based on several softwares/tools therefore, it is necessary to have all dependencies to be pre-installed in your system and available in the PATH ( [A. Standard installation](#standard) ) or it can be installed as a docker image ( [B. Installation using docker](#docker) ). 
 
@@ -58,36 +58,15 @@ python2 run.py
 *This tutorial based on Ubuntu 18.04*
 
 
-**Step 1** — install a few prerequisite packages which let apt use packages over HTTPS:
-
 ###### *Approximate time ~ 10 minutes*
 
-Note: Skip steps 1 and 2 in case that you already installed docker program.
 
-``` bash
-$ sudo apt update
-$ sudo apt install apt-transport-https ca-certificates curl software-properties-common
-$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-$ sudo apt update
-```
+**(Optional)** Please follow the links in case if you need to install/config the Dcoker in your system. 
+Get Docker CE for Ubuntu: https://docs.docker.com/v17.09/engine/installation/linux/docker-ce/ubuntu/
+First tutorial: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+Second tutorial: https://phoenixnap.com/kb/how-to-install-docker-on-ubuntu-18-04
 
-Finally, install Docker:
-
-``` bash
-$ sudo apt install docker-ce
-```
-
-**Step 2**  — **(Optional)** Executing the Docker Command Without Sudo permission. 
-
-If you want to avoid typing sudo whenever you run the docker command, add your username to the docker group:
-
-``` bash
-$ sudo usermod -aG docker ${USER}
-$ su - ${USER}
-```
-
-**Step 3** —  Loading MethylStar docker image
+**Step 1** —  Loading MethylStar docker image
 
 ###### *Approximate time ~ 10 minutes*
 
@@ -97,29 +76,29 @@ Here you can download the image file and run by docker:
 
 ``` bash
 $ wget http://jlabdata.org/methylstar.tar.gz
-last update: NOV-15-2019
+last update: Dec-18-2019
 file size: 1.1 Gb
-md5sum: 1d5f5f841b759d516b0f490be36995b3
+md5sum: 7fe635a94a826344da8146ea46d3a469
 ```
-**Step 4** — Import the image file into docker:
+**Step 2** — Import the image file into docker:
 
 ``` bash
 $ docker load < methylstar.tar.gz
 ```
 
-**Step 5** — Running docker file
+**Step 3** — Running docker file
 
 Running the methylstar docker file.
 
 ``` bash
-$ docker run --rm -it --privileged -v /PATH/TO/RAW-FILES/:/data \
-                 -v /PATH/TO/results/:/results \
-                 methylstar:ver.1.4
+$ docker run --rm -it --privileged -v /PATH/TO/RAWDATA/:/data \
+                 -v /PATH/TO/RESULT/FOLDER/:/results \
+                 methylstar:latest
 ```
 
-NOTE 1: Please change the */PATH/TO/RAW-FILES/* according to the your raw files folder in your system.
+NOTE 1: Please change the */PATH/TO/RAWDATA/* according to the your raw files folder in your system.
 
-NOTE 2: All the pipeline result will save in */PATH/TO/results/* so please change the directory.
+NOTE 2: All the pipeline result will save in */PATH/TO/RESULT/FOLDER/* so please change the directory.
 
 NOTE 3: Please do not change */data and /results*.
 
@@ -150,6 +129,12 @@ Step 3 — build the image.
 
 ``` bash
 $ docker build -t methylstar .    # there is a 'dot' in the end of command.
+```
+Step 4 — run the docker image.
+``` bash
+$ docker run --rm -it --privileged -v /PATH/TO/RAWDATA/:/data \
+                 -v /PATH/TO/RESULT/FOLDER/:/results \
+                 methylstar:latest
 ```
 
 ------------------------------------------------------------------------

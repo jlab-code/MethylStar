@@ -32,6 +32,7 @@ def rem_menu():
     print ycolor("\t10.")+" Clean bedgraph/log file(s)."
     print ycolor("\t11.")+" Clean methylkit/log file(s)."
     print ycolor("\t12.")+" Clean bigwig/log file(s)."
+    print rcolor("\t13.") + " Clean all the results directory."
     print rcolor("B.")+" Back to main Menu\n"
     choice = raw_input(">>  ")
     exec_menu(choice)
@@ -82,6 +83,16 @@ def removeRef(str_dir, str_status):
         # set 1 to resuming
         replace_config("STATUS", str_status, "1")
 
+
+def remAllDir():
+    try:
+        if confirm_run():
+            subprocess.call(['./src/bash/del-folders.sh'])
+            message(0, "--> Removed all the files!")
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        print(rcolor(e.message))
+        message(2, "something is going wrong... please run again. ")
 
 def remTrim():
     removeRef("/trimmomatic-files/", "st_trim")
@@ -147,6 +158,9 @@ def remBigwig():
     removeRef("/bigwig-format/", "st_bigwig")
     exec_menu('')
 
+def remAll():
+    remAllDir()
+    exec_menu('')
 
 # Back to main menu
 def exit():
@@ -172,6 +186,7 @@ menu_remove = {
     '10': remMethbed,
     '11': remMethkit,
     '12': remBigwig,
+    '13': remAll,
     'b': exit,
 }
 
