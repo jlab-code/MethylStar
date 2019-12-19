@@ -40,7 +40,7 @@ Here our pipeline comprises of custom bash scripts together with pre-installed s
 1. [Installation and Configuration](installation.html)
 2. [Running The Pipeline](runPipeline.html)
 <!-- 3. [Interpret Outputs/Results](docs/directory.md) -->
-<!-- 5. [FAQs](docs/faq.md) -->
+<!-- 5. [FAQs](docs/faq.md) --->
 
 
 ### Contributors:
