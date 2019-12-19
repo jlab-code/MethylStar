@@ -1,13 +1,4 @@
----
-output: html_document
----
-```{r figurename, echo=FALSE, out.width = '40%'}
-#knitr::include_graphics("MethylStar_logo.png")
-```
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+# ![shahryary/MethylStar](docs/MethylStar_logo.png)
 
 ### An efficient and flexible pipeline for population-level analysis of WGBS data
 

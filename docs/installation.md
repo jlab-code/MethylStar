@@ -62,9 +62,16 @@ python2 run.py
 
 
 **(Optional)** Please follow the links in case if you need to install/config the Dcoker in your system. 
+
+
 Get Docker CE for Ubuntu: https://docs.docker.com/v17.09/engine/installation/linux/docker-ce/ubuntu/
+
+
 First tutorial: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+
+
 Second tutorial: https://phoenixnap.com/kb/how-to-install-docker-on-ubuntu-18-04
+
 
 **Step 1** —  Loading MethylStar docker image
 

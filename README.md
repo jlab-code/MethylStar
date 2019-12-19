@@ -31,14 +31,14 @@ Here our pipeline comprises of custom bash scripts together with pre-installed s
 
 ### Documentation
 
-1. [Installation and Configuration](docs/installation.md)
-2. [Running The Pipeline](docs/runPipeline.md)
-3. [Interpret Outputs/Results](docs/directory.md)
-5. [FAQs](docs/faq.md)
+1. [Installation and Configuration](installation.html)
+2. [Running The Pipeline](runPipeline.html)
+<!-- 3. [Interpret Outputs/Results](docs/directory.md) -->
+<!-- 5. [FAQs](docs/faq.md) --->
 
 
 ### Contributors:
 
 - Yadi Shahryary - y.shahryary@tum.de
-- Rashmi Hazarika
-- Frank Johannes
+- Rashmi Hazarika - rashmi.hazarika@tum.de
+- Frank Johannes - frank@johanneslab.org
