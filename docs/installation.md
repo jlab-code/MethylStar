@@ -1,7 +1,7 @@
 Installation and Configuration MethylStar
 ================
 
-###### *last update: Dec-18-2019*
+###### *last update: Dec-20-2019*
 
 MethylStar is based on several softwares/tools therefore, it is necessary to have all dependencies to be pre-installed in your system and available in the PATH ( [A. Standard installation](#standard) ) or it can be installed as a docker image ( [B. Installation using docker](#docker) ). 
 
@@ -83,9 +83,9 @@ Here you can download the image file and run by docker:
 
 ``` bash
 $ wget http://jlabdata.org/methylstar.tar.gz
-last update: Dec-18-2019
+last update: Dec-20-2019
 file size: 1.1 Gb
-md5sum: 7fe635a94a826344da8146ea46d3a469
+md5sum: ebe3f0c7ecdeb942f669abfce9e9fb7b
 ```
 **Step 2** — Import the image file into docker:
 
