@@ -3,7 +3,7 @@
 
 
 
-### An efficient and flexible pipeline for population-level analysis of WGBS data
+### An efficient and flexible pipeline for high-throughput analysis of WGBS data
 
 To process a large number of WGBS samples in a consistent, documented and reproducible manner it is advisable to use a pipeline system. MethylStar is a comprehensive, fast and flexible pipeline specifically suited for processing large amounts of BS-Seq datasets.
 
