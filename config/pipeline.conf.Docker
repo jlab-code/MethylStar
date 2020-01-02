@@ -32,7 +32,7 @@ n_th=16
 [Bismark]
 bismark_path=/home/software/Bismark-0.20.1
 samtools_path=/home/software/samtools/bin/samtools
-bedtools_path=/bin/bedtools
+bedtools_path=/usr/bin/bedtools
 modified_time=1539787258
 bis_parallel=4
 Nthreads=2
