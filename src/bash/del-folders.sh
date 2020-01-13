@@ -3,7 +3,7 @@ curr_dir="$(dirname "$0")"
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
 . $curr_dir/tmp.conf;
 
-rem=$(find / -name "*.*" -type f -delete)
+rem=$(find $result_pipeline/ -name "*.*" -type f -delete)
 com=$(sed -i "s/st_methimpute=.*/st_methimpute=0/g" config/pipeline.conf)
 com=$(sed -i "s/st_trim=.*/st_trim=0/g" config/pipeline.conf)
 com=$(sed -i "s/st_fastq=.*/st_fastq=0/g" config/pipeline.conf)
