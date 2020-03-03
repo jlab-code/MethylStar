@@ -13,6 +13,7 @@ def info_bismark_mapper():
     s = gcolor("Configuration summary: \n")+\
         "" + "\n"\
     "- Bismark location: " + mcolor(read_config("Bismark", "bismark_path")) + "\n" \
+    "   -- scBS-Seq (--pbat)?" + mcolor(true_false_fields_config(read_config("Bismark", "single_cell")))+"\n"\
     "   -- Nucleotide: " + mcolor(true_false_fields_config(read_config("Bismark", "nucleotide"))) + "\n" \
     "   -- Buffer size: " +  mcolor(read_config("Bismark", "buf_size")) + "\n" \
     "   -- Number of Parallel: " + mcolor(read_config("Bismark", "bis_parallel")) + " \n" \
@@ -45,7 +46,7 @@ def run():
         subprocess.call(['./src/bash/path-export.sh'])
         subprocess.call(['./src/bash/pre-bismark.sh'])
 
-        if (read_config("GENERAL", "genome_type")=="scBS-Seq"):
+        if (read_config("Bismark", "single_cell")=="true"):
 
             subprocess.call(['./src/bash/bismark-mapper-scBS-Seq.sh'])
         else:

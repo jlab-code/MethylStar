@@ -43,7 +43,7 @@ run_pair_bismark=true
 deduplicate=-p
 methextractor=-p
 del_inter_file=true
-
+single_cell=false
 [STATUS]
 quickrun=0
 st_prep=0

@@ -53,9 +53,9 @@ if $parallel_mode; then
 			. "$1"
 			instart=$(date +%s)
 			echo "Running Bismark meth extractor for $2" 2>&1 | tee -a $tmp_clog/bismark-meth-extract.log
-			tmp=$(echo $2 | sed 's/.*\///')
+			tmp=$(echo "$2" | sed 's/.*\///')
 			label=$(echo ${tmp%%.*})
-	        bis_extractor=$($bismark_path/bismark_methylation_extractor $deduplicate  --bedGraph --CX --cytosine_report --parallel $bis_parallel --buffer_size $buf_size"G" --genome_folder $genome_ref $2 -o $tmp_dme/ 2>&1 | tee -a $tmp_dme/$label.log )
+	        bis_extractor=$($bismark_path/bismark_methylation_extractor $deduplicate  --bedGraph --CX --cytosine_report --parallel $bis_parallel --buffer_size $buf_size"G" --genome_folder $genome_ref "$2" -o $tmp_dme/ 2>&1 | tee -a $tmp_dme/$label.log )
 			#cat  $tmp_dme/$label.deduplicated_splitting_report.txt 2>&1 | tee -a $tmp_clog/bismark-meth-extract.log
 			echo $2 >> $tmp_dme/list-finished.lst;
 			echo "-- Moving Cx-reports to the $tmp_cx_report folder." 

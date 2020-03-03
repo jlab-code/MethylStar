@@ -708,6 +708,18 @@ def bismark_path():
         message(2, "Something is going wrong... please run again. ")
 
     '''
+        Single cell
+    '''
+    title("Run with scBS-Seq (--pbat)? ")
+    if confirm("Bismark", "single_cell", 3):
+        val = en_di()
+        replace_config("Bismark", "single_cell", val)
+        message(4, "--> Configuration updated!")
+    else:
+        pass
+
+
+    '''
         Sets the number of parallel instances of Bismark to be run concurrently
     '''
     title("Configuration part for Bismark Parallel")
@@ -1021,6 +1033,7 @@ def show_config():
 
     print "- QC-Fastq path: "+ mcolor(read_config("GENERAL", "fastq_path"))
     print "- Bismark parameters: "+ mcolor(read_config("Bismark", "bismark_path"))
+    print "     -- scBS-Seq (--pbat)? " + mcolor(true_false_fields_config(read_config("Bismark", "single_cell")))
     print "     -- Nucleotide status: " + mcolor(read_config("Bismark", "nucleotide"))
     print "     -- Number of Parallel: " + mcolor(read_config("Bismark", "bis_parallel"))+" Threads."
     print "     -- Buffer size: " + mcolor(read_config("Bismark", "buf_size"))+" Gigabyte."
