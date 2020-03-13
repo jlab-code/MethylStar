@@ -24,8 +24,6 @@ done < $input;
 
 #-------------------------------------------------------------------------------
 #changing directory to write in folder path
-#tmp_path=$tmp_bismap/
-#cd "${tmp_path%/*}"
 echo -e "Genome Type: $genome_type \n"
 #-------------------------------------------------------------------------------
 # start to run bismark mapper
@@ -38,7 +36,7 @@ if $parallel_mode; then
 				tmp_path=$tmp_bismap/
 				cd "${tmp_path%/*}"
 
-				label= $(echo ${2%%.*} |sed 's/.*\///')
+				label=$(echo ${2%%.*} |sed 's/.*\///')
 				echo $label
 				if $nucleotide; then
 					echo "-- Nucleotide coverage is enabled." 
@@ -60,6 +58,8 @@ if $parallel_mode; then
 
 
 	else
+		tmp_path=$tmp_bismap/
+		cd "${tmp_path%/*}"
 		totaltime=0
 		for fq in "${arr[@]}"
 			do
