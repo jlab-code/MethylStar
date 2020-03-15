@@ -40,18 +40,18 @@ def __update__():
 
     cmd = 'wget -O '+user+'/tmpMeth.zip '+' https://github.com/jlab-code/MethylStar/archive/master.zip'
     unzip ='unzip -o '+user+'/tmpMeth.zip ' + '-d '+user+'/'
-    rename='mv '+user+'/MethylStar-master '+ user+'/tmpMtlStar'
+    #rename='mv '+user+'/MethylStar-master '+ user+'/tmpMtlStar'
     
     try:
         subprocess.call(cmd, shell=True)
         subprocess.call(unzip, shell=True)
-        subprocess.call(rename, shell=True)
+        #subprocess.call(rename, shell=True)
     except Exception as e:
         logging.error(traceback.format_exc())
         message(2, "Something is going wrong... please run again. ")
 
     # checking version
-    newConfig = user+'/tmpMtlStar/config/pipeline.conf'
+    newConfig = user+'/MethylStar-master/config/pipeline.conf'
     newVer = read_config_new("GENERAL", "currversion", newConfig)
 
     if currversion == newVer:
@@ -69,11 +69,11 @@ def __update__():
                     rm = "rm " + newConfig + ".Docker"
                     subprocess.call(rm, shell=True)
 
-                cmd = "cp -rf " + user + "/tmpMtlStar/*" + " " + cwd
+                cmd = "cp -rf " + user + "/MethylStar-master/*" + " " + cwd
                 subprocess.call(cmd, shell=True)
                 # ------------- remove files
                 rm = "rm -r "+user+"/tmpMeth.zip"
-                #subprocess.call(rm, shell=True)
+                subprocess.call(rm, shell=True)
                 # --------------------------
                 print(ycolor("Restarting MethylStar ...\n"))
                 print(qucolor("MethylStar updated. The new version is: "+newVer)+"\n")
