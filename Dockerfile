@@ -144,8 +144,8 @@ RUN mkdir -p /home/shared/reference_genome
 RUN chown -R root:root /home/shared/reference_genome
 RUN chmod ugo+rxw -R /home/shared/reference_genome
 
-#RUN wget http://10.162.143.56/refgenome/TAIR10_chr_all.fa
-RUN wget http://jlabdata.org/refgenome/TAIR10_chr_all.fa
+RUN wget http://10.162.143.56/refgenome/TAIR10_chr_all.fa
+#RUN wget http://jlabdata.org/refgenome/TAIR10_chr_all.fa
 RUN chmod +x TAIR10_chr_all.fa
 RUN mv TAIR10_chr_all.fa /home/shared/reference_genome
 

@@ -12,7 +12,7 @@ import subprocess
 import shutil
 import pwd
 
-from src.py.pipeline import rcolor, ycolor, qucolor
+from src.py.pipeline import rcolor, ycolor, qucolor,mcolor
 # Main definition - constants
 menu_actions = {}
 

@@ -57,8 +57,8 @@ def conf_menu():
     print ycolor("\t7.")+" Methimpute parameters"
     print ycolor("\t8.")+" Parallel mode"
     print ycolor("\t9.") + " E-mail notification"
-    print ycolor("\t10.")+" See configured parameters"
-
+    print ycolor("\t10.")+" See configured parameters\n"
+    print(qucolor("\tU.")+" Update MethylStar")
     print rcolor("B.")+" Back to main Menu\n"
     choice = raw_input(">>  ")
     exec_menu(choice)
@@ -1056,10 +1056,14 @@ def show_config():
     print "- E-mail notification: " + mcolor(true_false_fields_config(read_config("EMAIL", "active")))
     if (read_config("EMAIL", "active") == "true"):
         print "     -- E-mail address: " + mcolor(read_config("EMAIL", "email_rec"))
-
+    print "- MethylStar version: " + mcolor(read_config("GENERAL", "currversion"))
     message(0, "...")
 
 
+def update():
+    from src.py.part_update import __update__
+    __update__()
+    message(0, "Update canceled")
 
 # Back program
 def exit():
@@ -1080,7 +1084,8 @@ menu_act = {
     '7': methimpute,
     '8': parallel_mode,
     '9': email,
-    '10':show_config,
+    '10': show_config,
+    'u': update,
     'b': exit,
 }
 
