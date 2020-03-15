@@ -1063,7 +1063,6 @@ def show_config():
 def update():
     from src.py.part_update import __update__
     __update__()
-    message(0, "Update canceled")
 
 # Back program
 def exit():

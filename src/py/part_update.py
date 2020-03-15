@@ -55,7 +55,7 @@ def __update__():
     newVer = read_config_new("GENERAL", "currversion", newConfig)
 
     if currversion == newVer:
-        message(0, "The version of MethylStar is up-to-date.")
+        print(mcolor("The version of MethylStar is up-to-date."))
     else:
         print(mcolor("The new version of MethylStar is available.\n"))
         answer = query_yes_no("Do you want to update?", None)
@@ -82,4 +82,5 @@ def __update__():
                 logging.error(traceback.format_exc())
                 message(2, "Something is going wrong... please run again. ")
         else:
-            pass
+            message(0, "Update canceled")
+    message(0, ".....")
