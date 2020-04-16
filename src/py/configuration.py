@@ -706,6 +706,16 @@ def bismark_path():
     except Exception as e:
         logging.error(traceback.format_exc())
         message(2, "Something is going wrong... please run again. ")
+    
+
+    title("Running Bismark with paired-end files? pair_1 with unpaired_1 & paired_2 with unpaired_2\n")
+    message(4," ** if you disable then bismark will run pair1 with pair2 and will ignore all unpaired. **\n")
+    if confirm("Bismark", "run_pair_bismark", 3):
+	    val = en_di()
+	    replace_config("Bismark", "run_pair_bismark", val)
+	    message(4, "--> Configuration updated!")
+    else:
+	    pass 
 
     '''
         Single cell
@@ -718,6 +728,24 @@ def bismark_path():
     else:
         pass
 
+    if (read_config("Bismark", "single_cell") == "true"):
+        message(4, "\n\t**** A library can only be specified to be either PBAT-Seq library (default) or non-directional .  ***")
+        if confirm("Bismark", "directional", 3):
+        	sys.stdout.write(ycolor("1") + "- Default \n")
+        	sys.stdout.write(ycolor("2") + "- --non_directional\n")
+        	val = inputNumber("\nPlease enter the number to select:")
+        	while not int(val) in range(1, 3):
+        		val = inputNumber("Please enter the valid number:")
+
+        	if int(val)==2:
+        		txt="--non_directional"
+        	else:
+        		txt=""
+        	
+        	replace_config("Bismark", "directional", txt)
+        	message(4, "--> Configuration updated!")
+    else:
+    	replace_config("Bismark", "directional", "")
 
     '''
         Sets the number of parallel instances of Bismark to be run concurrently
@@ -1034,6 +1062,13 @@ def show_config():
     print "- QC-Fastq path: "+ mcolor(read_config("GENERAL", "fastq_path"))
     print "- Bismark parameters: "+ mcolor(read_config("Bismark", "bismark_path"))
     print "     -- scBS-Seq (--pbat)? " + mcolor(true_false_fields_config(read_config("Bismark", "single_cell")))
+    if (read_config("Bismark", "single_cell") == "true"):
+    	if (read_config("Bismark", "directional")==''):
+    		txt="directional"
+    	else:
+    		txt=read_config("Bismark", "directional")
+    	print "     	-- directional status: " + mcolor(txt)
+
     print "     -- Nucleotide status: " + mcolor(read_config("Bismark", "nucleotide"))
     print "     -- Number of Parallel: " + mcolor(read_config("Bismark", "bis_parallel"))+" Threads."
     print "     -- Buffer size: " + mcolor(read_config("Bismark", "buf_size"))+" Gigabyte."

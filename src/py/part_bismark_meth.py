@@ -49,6 +49,10 @@ def run_bimark_meth():
         else:
             replace_config("Bismark", "methextractor", "-s")
 
+
+        if (read_config("GENERAL", "genome_type") == "scBS-Seq" or read_config("Bismark", "single_cell") == "true"):
+            replace_config("Bismark", "methextractor", "-s")
+
         if confirm_run():
             print qucolor("\nRunning Bismark Meth Extractor ...")
             subprocess.call(['./src/bash/path-export.sh'])

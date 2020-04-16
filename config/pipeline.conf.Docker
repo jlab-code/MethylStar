@@ -45,6 +45,8 @@ deduplicate=-p
 methextractor=-p
 del_inter_file=true
 single_cell=false
+directional=
+
 [STATUS]
 quickrun=0
 st_prep=0
