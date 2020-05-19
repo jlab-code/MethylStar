@@ -1,7 +1,7 @@
 Installation and Configuration MethylStar
 ================
 
-###### *last update: 16-April-2020*
+###### *last update: 19-May-2020*
 
 MethylStar is based on several softwares/tools therefore, it is necessary to have all dependencies to be pre-installed in your system and available in the PATH ( [A. Standard installation](#standard) ) or it can be installed as a docker image ( [B. Installation using docker](#docker) ). 
 
@@ -21,23 +21,27 @@ It is highly recommended to use a docker image as it simplifies the process of m
 
 Before running MethylStar, you will need to install or check the installation of several packages.
 
-##### Step A.1 — Installing Software
+##### Step A.1 — Installing Software (tested version with MethylStar)
 
 - Python Ver.2 and R > 3.5.x
     
-- FastQC (Ver. > 0.11.X  ) - https://github.com/s-andrews/FastQC  
+- FastQC (Ver. > 0.11.X  ) - https://github.com/s-andrews/FastQC	Download: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.8.zip
     
-- Trimmomatic (Ver. > 0.38) - http://www.usadellab.org/cms/?page=trimmomatic
+- Trimmomatic (Ver. > 0.38) - http://www.usadellab.org/cms/?page=Trimmomatic    Download: http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-Src-0.39.zip
     
-- Bismark (Ver. > 0.19 ) - https://github.com/FelixKrueger/Bismark
+- Bismark (Ver. > 0.19.1 ) - https://github.com/FelixKrueger/Bismark	Download: https://github.com/FelixKrueger/Bismark/archive/0.19.1.tar.gz
     
-- METHimpute (Ver. > 1.6 ) - https://github.com/ataudt/methimpute
+- METHimpute (Ver. > 1.6 ) - https://github.com/ataudt/methimpute      In R use: BiocManager::install("methimpute")
     
-- Samtools (Ver. > 1.9 ) - https://github.com/samtools/samtools.git 
+- Samtools (Ver. > 1.9 ) - https://github.com/samtools/samtools.git    Download: https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
     
-- bowtie2 (Ver. >  2.3.X ) - https://github.com/BenLangmead/bowtie2
+- bowtie2 (Ver. >  2.3.X ) - https://github.com/BenLangmead/bowtie2    Download: https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip
 
+- BCF Tools (Ver.1.19 ) - Download https://github.com/samtools/bcftools/releases/download/1.9/bcftools-1.9.tar.bz2
 
+- Htslib (Ver.1.9 ) - Download https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2 
+
+We are testing MethylStar every month with the new version of software to make sure the stability and compatibility.
 
 ##### Step A.2 — Download MethylStar folder from github
 
