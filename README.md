@@ -33,9 +33,8 @@ Here our pipeline comprises of custom bash scripts together with pre-installed s
 
 1. [Installation and Configuration](docs/installation.md)
 2. [Running The Pipeline](docs/runPipeline.md)
-3. <a name="standard">[MethylStar tutorial](https://www.youtube.com/watch?v=ll8mbPjVwnM)
+3. [MethylStar tutorial on YouTube](https://www.youtube.com/watch?v=ll8mbPjVwnM)
 <!-- 5. [FAQs](docs/faq.md) --->
-
 
 ### Contributors:
 
