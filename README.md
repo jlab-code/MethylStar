@@ -35,7 +35,7 @@ In its current implementation, MethylStar comprises of the following core NGS co
 
 1. [Installation and Configuration](docs/installation.md)
 2. [Running The Pipeline](docs/runPipeline.md)
-3. [MethylStar tutorial on YouTube](https://www.youtube.com/watch?v=ll8mbPjVwnM)
+3. [MethylStar tutorial on YouTube](#MethylStar_tutorial_on_YouTube)<a name="MethylStar_tutorial_on_YouTube"> (https://www.youtube.com/watch?v=ll8mbPjVwnM)
 <!-- 5. [FAQs](docs/faq.md) --->
 
 ### Contributors:
