@@ -49,6 +49,10 @@ Before running MethylStar, you will need to install or check the installation of
 	
 	Download: https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip
 
+- bedtools (Ver. >  2.29.X ) - https://bedtools.readthedocs.io/en/latest/
+	
+	In Ubuntu: sudo apt-get install bedtools
+	
 - (optional) BCF Tools (Ver.1.19 )
 
 	Download https://github.com/samtools/bcftools/releases/download/1.9/bcftools-1.9.tar.bz2
