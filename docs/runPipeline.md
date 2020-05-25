@@ -244,7 +244,18 @@ Methimpute implements a HMM-based binomial test for methylation status calling. 
 The following settings can be edited by typing [y/n].
 
 - Run model with Intermediate status of Cytosines. Cytosines will be assigned as Methylated, Intermediate and Unmethylated.
-- Methylation level around Genes and transposable elements will be plotted
+- Methylation level around Genes and transposable elements will be plotted.
+For *Arabidopsis thaliana* we have already provided the Annotation for genes (genes.RData) and TEs (TEs.RData). For any other species, users need to supply the .RData files for generating metaplots. These ".RData" files can be generated from annotation files (.gff3) with the following sample code in R.
+```
+library(rtracklayer)
+file <- "/PATH/TO/MyGffFile.gff3"
+mygff <- import.gff3(file, colnames=c("type", "ID"))
+gene.idx <- which(elementMetadata(mygff)[,"type"] == "gene")
+genes <- mygff[gene.idx,]
+names(genes) <- elementMetadata(genes)$ID
+save(genes, file="/MethylStar/bindata/genes.RData")
+```
+NOTE 1: These ".RData" should be copy into /MethylStar/bindata/ directory. (replace with existing files)
 
 ```
 7. Methimpute parameters

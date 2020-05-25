@@ -852,6 +852,11 @@ def en_di():
 
 
 def methimpute():
+    if read_config("GENERAL", "genome_type") !="Arabidopsis":
+        s = "\nWARNING: \nCurrently, default genome is NOT A. thaliana, However, if your genome is Human or any other genome.\n" 
+        s += "Please supply .RData files for generation of metaplots for genes and TEs.\n"
+        s += "Check manual https://github.com/jlab-code/MethylStar/blob/master/docs/runPipeline.md for more info.\n"
+        print(ycolor (s))
     try:
         title("Include Intermediate status")
         if confirm("Methimpute", "intermediate", 3):
