@@ -255,7 +255,7 @@ genes <- mygff[gene.idx,]
 names(genes) <- elementMetadata(genes)$ID
 save(genes, file="/MethylStar/bindata/genes.RData")
 ```
-NOTE 1: These ".RData" should be copy into /MethylStar/bindata/ directory. (replace with existing files)
+NOTE 1: These ".RData" should be copy into "/MethylStar/bindata/" directory. (replace with existing files)
 
 ```
 7. Methimpute parameters
