@@ -37,6 +37,7 @@ In its current implementation, MethylStar comprises of the following core NGS co
 2. [Running The Pipeline](docs/runPipeline.md)
 3. [MethylStar tutorial on YouTube](#MethylStar_tutorial_on_YouTube)<a name="MethylStar_tutorial_on_YouTube"> (https://www.youtube.com/watch?v=ll8mbPjVwnM)
 <!-- 5. [FAQs](docs/faq.md) --->
+4. [Published paper - BMC Genomics](https://rdcu.be/b751i)
 
 ### Contributors:
 
