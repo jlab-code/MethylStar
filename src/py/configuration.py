@@ -792,12 +792,50 @@ def bismark_path():
 
     else:
         pass
-
+    
+    samtoolsCheck()
     bedtoolsCheck()
 
     message(0, "Configuration updated for Bismark Mapper!")
 
 
+def samtoolsCheck():
+    try:
+        title("Please specify the samtools path")
+        if read_config("Bismark", "samtools_path").replace(" ", "") == '':
+            location_bis = subprocess.check_output(['which', 'samtools'])
+            detected = True
+        else:
+            location_bis = read_config("Bismark", "samtools_path")
+            print "You set the location to: " + mcolor(location_bis)
+            detected = False
+        if location_bis != None:
+            if detected:
+                print "Detected samtools program in location: " + mcolor(location_bis)
+            answer = query_yes_no("Do you want to change the location?", None)
+            if answer:
+                location_bis = raw_input("Please enter the samtools file location: ")
+                while not (os.path.isfile(location_bis)):
+                    message(1, "The file does not exist!")
+                    location_bis = raw_input("Please try again: ")
+                replace_config("Bismark", "samtools_path", location_bis)
+                message(4, "--> Configuration updated!")
+            else:
+                replace_config("Bismark", "samtools_path", location_bis)
+                message(3, "We will keep the default value!")
+    except subprocess.CalledProcessError:
+        message(1, "It seems you don't have samtools in your PATH")
+        bismark = raw_input("Please enter the samtools file location: ")
+        while not (os.path.isfile(bismark)):
+            message(1, "The file does not exist!")
+            bismark = raw_input("Please try again: ")
+        replace_config("Bismark", "samtools_path", bismark)
+        message(4, "--> Configuration updated!")
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        message(2, "Something is going wrong... please run again. ")
+
+	
 def bedtoolsCheck():
     try:
         title("Please specify the bedtools path")
@@ -1078,6 +1116,7 @@ def show_config():
     print "     -- Number of Parallel: " + mcolor(read_config("Bismark", "bis_parallel"))+" Threads."
     print "     -- Buffer size: " + mcolor(read_config("Bismark", "buf_size"))+" Gigabyte."
     print "     -- Samtools Path: " + mcolor(read_config("Bismark", "samtools_path"))
+    print "     -- Bedtools Path: " + mcolor(read_config("Bismark", "bedtools_path"))
     print "     -- Intermediate for MethExtractor: " +mcolor(true_false_fields_config(read_config("Bismark", "intermediate_files")))
     print "- Methylation extraction parameters( Only for quick run)"
     print "     -- Minimum read coverage: " + mcolor(read_config("Methimpute", "mincov"))
