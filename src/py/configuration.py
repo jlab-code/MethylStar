@@ -219,7 +219,7 @@ def raw_dataset():
         if confirm("GENERAL", "raw_dataset", 3):
                 response = raw_input("\nPlease enter the RAW files directory: ")
                 while not (os.path.isdir(response)):
-                    message(1, "The directory is not exist!.")
+                    message(1, "The directory does not exist!")
                     response = raw_input("Please enter the RAW files directory: ")
                 stored_place['raw_dataset'] = response
                 # check if there is files & give the directory size
@@ -252,7 +252,7 @@ def raw_dataset():
             sys.stdout.write(ycolor("2") + "- You have files in Pairs-end case.\n")
             file_mode = inputNumber("\nPlease enter the number to select:")
             while not int(file_mode) in range(1, 3):
-                file_mode = inputNumber("Please enter the valid number:")
+                file_mode = inputNumber("Please enter a valid number:")
 
             if int(file_mode) == 1:
                 pairStatus=False
@@ -270,12 +270,12 @@ def raw_dataset():
             print(mcolor("You can select from default options: "))
             sys.stdout.write(ycolor("1- ") + "XXX"+ycolor("_[1-2].fq.gz")+" format.\n")
             sys.stdout.write(ycolor("2- ") + "XXX"+ycolor("_[1-2].fastq.gz")+" format.\n")
-            answer = query_yes_no("Do you want to choice from menu above?", None)
+            answer = query_yes_no("Do you want to choose from menu above?", None)
 
             if answer:
                 response = inputNumber("\nPlease enter the number to select: ")
                 while not int(response) in range(1, 3):
-                    response = inputNumber("Please enter the valid number: ")
+                    response = inputNumber("Please enter a valid number: ")
 
                 if int(response) == 1:
                     pattern_one ="_1.fq.gz"
@@ -304,7 +304,7 @@ def raw_dataset():
             secd_pairs=sorted(secd_pairs)
             for item in range(len(first_pairs)):
                 print first_pairs[item] + "\t\t" + secd_pairs[item]
-            print ycolor("\nPlease check the pairs that listed correctly, otherwise give the different pattern.")
+            print ycolor("\nPlease check if the pairs are listed correctly, otherwise give a different pattern.")
 
 
         else:
@@ -350,8 +350,8 @@ def result_pipeline():
 
             print "-----" * 20
             print "\nYou have " + mcolor(size[0]) + " M.byte free space in your disk."
-            print "The list bellow is recommendation to have Free space in your disk."
-            print "(This calculation based on your data-set size.)"
+            print "The list bellow is a recommendation to have free space in your disk."
+            print "(This calculation is based on your data-set size.)"
             print "\nFree space for Trimmomatic part: " + mcolor(round(per_file * number_of_dataset * 1.2)) + " Gig."
             print "Free space for QC-Fastq-report: " + mcolor(round(2 * number_of_dataset)) + " MB."
             print "Free space for Bismark Mapper part: " + mcolor(round(per_file * number_of_dataset * 1.8)) + " Gig."
@@ -386,7 +386,7 @@ def genome_ref():
             print "(We will generate the Bisulfite_Genome folder inside this folder.)\n"
             response = raw_input(">> ")
             while not (os.path.isdir(response)):
-                message(1, "The directory is not exist!.")
+                message(1, "The directory does not exist!")
                 response = raw_input("Please specify a reference genome location:")
             stored_place['genome_ref'] = response
             # call immediately after folder to ask file
@@ -409,7 +409,7 @@ def genome_name():
     onlyfiles = [f for f in listdir(di_tosearch) if isfile(join(di_tosearch, f))]
 
     if len(onlyfiles) == 0:
-        message(1, "Could't find any Reference file under "+di_tosearch+" folder.")
+        message(1, "Couldn't find any Reference file under the "+di_tosearch+" folder.")
         message(2, "Please, copy Ref. genome into "+di_tosearch+" and re-config again.")
 
     else:
@@ -418,7 +418,7 @@ def genome_name():
             sys.stdout.write(ycolor(str(onlyfiles.index(file)))+" : "+file+"\n")
         response = inputNumber("\nPlease enter the number to select: ")
         while not int(response) in range(0, len(onlyfiles)):
-            response = inputNumber("Please enter the valid number: ")
+            response = inputNumber("Please enter a valid number: ")
 
         response = onlyfiles[int(response)]
         replace_config("GENERAL", "genome_ref", di_tosearch)
@@ -435,7 +435,7 @@ def genome_type():
 
     response = inputNumber("\nPlease enter the number to select:")
     while not int(response) in range(0, len(list_gen)):
-        response = inputNumber("Please enter the valid number:")
+        response = inputNumber("Please enter a valid number:")
 
     response = list_gen[int(response)]
     replace_config("GENERAL", "genome_type", response)
@@ -451,7 +451,7 @@ def trimmomatic():
         if confirm("Trimmomatic", "trim_path", 3):
             response = raw_input("Please enter the Trimmomatic location: ")
             while not (os.path.isdir(response)):
-                message(1, "The directory is not exist!.")
+                message(1, "The directory does not exist!")
                 response = raw_input("Please enter the Trimmomatic location:")
 
             # searching for jar file!
@@ -488,7 +488,7 @@ def trimmomatic():
 
                 response = inputNumber("\nPlease enter the number to select:")
                 while not int(response) in range(0, len(list_adaptors)):
-                    response = inputNumber("Please enter the valid number:")
+                    response = inputNumber("Please enter a valid number:")
 
                 response = list_adaptors[int(response)]
 
@@ -507,7 +507,7 @@ def trimmomatic():
                 sys.stdout.write(ycolor("2")+"-Paired-End\n")
                 end_mode = inputNumber("\nPlease enter the number to select:")
                 while not int(end_mode) in range(1, 3):
-                    end_mode = inputNumber("Please enter the valid number:")
+                    end_mode = inputNumber("Please enter a valid number:")
                 mode = ""
                 if int(end_mode) == 1:
                     mode = "SE"
@@ -582,7 +582,7 @@ def trimmomatic():
                 '''
                 Number of thread to process. there is a default value.
                 '''
-                number_thread = inputNumber("\nPlease enter the number of thread:")
+                number_thread = inputNumber("\nPlease enter the number of threads:")
                 replace_config("Trimmomatic", "n_th", number_thread)
 
         else:
@@ -609,7 +609,7 @@ def java_check():
             if answer:
                 location = raw_input("Please enter the Java location: ")
                 while not (os.path.isfile(location)):
-                    message(1, "Couldn't find any java program!.")
+                    message(1, "Couldn't find any java program!")
                     location = raw_input("Please try again: ")
                 replace_config("Trimmomatic", "java_path", location)
             else:
@@ -617,7 +617,7 @@ def java_check():
                 stored_place['java_path'] = location
 
     except subprocess.CalledProcessError:
-        message(1, "\nIt seems you don't have Java in your PATH, Please install and export to the your PATH.")
+        message(1, "\nIt seems you don't have Java in your PATH, Please install and export to your PATH.")
         message(4, "Tip: you can export with following command.[ export PATH=JAVA_LOCATION/java:$PATH ]")
     except Exception as e:
         logging.error(traceback.format_exc())
@@ -644,7 +644,7 @@ def fastq_path():
             if answer:
                 location = raw_input("Please enter the FastQC location: ")
                 while not (os.path.isfile(location)):
-                    message(1, "Fastq file not found!.")
+                    message(1, "FastQC file not found!")
                     location = raw_input("Please try again: ")
                 replace_config("GENERAL", "fastq_path", location)
             else:
@@ -652,10 +652,10 @@ def fastq_path():
                 stored_place['fastq_path'] = location
 
     except subprocess.CalledProcessError:
-        message(1, "It seems you don't have FastQc in your PATH")
+        message(1, "It seems you don't have FastQC in your PATH")
         fastq = raw_input("Please enter the FastQC location: ")
         while not (os.path.isdir(fastq)):
-            message(1, "The directory is not exist!.")
+            message(1, "The directory does not exist!")
             fastq = raw_input("Please try again: ")
         replace_config("GENERAL", "fastq_path", fastq)
 
@@ -688,7 +688,7 @@ def bismark_path():
             if answer:
                 location_bis = raw_input("Please enter the Bismark location: ")
                 while not (os.path.isdir(location_bis)):
-                    message(1, "The directory is not exist!.")
+                    message(1, "The directory does not exist!")
                     location_bis = raw_input("Please try again: ")
                 replace_config("Bismark", "bismark_path", location_bis)
                 message(4, "--> Configuration updated!")
@@ -699,7 +699,7 @@ def bismark_path():
         message(1, "It seems you don't have Bismark in your PATH")
         bismark = raw_input("Please enter the Bismark location: ")
         while not (os.path.isdir(bismark)):
-            message(1, "The directory is not exist!.")
+            message(1, "The directory does not exist!")
             bismark = raw_input("Please try again: ")
         replace_config("Bismark", "bismark_path", bismark)
         message(4, "--> Configuration updated!")
@@ -729,13 +729,13 @@ def bismark_path():
         pass
 
     if (read_config("Bismark", "single_cell") == "true"):
-        message(4, "\n\t**** A library can only be specified to be either PBAT-Seq library (default) or non-directional .  ***")
+        message(4, "\n\t**** A library can only be specified to be either PBAT-Seq library (default) or non-directional.  ***")
         if confirm("Bismark", "directional", 3):
         	sys.stdout.write(ycolor("1") + "- Default \n")
         	sys.stdout.write(ycolor("2") + "- --non_directional\n")
         	val = inputNumber("\nPlease enter the number to select:")
         	while not int(val) in range(1, 3):
-        		val = inputNumber("Please enter the valid number:")
+        		val = inputNumber("Please enter a valid number:")
 
         	if int(val)==2:
         		txt="--non_directional"
@@ -775,13 +775,13 @@ def bismark_path():
         Sets nucleotide !
     '''
     title("Configuration part for Bismark Nucleotide")
-    message(4, "\t**** To change the Nucleotide report option please Enable it.***")
+    message(4, "\t**** To change the Nucleotide report option please Enable it. ***")
     if confirm("Bismark", "nucleotide", 3):
         sys.stdout.write(ycolor("\n1")+"-Enable this option.\n")
         sys.stdout.write(ycolor("2")+"-Disable this option.\n")
         nu_mode = inputNumber("Please enter the number to select:")
         while not int(nu_mode) in range(1, 3):
-            nu_mode = inputNumber("Please enter the valid number:")
+            nu_mode = inputNumber("Please enter a valid number:")
 
         if int(nu_mode)==1:
             mode="true"
@@ -800,7 +800,7 @@ def bismark_path():
 
 def bedtoolsCheck():
     try:
-        title("Please please specify the bedtools path")
+        title("Please specify the bedtools path")
         if read_config("Bismark", "bedtools_path").replace(" ", "") == '':
             location_bis = subprocess.check_output(['which', 'bedtools'])
             detected = True
@@ -810,12 +810,12 @@ def bedtoolsCheck():
             detected = False
         if location_bis != None:
             if detected:
-                print "Detected Bedtools program in location: " + mcolor(location_bis)
+                print "Detected bedtools program in location: " + mcolor(location_bis)
             answer = query_yes_no("Do you want to change the location?", None)
             if answer:
                 location_bis = raw_input("Please enter the bedtools file location: ")
                 while not (os.path.isfile(location_bis)):
-                    message(1, "The file is not exist!.")
+                    message(1, "The file does not exist!")
                     location_bis = raw_input("Please try again: ")
                 replace_config("Bismark", "bedtools_path", location_bis)
                 message(4, "--> Configuration updated!")
@@ -823,10 +823,10 @@ def bedtoolsCheck():
                 replace_config("Bismark", "bedtools_path", location_bis)
                 message(3, "We will keep the default value!")
     except subprocess.CalledProcessError:
-        message(1, "It seems you don't have Bedtools in your PATH")
-        bismark = raw_input("Please enter the Bedtools file location: ")
+        message(1, "It seems you don't have bedtools in your PATH")
+        bismark = raw_input("Please enter the bedtools file location: ")
         while not (os.path.isfile(bismark)):
-            message(1, "The file is not exist!.")
+            message(1, "The file does not exist!")
             bismark = raw_input("Please try again: ")
         replace_config("Bismark", "bedtools_path", bismark)
         message(4, "--> Configuration updated!")
@@ -841,7 +841,7 @@ def en_di():
     sys.stdout.write(ycolor("2") + "- Disable this option.\n")
     nu_mode = inputNumber("Please enter the number to select:")
     while not int(nu_mode) in range(1, 3):
-        nu_mode = inputNumber("Please enter the valid number:")
+        nu_mode = inputNumber("Please enter a valid number:")
 
     if int(nu_mode) == 1:
         mode = "true"
@@ -853,7 +853,7 @@ def en_di():
 
 def methimpute():
     if read_config("GENERAL", "genome_type") !="Arabidopsis":
-        s = "\nWARNING: \nCurrently, default genome is NOT A. thaliana, However, if your genome is Human or any other genome.\n" 
+        s = "\nWARNING: \nCurrently, genome is NOT A. thaliana, however, your genome is human or any other genome.\n" 
         s += "Please supply .RData files for generation of metaplots for genes and TEs.\n"
         s += "Check manual https://github.com/jlab-code/MethylStar/blob/master/docs/runPipeline.md for more info.\n"
         print(ycolor (s))
@@ -869,7 +869,7 @@ def methimpute():
 
                 val = inputNumber("\nPlease enter the number to select:")
                 while not int(val) in range(1, 3):
-                    val = inputNumber("Please enter the valid number:")
+                    val = inputNumber("Please enter a valid number:")
 
                 if int(val) == 1:
                     val = "independent"
@@ -900,7 +900,7 @@ def methimpute():
         else:
             pass
 
-        title("Output full report (Genes,TEs)")
+        title("Output full report (Genes, TEs)")
         if confirm("Methimpute", "full_report", 3):
             val = en_di()
             replace_config("Methimpute", "full_report", val)
@@ -918,7 +918,7 @@ def methimpute():
             sys.stdout.write(ycolor("4") + " - CHH\n")
             val = inputNumber("\nPlease enter the number to select:")
             while not int(val) in range(1, 5):
-                val = inputNumber("Please enter the valid number:")
+                val = inputNumber("Please enter a valid number:")
 
             if int(val) == 1:
                 val="All"
@@ -961,21 +961,21 @@ def parallel_mode():
                 location = subprocess.check_output(['which', 'parallel'])
                 print "Detected Parallel program in location: " + mcolor(location)
 
-                sys.stdout.write(ycolor("1") + "- Automatic optimize parallel based on system resources (Recommended)\n")
+                sys.stdout.write(ycolor("1") + "- Automatically optimize parallel based on system resources (recommended)\n")
                 sys.stdout.write(ycolor("2") + "- Manually set number of parallel \n")
                 sys.stdout.write(ycolor("3") + "- Disable parallel mode \n")
 
                 pa_mode = inputNumber("\nPlease enter the number to select: ")
                 while not int(pa_mode) in range(1, 4):
-                    pa_mode = inputNumber("Please enter the valid number: ")
+                    pa_mode = inputNumber("Please enter a valid number: ")
 
                 user_input = 0
                 if pa_mode == 1:
                     print "Selected Auto parallel optimization mode."
                 elif pa_mode == 2:
-                     print(ycolor("\nWARNING: large Number of Parallel it would be crash the processing.\n"))
-                     print(ycolor("Please read the documentation before using Parallel manually.\n"))
-                     user_input = inputNumber("\nPlease set the number of Jobs: ")
+                     print(ycolor("\nWARNING: a large number of parallel could crash the processing.\n"))
+                     print(ycolor("Please read the documentation before using parallel manually.\n"))
+                     user_input = inputNumber("\nPlease set the number of jobs: ")
 
                 if pa_mode == 3:
                     par = "false"
@@ -988,7 +988,7 @@ def parallel_mode():
             pass
         message(0, "Configuration updated!")
     except subprocess.CalledProcessError:
-        message(2, "\nIt seems you don't have Parallel in your PATH, Please install and export to the your PATH.")
+        message(2, "\nIt seems you don't have parallel in your PATH. Please install and export to your PATH.")
 
     except Exception as e:
         logging.error(traceback.format_exc())
@@ -1003,7 +1003,7 @@ def email():
             sys.stdout.write(ycolor("2")+"- Disable email notification.\n")
             nu_mode = inputNumber("\nPlease enter the number to select:")
             while not int(nu_mode) in range(1, 3):
-                nu_mode = inputNumber("Please enter the valid number:")
+                nu_mode = inputNumber("Please enter a valid number:")
             if int(nu_mode)==1:
                 mode="true"
             else:
