@@ -47,7 +47,7 @@ if $parallel_mode; then
 				# Sleep up to 10 seconds
 				echo ""
 				echo "Running Bismark deduplication report for $label ..." 2>&1 | tee -a $tmp_clog/bismark-deduplicate.log
-				ded=$($bismark_path/deduplicate_bismark $deduplicate --bam  "$2" --output_dir $tmp_dide/ 2>&1 | tee -a $tmp_dide/$label.log )
+				ded=$($bismark_path/deduplicate_bismark $deduplicate --bam  "$2" --samtools_path $samtools_path --output_dir $tmp_dide/ 2>&1 | tee -a $tmp_dide/$label.log )
 				echo $2 >> $tmp_dide/list-finished.lst;   
 				sed -n -e 15p  -e 18,22p $tmp_dide/$label.log
 				echo "---------------------------------------------------------------"
@@ -69,7 +69,7 @@ else
 				label=$(echo $(echo $bamfile | sed 's/.*\///') | sed -e 's/.bam//g')
 				echo ""
 				echo "Running Bismark deduplication report for $label ..." 
-				ded=$($bismark_path/deduplicate_bismark	$deduplicate --bam $bamfile --output_dir $tmp_dide/ 2>&1 | tee -a $tmp_dide/$label.log)
+				ded=$($bismark_path/deduplicate_bismark	$deduplicate --bam $bamfile --samtools_path $samtools_path --output_dir $tmp_dide/ 2>&1 | tee -a $tmp_dide/$label.log)
 				runtime=$((($(date +%s)-$start)/60))
 				echo $bamfile >> $tmp_dide/list-finished.lst;
 				sed -n -e 15p  -e 18,22p $tmp_dide/$label.log;

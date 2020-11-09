@@ -5,23 +5,20 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 
 
 if [ ! -d $bismark_path ]; then
-	echo "Error: we require Bismark! but its not installed. see the configuration file 'config.cfg'"
+	echo "Error: we require Bismark! But it's not installed. See the configuration file 'config.cfg'."
 	exit 1
 fi
 
 if ! [ -x "$(command -v bowtie2)" ]; then
-  echo "Error: we could't find 'Bowtie2' in your PATH. see the configuration file 'config.cfg'"
+  echo "Error: we couldn't find 'Bowtie2' in your PATH. See the configuration file 'config.cfg'."
   exit 1
  else 
- 	sam=$(echo $(command -v bowtie2)) 
+ 	bow=$(echo $(command -v bowtie2)) 
  	echo $bow
 	export PATH="$PATH:$bow"
 fi
 
-if ! [ -x "$(command -v samtools)" ]; then
-  echo "Error: we could't find 'samtools' in your PATH. see the configuration file 'config.cfg'"
+if ! [ -x "$(command -v $samtools_path)" ]; then
+  echo "Error: we couldn't find 'samtools' in the specified location. See the configuration file 'config.cfg'."
   exit 1
- else 
- 	sam=$(echo $(command -v samtools)) 
-	export PATH="$PATH:$sam"
 fi

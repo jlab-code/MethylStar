@@ -41,11 +41,11 @@ if $parallel_mode; then
 				if $nucleotide; then
 					echo "-- Nucleotide coverage is enabled." 
 					echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
+					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
 				else
 					echo "-- Nucleotide coverage is disabled." 
 					echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 				fi
 				echo $2 >> $tmp_bismap/list-finished.lst;			
 
@@ -68,11 +68,11 @@ if $parallel_mode; then
 				if $nucleotide; then
 					echo "-- Nucleotide coverage is enabled." 
 					echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
+					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
 				else
 					echo "-- Nucleotide coverage is disabled." 
 					echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 				fi
 				#---------------------------------------------------------------------------
 				echo $fq >> $tmp_bismap/list-finished.lst;
