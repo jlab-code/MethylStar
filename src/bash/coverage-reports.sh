@@ -56,11 +56,11 @@ if $parallel_mode; then
 		. "$1"
 		label=$(echo $(echo $2 |sed 's/.*\///') | sed -e 's/.bam//g')
 		echo "-- Running genome coverage and sequencing depth for $label ..." 2>&1 | tee -a $tmp_clog/covseq.log
-		gen_size=$(samtools view -H $2  | grep -P '^@SQ' | cut -f 3 -d ':' | awk '{sum+=$1} END {print sum}')
-		cmd=$(samtools depth $2 | awk -v gen="$gen_size" '{sum+=$3} END {print "Average sequencing depth(X) = ",sum/gen}')
+		gen_size=$($samtools_path view -H $2  | grep -P '^@SQ' | cut -f 3 -d ':' | awk '{sum+=$1} END {print sum}')
+		cmd=$($samtools_path depth $2 | awk -v gen="$gen_size" '{sum+=$3} END {print "Average sequencing depth(X) = ",sum/gen}')
 		echo "# $cmd" 
 		#calculating genome coverage
-		gencov=$(bedtools genomecov -ibam $2 -bga -g $tmp_rdata/*_chr_all.txt | awk -v gen="$gen_size" '{if($4>0) total += ($3-$2)} END {print "Genome coverage (%) = ", total/gen * 100}')
+		gencov=$($bedtools_path genomecov -ibam $2 -bga -g $tmp_rdata/*_chr_all.txt | awk -v gen="$gen_size" '{if($4>0) total += ($3-$2)} END {print "Genome coverage (%) = ", total/gen * 100}')
 		echo "# ${gencov}" 
 
 		echo "file: " $label >> $tmp_covseq/$fileName-report.log
@@ -87,11 +87,11 @@ else
 			label=$(echo $(echo $file |sed 's/.*\///') | sed -e 's/.bam//g')
 			echo "-- Running genome coverage and sequencing depth $label ..." 2>&1 | tee -a $tmp_clog/covseq.log
 
-			gen_size=$(samtools view -H $file  | grep -P '^@SQ' | cut -f 3 -d ':' | awk '{sum+=$1} END {print sum}')
-			cmd=$(samtools depth $file | awk -v gen="$gen_size" '{sum+=$3} END {print "Average sequencing depth(X) = ",sum/gen}')
+			gen_size=$($samtools_path view -H $file  | grep -P '^@SQ' | cut -f 3 -d ':' | awk '{sum+=$1} END {print sum}')
+			cmd=$($samtools_path depth $file | awk -v gen="$gen_size" '{sum+=$3} END {print "Average sequencing depth(X) = ",sum/gen}')
 			echo "# $cmd" 
 			#calculating genome coverage
-			gencov=$(bedtools genomecov -ibam $file -bga -g $tmp_rdata/*_chr_all.txt | awk -v gen="$gen_size" '{if($4>0) total += ($3-$2)} END {print "Genome coverage (%) = ", total/gen * 100}')
+			gencov=$($bedtools_path genomecov -ibam $file -bga -g $tmp_rdata/*_chr_all.txt | awk -v gen="$gen_size" '{if($4>0) total += ($3-$2)} END {print "Genome coverage (%) = ", total/gen * 100}')
 			echo "# ${gencov}" 
 			echo "file: " $label >> $tmp_covseq/$fileName-report.log
 			echo "# $cmd" >> $tmp_covseq/$fileName-report.log
