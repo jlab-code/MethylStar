@@ -14,7 +14,7 @@ if [ ! -f $tmp_rdata/Ref_Chr.RData ]
 		echo "Generating reference chromosome from Ref.genome  ..."
 		#copy genome_ref  to result directory because of reading/writing probabaly. 
 		pre_proc=$(cp $genome_ref/$genome_name $result_pipeline/rdata/)
-		a_proc= $(samtools faidx $tmp_rdata/$genome_name)
+		a_proc= $($samtools_path faidx $tmp_rdata/$genome_name)
 		tmp=$(echo $genome_name | sed 's/.*\///')
 		label=$(echo ${tmp%%.*})
 		b_proc= $(cut -f1,2 $tmp_rdata/*.fai > $tmp_rdata/$label.txt )
