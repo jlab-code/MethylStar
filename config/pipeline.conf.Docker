@@ -1,6 +1,6 @@
 [GENERAL]
 firstRun=false
-currversion=1.1
+currversion=1.1.1
 raw_dataset=/data
 result_pipeline=/results
 genome_ref=/home/shared/reference_genome
