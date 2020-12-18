@@ -56,7 +56,7 @@ if $parallel_mode; then
 				label=$(echo $(echo "$2" | sed 's/.*\///') | sed -e 's/.bam//g')						
 				# Sleep up to 10 seconds
 				echo "-- Running sort for $label ..." 2>&1 | tee -a $tmp_clog/bismark-sorting.log
-				ded=$(samtools sort -@ 4 -m 4G -o $tmp_covseq/sorted-$label.bam "$2")
+				ded=$($samtools_path sort -@ 4 -m 4G -o $tmp_covseq/sorted-$label.bam "$2")
 				: '
 				if [ -f $tmp_covseq/sorted-$label.bam ]
 				then
@@ -82,7 +82,7 @@ else
 				start=$(date +%s)
 				label=$(echo $(echo $bamfile | sed 's/.*\///') | sed -e 's/.bam//g')
 				echo "-- Running sort for $label ..." 
-				ded=$(samtools sort -@ 4 -m 4G -o $tmp_covseq/sorted-$label.bam $bamfile )
+				ded=$($samtools_path sort -@ 4 -m 4G -o $tmp_covseq/sorted-$label.bam $bamfile )
 				: '
 				if [ -f $tmp_covseq/sorted-$label.bam ]
 				then
