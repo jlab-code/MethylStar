@@ -17,12 +17,12 @@ full_report=as.logical(toupper((args[8])))
 context_report=(args[9])
 intermediate_mode=(args[10])
 
-
+file=(args[11])
 
 #regenerating new list of CX files to process
 #system('chmod a+x list-files.txt')
-try(system("ls -1v ../cx-reports/*.txt > list-files.lst" ,intern = TRUE))
-fileName <-fread("list-files.lst",skip = 0,header = FALSE)
+#try(system("ls -1v ../cx-reports/*.txt > list-files.lst" ,intern = TRUE))
+#fileName <-fread("list-files.lst",skip = 0,header = FALSE)
 
 #-------------------------------------------------
 # Modifying the main writing function from "write.table" to "fwrite" in data.table
@@ -60,16 +60,17 @@ modifiedexportMethylome <- function( model, filename, original_file) {
   rm(data,df,Cx,final_dataset)
 }
 #---------------------------------------------------------------
-files_to_go <-NULL
-file_processed<-"file-processed.lst"
-if (!file.exists(file_processed)){
-  print("It's first time you are running Methimpute for this data-set!")
-  files_to_go <- fileName
-} else {
-  file_processed <-fread("file-processed.lst",skip = 0,header = FALSE)
-  files_to_go <- as.data.table(anti_join (fileName , file_processed, by = c("V1")))
-  print("Resuming the job...  ")
-}
+#files_to_go <-NULL
+#file_processed<-"file-processed.lst"
+#if (!file.exists(file_processed)){
+#  print("It's first time you are running Methimpute for this data-set!")
+#  files_to_go <- fileName
+#} else {
+#  file_processed <-fread("file-processed.lst",skip = 0,header = FALSE)
+#  files_to_go <- as.data.table(anti_join (fileName , file_processed, by = c("V1")))
+#  print("Resuming the job...  ")
+#}
+
 # Rdata import
 list<- list.files(path = rdata, pattern = "*.RData")
 for (i in 1:length(list)){
@@ -85,13 +86,13 @@ if (context_report=="All"){
 }
 
 
-startCompute <- function(files_to_go) {
+startCompute <- function(file) {
   # storing the file which is done
   going_file <- NULL
-  ptm <- proc.time()
-  for (i in 1:length(files_to_go$V1)){
-    tryCatch({
-    going_file <- files_to_go$V1[i:i]
+    
+  tryCatch({
+    ptm <- proc.time()
+    going_file <- file
     print(paste0("Running...", going_file))
     #----------------------------------------------------------------------------
     # meth impute part
@@ -151,8 +152,7 @@ startCompute <- function(files_to_go) {
     rm(model,methylome)
     print(proc.time() - ptm)
     },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-  }
 
 }
-startCompute(files_to_go)
+startCompute(file)
 rm(list=ls())

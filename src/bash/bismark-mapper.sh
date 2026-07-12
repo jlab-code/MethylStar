@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Script name =" $(basename "$0")
 curr_dir="$(dirname "$0")"
 orgPip=$(pwd)
 com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.conf)
@@ -33,25 +34,28 @@ if $parallel_mode; then
 			start=$(date +%s)
 			doit() {
 				. "$1"
+                                echo $1
 				tmp_path=$tmp_bismap/
 				cd "${tmp_path%/*}"
-
+				
+				echo $2
 				label=$(echo ${2%%.*} |sed 's/.*\///')
 				echo $label
 				if $nucleotide; then
 					echo "-- Nucleotide coverage is enabled." 
 					echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
+					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --un --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
 				else
 					echo "-- Nucleotide coverage is disabled." 
 					echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --un --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $2 -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 				fi
 				echo $2 >> $tmp_bismap/list-finished.lst;			
 
 			}
 			export -f doit
-			par=$(echo $curr_dir/tmp.conf) 
+			par=$(echo $curr_dir/tmp.conf)
+			cat $input
 			cat "$input"  | parallel -j $npar --lb doit "$par"
 			runtime=$((($(date +%s)-$start)/60))
 			echo "Bismark for finished. Duration time $runtime Minutes." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
@@ -68,11 +72,11 @@ if $parallel_mode; then
 				if $nucleotide; then
 					echo "-- Nucleotide coverage is enabled." 
 					echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
+					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --un --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --nucleotide_coverage --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log )
 				else
 					echo "-- Nucleotide coverage is disabled." 
 					echo "-- Running bismark for $label ..." 2>&1 | tee -a $tmp_clog/bismark-mapper.log
-					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
+					result=$($bismark_path/bismark -s 0 -u 0 -N 0 -L 20 --un --samtools_path $samtools_path --parallel $bis_parallel -p $Nthreads --genome $genome_ref -q $fq -o $tmp_bismap/ 2>&1 | tee -a $tmp_bismap/$label.log)
 				fi
 				#---------------------------------------------------------------------------
 				echo $fq >> $tmp_bismap/list-finished.lst;

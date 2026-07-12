@@ -123,6 +123,147 @@ def inputNumber(message):
             break
 
 
+def read_config_default(section, key, default):
+    try:
+        return read_config(section, key)
+    except Exception:
+        return default
+
+def ensure_fastp_config():
+    defaults = {
+        "fastp_qualified_quality_phred": "20",
+        "fastp_trim_front1": "10",
+        "fastp_trim_tail1": "0",
+        "fastp_trim_front2": "10",
+        "fastp_trim_tail2": "0",
+        "fastp_length_required": "30",
+        "fastp_trim_poly_g": "true",
+        "fastp_detect_adapter_for_pe": "true",
+    }
+
+    config = GrumpyConfigParser()
+    config.optionxform = str
+    config.read('config/pipeline.conf')
+    changed = False
+    if not config.has_section("Fastp"):
+        config.add_section("Fastp")
+        changed = True
+    for key, value in defaults.items():
+        if not config.has_option("Fastp", key):
+            config.set("Fastp", key, value)
+            changed = True
+    if changed:
+        with open('config/pipeline.conf', 'wb') as config_file:
+            config.write(config_file)
+
+def ensure_bismark_config():
+    defaults = {
+        "bismark_mapping_mode": "PE",
+    }
+
+    config = GrumpyConfigParser()
+    config.optionxform = str
+    config.read('config/pipeline.conf')
+    changed = False
+    if not config.has_section("Bismark"):
+        config.add_section("Bismark")
+        changed = True
+    for key, value in defaults.items():
+        if not config.has_option("Bismark", key):
+            config.set("Bismark", key, value)
+            changed = True
+    if changed:
+        with open('config/pipeline.conf', 'wb') as config_file:
+            config.write(config_file)
+
+def bool_config_enabled(value):
+    return str(value).lower() in ["true", "yes", "y", "1", "on"]
+
+def configure_fastp_number(key, label, default):
+    current = read_config_default("Fastp", key, default)
+    print "The current status is: " + mcolor(current)
+    answer = query_yes_no("Do you want to re-config this part?", None)
+    if answer:
+        user_input = inputNumber("\nPlease enter the value of " + label + ": ")
+        while int(user_input) < 0:
+            user_input = inputNumber("Please enter a zero or positive integer: ")
+        replace_config("Fastp", key, str(user_input))
+        message(4, "--> Configuration updated!")
+    else:
+        message(3, "--> Keeping the default value.")
+
+def configure_fastp_bool(key, label, default):
+    current = read_config_default("Fastp", key, default)
+    outtxt = true_false_fields_config(current)
+    if outtxt == "":
+        outtxt = current
+    print "The current status is: " + mcolor(outtxt)
+    answer = query_yes_no("Do you want to re-config this part?", None)
+    if answer:
+        default_answer = "yes"
+        if not bool_config_enabled(current):
+            default_answer = "no"
+        enabled = query_yes_no("Enable " + label + "?", default_answer)
+        if enabled:
+            replace_config("Fastp", key, "true")
+        else:
+            replace_config("Fastp", key, "false")
+        message(4, "--> Configuration updated!")
+    else:
+        message(3, "--> Keeping the default value.")
+
+def configure_bismark_mapping_mode():
+    ensure_bismark_config()
+    current = read_config_default("Bismark", "bismark_mapping_mode", "PE").upper()
+    print "The current status is: " + mcolor(current)
+    answer = query_yes_no("Do you want to re-config this part?", None)
+    if answer:
+        sys.stdout.write(ycolor("1") + "- PE: align R1 and R2 together with Bismark paired-end mode.\n")
+        sys.stdout.write(ycolor("2") + "- SE: align R1 and R2 separately with Bismark single-end mode.\n")
+        val = inputNumber("\nPlease enter the number to select:")
+        while not int(val) in range(1, 3):
+            val = inputNumber("Please enter a valid number:")
+
+        if int(val) == 2:
+            txt = "SE"
+        else:
+            txt = "PE"
+
+        replace_config("Bismark", "bismark_mapping_mode", txt)
+        message(4, "--> Configuration updated!")
+    else:
+        message(3, "--> Keeping the default value.")
+
+def fastp_pbat_preset():
+    ensure_fastp_config()
+
+    title("Configuration part for PBAT-based preset")
+    print ycolor("These following parameters are used for the PBAT-based workflow when non-directional mapping is enabled.")
+
+    title("Configuration part for minimum sequencing quality")
+    configure_fastp_number("fastp_qualified_quality_phred", "--qualified_quality_phred", "20")
+
+    title("Configuration part for 5 prime end of R1 trimmed length")
+    configure_fastp_number("fastp_trim_front1", "--trim_front1", "10")
+
+    title("Configuration part for 3 prime end of R1 trimmed length")
+    configure_fastp_number("fastp_trim_tail1", "--trim_tail1", "0")
+
+    title("Configuration part for 5 prime end of R2 trimmed length")
+    configure_fastp_number("fastp_trim_front2", "--trim_front2", "10")
+
+    title("Configuration part for 3 prime end of R2 trimmed length")
+    configure_fastp_number("fastp_trim_tail2", "--trim_tail2", "0")
+
+    title("Configuration part for minimum length")
+    configure_fastp_number("fastp_length_required", "--length_required", "30")
+
+    title("Configuration part for trim poly_G sequences")
+    configure_fastp_bool("fastp_trim_poly_g", "--trim_poly_g", "true")
+
+    title("Configuration part for auto-detecting adapters for PE reads")
+    configure_fastp_bool("fastp_detect_adapter_for_pe", "--detect_adapter_for_pe", "true")
+
 def message(msg_code, msg):
 
     if msg_code == 0:
@@ -352,7 +493,7 @@ def result_pipeline():
             print "\nYou have " + mcolor(size[0]) + " M.byte free space in your disk."
             print "The list bellow is a recommendation to have free space in your disk."
             print "(This calculation is based on your data-set size.)"
-            print "\nFree space for Trimmomatic part: " + mcolor(round(per_file * number_of_dataset * 1.2)) + " Gig."
+            print "\nFree space for Trimming part: " + mcolor(round(per_file * number_of_dataset * 1.2)) + " Gig."
             print "Free space for QC-Fastq-report: " + mcolor(round(2 * number_of_dataset)) + " MB."
             print "Free space for Bismark Mapper part: " + mcolor(round(per_file * number_of_dataset * 1.8)) + " Gig."
             print "Free space for Qc-Fastq Bam report: " + mcolor(round(2 * number_of_dataset)) + " MB."
@@ -429,7 +570,7 @@ def genome_name():
 
 def genome_type():
     print("Enter the Genome type from the list: \n")
-    list_gen=["Arabidopsis", "Human", "Maize", "Rice", "scBS-Seq", "Others"]
+    list_gen=["Arabidopsis", "Human", "Maize", "Rice", "snmC-Seq", "Others"]
     for file in list_gen:
         sys.stdout.write(ycolor(str(list_gen.index(file))) + " : " + file + "\n")
 
@@ -447,7 +588,7 @@ def trimmomatic():
     java_check()
     #
     try:
-        title("Configuration part for Trimmomatic location (location folder)")
+        title("Configuration part for Trimming location (location folder)")
         if confirm("Trimmomatic", "trim_path", 3):
             response = raw_input("Please enter the Trimmomatic location: ")
             while not (os.path.isdir(response)):
@@ -588,6 +729,8 @@ def trimmomatic():
         else:
             pass
 
+        fastp_pbat_preset()
+
         message(0, "Configuration Updated!")
     except Exception as e:
         logging.error(traceback.format_exc(e.message))
@@ -669,6 +812,7 @@ def fastq_path():
 def bismark_path():
 
     try:
+        ensure_bismark_config()
         title("Alignment parameters (Bismark mapper)")
         if read_config("Bismark", "bismark_path").replace(" ", "") == '':
 
@@ -718,9 +862,9 @@ def bismark_path():
 	    pass 
 
     '''
-        Single cell
+        PBAT-based data
     '''
-    title("Run with scBS-Seq (--pbat)? ")
+    title("Run with PBAT-based data (--non-directional)?")
     if confirm("Bismark", "single_cell", 3):
         val = en_di()
         replace_config("Bismark", "single_cell", val)
@@ -728,24 +872,16 @@ def bismark_path():
     else:
         pass
 
-    if (read_config("Bismark", "single_cell") == "true"):
-        message(4, "\n\t**** A library can only be specified to be either PBAT-Seq library (default) or non-directional.  ***")
-        if confirm("Bismark", "directional", 3):
-        	sys.stdout.write(ycolor("1") + "- Default \n")
-        	sys.stdout.write(ycolor("2") + "- --non_directional\n")
-        	val = inputNumber("\nPlease enter the number to select:")
-        	while not int(val) in range(1, 3):
-        		val = inputNumber("Please enter a valid number:")
-
-        	if int(val)==2:
-        		txt="--non_directional"
-        	else:
-        		txt=""
-        	
-        	replace_config("Bismark", "directional", txt)
-        	message(4, "--> Configuration updated!")
+    if read_config("Bismark", "single_cell") == "true":
+        replace_config("Bismark", "bismark_mapping_mode", "PE")
+        replace_config("Bismark", "directional", "--non_directional")
+    elif read_config("GENERAL", "pairs_mode") == "true":
+        title("Bismark alignment mode for paired-end input reads")
+        message(4, "\t**** pairs_mode=true means the input files are paired-end. This setting controls whether Bismark aligns them as PE or as two SE runs. ***")
+        configure_bismark_mapping_mode()
     else:
-    	replace_config("Bismark", "directional", "")
+        replace_config("Bismark", "bismark_mapping_mode", "SE")
+        replace_config("Bismark", "directional", "")
 
     '''
         Sets the number of parallel instances of Bismark to be run concurrently
@@ -1091,7 +1227,7 @@ def show_config():
     print "- Genome folder location: " + mcolor(read_config("GENERAL", "genome_ref"))
     print "     -- Genome Reference name: " + mcolor(read_config("GENERAL", "genome_name"))
     print "- Paired End: " + mcolor(true_false_fields_config(read_config("GENERAL", "pairs_mode")))
-    print "- Trimmomatic location: "+ mcolor(read_config("Trimmomatic", "trim_path"))
+    print "- Trimmomatic settings for non-PBAT trimming: "+ mcolor(read_config("Trimmomatic", "trim_path"))
     print "     -- JAVA path: " + mcolor(read_config("Trimmomatic", "java_path"))
     print "     -- ILLUMINACLIP: " + mcolor(read_config("Trimmomatic", "name_adap"))\
           +":"+mcolor(read_config("Trimmomatic", "ill_clip"))
@@ -1101,16 +1237,22 @@ def show_config():
     print "     -- SLIDINGWINDOW: " + mcolor(read_config("Trimmomatic", "SLIDINGWINDOW"))
     print "     -- MINLEN: " + mcolor(read_config("Trimmomatic", "MINLEN"))
     print "     -- Number of Threads: " + mcolor(read_config("Trimmomatic", "n_th"))
+    ensure_fastp_config()
+    print "- PBAT-based preset:"
+    print "     -- Min sequencing quality: " + mcolor(read_config("Fastp", "fastp_qualified_quality_phred"))
+    print "     -- 5 prime end of R1 trimmed length: " + mcolor(read_config("Fastp", "fastp_trim_front1"))
+    print "     -- 3 prime end of R1 trimmed length: " + mcolor(read_config("Fastp", "fastp_trim_tail1"))
+    print "     -- 5 prime end of R2 trimmed length: " + mcolor(read_config("Fastp", "fastp_trim_front2"))
+    print "     -- 3 prime end of R2 trimmed length: " + mcolor(read_config("Fastp", "fastp_trim_tail2"))
+    print "     -- Min length: " + mcolor(read_config("Fastp", "fastp_length_required"))
+    print "     -- Trim poly_G sequences: " + mcolor(true_false_fields_config(read_config("Fastp", "fastp_trim_poly_g")))
+    print "     -- Auto detect adapter for PE reads: " + mcolor(true_false_fields_config(read_config("Fastp", "fastp_detect_adapter_for_pe")))
 
     print "- QC-Fastq path: "+ mcolor(read_config("GENERAL", "fastq_path"))
+    ensure_bismark_config()
     print "- Bismark parameters: "+ mcolor(read_config("Bismark", "bismark_path"))
-    print "     -- scBS-Seq (--pbat)? " + mcolor(true_false_fields_config(read_config("Bismark", "single_cell")))
-    if (read_config("Bismark", "single_cell") == "true"):
-    	if (read_config("Bismark", "directional")==''):
-    		txt="directional"
-    	else:
-    		txt=read_config("Bismark", "directional")
-    	print "     	-- directional status: " + mcolor(txt)
+    print "     -- PBAT-based data (--non-directional)? " + mcolor(true_false_fields_config(read_config("Bismark", "single_cell")))
+    print "     -- Bismark mapping mode: " + mcolor(read_config("Bismark", "bismark_mapping_mode"))
 
     print "     -- Nucleotide status: " + mcolor(read_config("Bismark", "nucleotide"))
     print "     -- Number of Parallel: " + mcolor(read_config("Bismark", "bis_parallel"))+" Threads."
@@ -1164,7 +1306,9 @@ menu_act = {
     '9': email,
     '10': show_config,
     'u': update,
+    'U': update,
     'b': exit,
+    'B': exit,
 }
 
 

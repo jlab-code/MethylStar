@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 options(warn=-1)
 source("./src/bash/r-lib.R")
+#source("./src/bash/meth-r-lib.R")
 
 # reading base directory from config.cfg
 args <- commandArgs(trailingOnly = TRUE)

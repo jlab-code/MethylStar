@@ -1,3 +1,6 @@
+Ver. 1.5
+  - Fix the workflow to integrate the pipeline for PBAT-based data.
+
 Ver. 1.4
   - Added data-set options.
   - fixed parallel issues.

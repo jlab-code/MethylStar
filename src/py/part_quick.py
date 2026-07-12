@@ -20,6 +20,15 @@ def run_quick():
     try:
         title("Running in Quick mode! ")
         preparing_part()
+        is_snmc = ( read_config("Bismark", "single_cell") == "true" )
+        if is_snmc:
+            print rcolor("MethylStar does not support Quick Run for PBAT-based data. Please use Individual Run workflow.")
+            replace_config("STATUS", "quickrun", "1")
+            return
+        if is_snmc and read_config("GENERAL", "pairs_mode") != "true":
+            print rcolor("MethylStar does not support single-end mapping for the IDT snmC-Seq workflow right now.")
+            replace_config("STATUS", "quickrun", "1")
+            return
         '''
         pipeline.conf
         0: not yet run 
@@ -31,7 +40,7 @@ def run_quick():
 
             if int(read_config("STATUS", "st_trim")) != 2:
                 print "==" * 40
-                print qucolor("\nRunning Trimmomatic Part...")
+                print qucolor("\nRunning Trimming Part...")
                 run_trimmomatic(True)
 
             if int(read_config("STATUS", "st_fastq")) != 2:

@@ -50,7 +50,7 @@ def run_bimark_meth():
             replace_config("Bismark", "methextractor", "-s")
 
 
-        if (read_config("GENERAL", "genome_type") == "scBS-Seq" or read_config("Bismark", "single_cell") == "true"):
+        if (read_config("GENERAL", "genome_type") == "snmC-Seq" or read_config("Bismark", "single_cell") == "true"):
             replace_config("Bismark", "methextractor", "-s")
 
         if confirm_run():

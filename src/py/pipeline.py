@@ -22,9 +22,9 @@ def pip_menu():
     print("\n"+"=="*25)
     print("Please choose from the menu:\n")
     print(mcolor("A. Quick Run: \n"))
-    print(ycolor("\t0.")+" Trimmomatic, QC-Fastq-report, Bismark(alignment, remove duplicates), Extract methylation calls, Methimpute.\n")
+    print(ycolor("\t0.")+" Trimming reads, QC-Fastq-report, Bismark(alignment, remove duplicates), Extract methylation calls, Methimpute.\n")
     print(mcolor("B. Individual Run: \n"))
-    print(ycolor("\t1.")+" Run Trimommatic")
+    print(ycolor("\t1.")+" Trimming reads")
     print(ycolor("\t2.")+" Run QC-Fastq-report")
     print(ycolor("\t3.")+" Run Bismark Mapper")
     print(ycolor("\t4.")+" Run Genome coverage & Sequencing depth (After Mapping)")
@@ -64,18 +64,13 @@ def exec_menu(choice):
 
 
 def quickRun():
-    '''
-    if (read_config("GENERAL", "genome_type") == "scBS-Seq"):
-        print ycolor("Unfortunately you can't run in 'Quick Run' when you have 'scBS-Seq' data .")
+    if (read_config("Bismark", "single_cell") == "true"):
+        print ycolor("Unfortunately you can't run in 'Quick Run' when you have PBAT-based data. Please use Individual Run workflow.")
         exec_menu('')
     else:
         from part_quick import run_quick
         run_quick()
         exec_menu('')
-    '''
-    from part_quick import run_quick
-    run_quick()
-    exec_menu('')
 
 
 def itemTrim():

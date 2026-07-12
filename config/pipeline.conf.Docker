@@ -41,6 +41,7 @@ buf_size=40
 nucleotide=false
 intermediate_files=true
 run_pair_bismark=true
+bismark_mapping_mode=PE
 deduplicate=-p
 methextractor=-p
 del_inter_file=true
@@ -110,4 +111,3 @@ tmp_methyl_fmt=$result_pipeline/methylkit-format
 tmp_dmr=$result_pipeline/dmrcaller-format
 tmp_bed=$result_pipeline/bedgraph-format
 tmp_bigwig=$result_pipeline/bigwig-format
-

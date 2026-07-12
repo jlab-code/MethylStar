@@ -40,7 +40,7 @@ if $parallel_mode; then
 		echo "-------------------------------------------------------------" 
 		echo -e "Running trimmomatic for $first_file and $second_file ...\n"
 
-		run=$($java_path -jar $trim_jar $end_mode -threads $n_th -phred33  $path$first_file $path$second_file $tmp_fq/$label"_paired"$first_pattern $tmp_fq/$label"_unpaired"$first_pattern $tmp_fq/$label"_paired"$secnd_pattern $tmp_fq/$label"_unpaired"$secnd_pattern ILLUMINACLIP:$name_adap:$ill_clip LEADING:$LEADING TRAILING:$TRAILING SLIDINGWINDOW:$SLIDINGWINDOW MINLEN:$MINLEN 2>&1 | tee -a  $tmp_log/trimmomatic-log-$label.log )
+		run=$($java_path -jar $trim_jar $end_mode -threads $n_th -phred33  $path$first_file $path$second_file $tmp_fq/$label"_paired"$first_pattern $tmp_fq/$label"_unpaired"$first_pattern $tmp_fq/$label"_paired"$secnd_pattern $tmp_fq/$label"_unpaired"$secnd_pattern ILLUMINACLIP:$name_adap:$ill_clip HEADCROP:15 LEADING:$LEADING TRAILING:$TRAILING SLIDINGWINDOW:$SLIDINGWINDOW MINLEN:$MINLEN 2>&1 | tee -a  $tmp_log/trimmomatic-log-$label.log )
 		echo -e "Summary: \n"
 		cat $tmp_log/trimmomatic-log-$label.log
 		echo $path$first_file >> $tmp_fq/list-finished.lst;
@@ -67,7 +67,7 @@ else
 		second_file=$label"$secnd_pattern"
 		echo "-------------------------------------------------------------" 
 		echo -e "running trimmomatic for $first_file and $second_file ...\n"
-		run=$($java_path -jar $trim_jar $end_mode -threads $n_th -phred33  $path$first_file $path$second_file $tmp_fq/$label"_paired"$first_pattern $tmp_fq/$label"_unpaired"$first_pattern $tmp_fq/$label"_paired"$secnd_pattern $tmp_fq/$label"_unpaired"$secnd_pattern ILLUMINACLIP:$name_adap:$ill_clip LEADING:$LEADING TRAILING:$TRAILING SLIDINGWINDOW:$SLIDINGWINDOW MINLEN:$MINLEN 2>&1 | tee -a  $tmp_log/trimmomatic-log-$label.log )
+		run=$($java_path -jar $trim_jar $end_mode -threads $n_th -phred33  $path$first_file $path$second_file $tmp_fq/$label"_paired"$first_pattern $tmp_fq/$label"_unpaired"$first_pattern $tmp_fq/$label"_paired"$secnd_pattern $tmp_fq/$label"_unpaired"$secnd_pattern ILLUMINACLIP:$name_adap:$ill_clip HEADCROP:15 LEADING:$LEADING TRAILING:$TRAILING SLIDINGWINDOW:$SLIDINGWINDOW MINLEN:$MINLEN 2>&1 | tee -a  $tmp_log/trimmomatic-log-$label.log )
 		echo -e "Summary: \n"
 		cat $tmp_log/trimmomatic-log-$label.log
 		echo $path$first_file >> $tmp_fq/list-finished.lst;

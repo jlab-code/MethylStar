@@ -8,12 +8,20 @@ __email__ = "shahryary@gmail.com"
 
 from globalParameters import *
 
+def read_config_default(section, key, default):
+    try:
+        return read_config(section, key)
+    except Exception:
+        return default
+
 def info_bismark_mapper():
     title("Running Bismark Mapper Part")
+    bismark_mapping_mode = read_config_default("Bismark", "bismark_mapping_mode", "PE")
     s = gcolor("Configuration summary: \n")+\
         "" + "\n"\
     "- Bismark location: " + mcolor(read_config("Bismark", "bismark_path")) + "\n" \
-    "   -- scBS-Seq (--pbat)?" + mcolor(true_false_fields_config(read_config("Bismark", "single_cell")))+"\n"\
+    "   -- PBAT-based (--non-directional)?" + mcolor(true_false_fields_config(read_config("Bismark", "single_cell")))+"\n"\
+    "   -- Bismark mapping mode: " + mcolor(bismark_mapping_mode) + "\n" \
     "   -- Nucleotide: " + mcolor(true_false_fields_config(read_config("Bismark", "nucleotide"))) + "\n" \
     "   -- Buffer size: " +  mcolor(read_config("Bismark", "buf_size")) + "\n" \
     "   -- Number of Parallel: " + mcolor(read_config("Bismark", "bis_parallel")) + " \n" \
@@ -28,7 +36,7 @@ def info_bismark_mapper():
     elif status == 2:
         if len(check_empty_dir("bismark-mappers", "*.bam")) > 0:
             s += ycolor("WARNING: The directory is not empty, re-running this part might loosing the existing data!\n")
-            s += "It seems you have results for Trimmomatic part.\n"
+            s += "It seems you have results for Trimming part.\n"
             s += "You can re-run this part, but we recommend move the files to another folder and run again.\n"
 
     return s
@@ -47,8 +55,11 @@ def run():
         subprocess.call(['./src/bash/pre-bismark.sh'])
 
         if (read_config("Bismark", "single_cell")=="true"):
-
-            subprocess.call(['./src/bash/bismark-mapper-scBS-Seq.sh'])
+            if pairs_mode != 'true':
+                print rcolor("MethylStar does not support single-end data for the PBAT-based workflow right now.")
+                replace_config("STATUS", "st_bismark", "1")
+                return
+            subprocess.call(['./src/bash/bismark-mapper-snmC-Seq.sh'])
         else:
             if pairs_mode == 'true' and read_config("GENERAL", "parallel_mode") == "true":
                 subprocess.call(['./src/bash/bismark-mapper-pair-parallel.sh'])

@@ -8,19 +8,39 @@ __email__ = "shahryary@gmail.com"
 
 from globalParameters import *
 
+def read_config_default(section, key, default=""):
+    try:
+        return read_config(section, key)
+    except Exception:
+        return default
+
 def info_trimmomatic():
-    s = gcolor("Configuration Summary: ")+"\n\n"\
-    "Configured Java location: " + mcolor(read_config("Trimmomatic", "java_path")) + "\n" \
-    "Trimmomatic path: " + mcolor(read_config("Trimmomatic", "trim_path")) + "\n" \
-    "Trimmomatic Adapter: " + mcolor(read_config("Trimmomatic", "name_adap")) + "\n" \
-    "Trimmomatic Running mode: " + mcolor(read_config("Trimmomatic", "end_mode")) + "\n" \
-    "Trimmomatic ILLUMINACLIP: " + mcolor(read_config("Trimmomatic", "ill_clip")) + "\n" \
-    "Trimmomatic LEADING: " + mcolor(read_config("Trimmomatic", "LEADING")) + "\n" \
-    "Trimmomatic TRAILING: " + mcolor(read_config("Trimmomatic", "TRAILING")) + "\n" \
-    "Trimmomatic SLIDINGWINDOW: " + mcolor(read_config("Trimmomatic", "SLIDINGWINDOW")) + "\n" \
-    "Trimmomatic MINLEN: " + mcolor(read_config("Trimmomatic", "MINLEN")) + "\n" \
-    "Trimmomatic Threading: " + mcolor(read_config("Trimmomatic", "n_th")) + "\n" \
-    "Parallel mode is: " + mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"))) + "\n\n" \
+    s = gcolor("Configuration Summary: ") + "\n\n"
+
+    if read_config("Bismark", "single_cell") == "true":
+        s += "PBAT-based preset: " + "\n" \
+             "Min sequencing quality: " + mcolor(read_config_default("Fastp", "fastp_qualified_quality_phred", "20")) + "\n" \
+             "5 prime end of R1 trimmed length: " + mcolor(read_config_default("Fastp", "fastp_trim_front1", "10")) + "\n" \
+             "3 prime end of R1 trimmed length: " + mcolor(read_config_default("Fastp", "fastp_trim_tail1", "0")) + "\n" \
+             "5 prime end of R2 trimmed length: " + mcolor(read_config_default("Fastp", "fastp_trim_front2", "10")) + "\n" \
+             "3 prime end of R2 trimmed length: " + mcolor(read_config_default("Fastp", "fastp_trim_tail2", "0")) + "\n" \
+             "Min length: " + mcolor(read_config_default("Fastp", "fastp_length_required", "30")) + "\n" \
+             "Trim poly_G sequences: " + mcolor(true_false_fields_config(read_config_default("Fastp", "fastp_trim_poly_g", "true"))) + "\n" \
+             "Auto detect adapter for PE reads: " + mcolor(true_false_fields_config(read_config_default("Fastp", "fastp_detect_adapter_for_pe", "true"))) + "\n" \
+             "Number of threads: " + mcolor(read_config("Trimmomatic", "n_th")) + "\n" \
+             "Parallel mode is: " + mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"))) + "\n\n"
+    else:
+        s += "Configured Java location: " + mcolor(read_config("Trimmomatic", "java_path")) + "\n" \
+             "Trimmomatic path: " + mcolor(read_config("Trimmomatic", "trim_path")) + "\n" \
+             "Trimmomatic Adapter: " + mcolor(read_config("Trimmomatic", "name_adap")) + "\n" \
+             "Trimmomatic Running mode: " + mcolor(read_config("Trimmomatic", "end_mode")) + "\n" \
+             "Trimmomatic ILLUMINACLIP: " + mcolor(read_config("Trimmomatic", "ill_clip")) + "\n" \
+             "Trimmomatic LEADING: " + mcolor(read_config("Trimmomatic", "LEADING")) + "\n" \
+             "Trimmomatic TRAILING: " + mcolor(read_config("Trimmomatic", "TRAILING")) + "\n" \
+             "Trimmomatic SLIDINGWINDOW: " + mcolor(read_config("Trimmomatic", "SLIDINGWINDOW")) + "\n" \
+             "Trimmomatic MINLEN: " + mcolor(read_config("Trimmomatic", "MINLEN")) + "\n" \
+             "Trimmomatic Threading: " + mcolor(read_config("Trimmomatic", "n_th")) + "\n" \
+             "Parallel mode is: " + mcolor(true_false_fields_config(read_config("GENERAL", "parallel_mode"))) + "\n\n"
 
     status = int(read_config("STATUS", "st_trim"))
     pairs_mode = read_config("GENERAL", "pairs_mode")
@@ -28,22 +48,32 @@ def info_trimmomatic():
     if status == 1:
         s += ycolor("--> Please ensure that folder is empty, otherwise it will overwrite the files ...")
     elif status == 2:
-        if len(check_empty_dir("trimmomatic-files", "*.gz")) > 0:
-            s += "\nIt seems you have results for Trimmomatic part."
+        if len(find_file_pattern(read_config("Others", "tmp_fq"), "*.gz")) > 0:
+            s += "\nIt seems you have results for Trimming part."
             s += "You can re-run this part, but we recommend move the files to another folder and run again. \n"
             s += ycolor("WARNING: The directory is not empty, re-running this part might end up with loss of the existing data!")
         pass
 
-    if pairs_mode == "true" and read_config("Trimmomatic", "end_mode") == "SE":
-        s += ycolor("WARNING: You're running Trimmomatic in 'Single End' mode, but you have pair file!")
+    if read_config("Bismark", "single_cell") == "false" and pairs_mode == "true" and read_config("Trimmomatic", "end_mode") == "SE":
+        s += ycolor("WARNING: You're running read trimming in 'Single End' mode, but you have pair file!")
 
     return s
 
 
 def run(pairs_mode):
-    txt = "Trimmomatic Part finished."
+    txt = "Trimming Part finished."
     try:
-        if pairs_mode == 'true':
+        is_snmc = (read_config("GENERAL", "genome_type") == "snmC-Seq" or read_config("Bismark", "single_cell") == "true")
+        unsupported_snmc_single_end = "MethylStar does not support single-end data for the IDT snmC-Seq workflow right now."
+
+        if is_snmc:
+            if pairs_mode == 'true':
+                subprocess.call(['./src/bash/trimmomatic_pair-snmC-Seq.sh'])
+            else:
+                print rcolor(unsupported_snmc_single_end)
+                replace_config("STATUS", "st_trim", "1")
+                return
+        elif pairs_mode == 'true':
             subprocess.call(['./src/bash/trimmomatic_pair.sh'])
         else:
             subprocess.call(['./src/bash/trimmomatic.sh'])
@@ -77,13 +107,15 @@ def run_trimmomatic(status):
         pairs_mode = read_config("GENERAL", "pairs_mode")
         # checking using SE but pair file
         if pairs_mode == "true" and read_config("Trimmomatic", "end_mode") == "SE":
-            print ycolor("WARNING: You're running Trimmomatic in 'Single End' mode, but you have pair file!")
+            print ycolor("WARNING: You're running read trimming in 'Single End' mode, but you have pair file!")
 
         # creating list of file
         list_dataset = find_file_pattern(read_config("GENERAL", "raw_dataset"), "*.gz")
         # writing all list to the file
-        res_loc = read_config("GENERAL", "result_pipeline")
-        with open(res_loc+"/trimmomatic-files/"+'list-files.lst', 'wb') as f:
+        trimming_dir = read_config("Others", "tmp_fq")
+        if not os.path.isdir(trimming_dir):
+            os.makedirs(trimming_dir)
+        with open(trimming_dir + "/" + 'list-files.lst', 'wb') as f:
             for item in list_dataset:
                 f.write('%s\n' % item)
 
@@ -91,9 +123,9 @@ def run_trimmomatic(status):
             run(pairs_mode)
         else:
             if confirm_run():
-                print qucolor("\nRunning Trimmomatic Part...")
+                print qucolor("\nRunning Trimming Part...")
                 run(pairs_mode)
-                message(0, "Processing files is finished, You can check the log files in Menu, part 'Trimmomatic-log' ")
+                message(0, "Processing files is finished, You can check the log files in Menu, part 'Trimming log' ")
 
     except Exception as e:
         logging.error(traceback.format_exc())
@@ -108,6 +140,3 @@ def run_trimmomatic(status):
 
 
     return
-
-
-

@@ -31,7 +31,7 @@ if [ -f $tmp_meth_out/list-finished.lst ]
                 done < $input;
 fi
 
-cat  "$input"  | parallel -j $npar --lb  Rscript ./src/bash/methimpute-bam.R $result_pipeline $genome_ref $genome_name $tmp_rdata $intermediate $fit_output $enrichment_plot $full_report  $mincov $intermediate_mode $file --no-save --no-restore --verbose 
+cat  "$input"  | parallel -j 2 --lb  Rscript ./src/bash/methimpute-bam.R $result_pipeline $genome_ref $genome_name $tmp_rdata $intermediate $fit_output $enrichment_plot $full_report $mincov $intermediate_mode $file --no-save --no-restore --verbose 
 
 
 # check if everyfiles finished, then delete queue list 

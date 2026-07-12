@@ -13,7 +13,8 @@ run bismark_methylation_extractor: atypical command to extract context-dependent
 '
 #-------------------------------------------------------------------------------
 #generating up-to-date list of files
-gen=$(ls -1v $tmp_dme/*.cov.gz > $tmp_cx_report/list-files.lst)
+gen=$(ls -1v $tmp_dme/*.merged.bismark.cov.gz > $tmp_cx_report/list-files.lst)
+#gen=$(ls -1v $tmp_dme/*.cov.gz > $tmp_cx_report/list-files.lst)
 
 if [ -f $tmp_cx_report/list-finished.lst ]
 	then

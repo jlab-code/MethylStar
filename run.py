@@ -150,7 +150,9 @@ menu_actions = {
     '5': help_doc,
     '9': back,
     'c': config,
+    'C': config,
     'q': exit,
+    'Q': exit,
 }
 
 

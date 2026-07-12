@@ -9,7 +9,7 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 Generate Coverage report and sequencing depth.
 '
 if [ `ls $tmp_covseq/*temp* 2>/dev/null | wc -l ` -gt 0   ]
-then 
+then
 	remove=$(rm $tmp_covseq/*temp*)
 fi
 
@@ -119,10 +119,10 @@ if [ -z $(comm -23 <(sort -u $tmp_covseq/list-files.lst) <(sort -u $tmp_covseq/l
 then
 	com=$(sed -i "s/st_coreport=.*/st_coreport=2/g" config/pipeline.conf)
 
-	if [ "$quickrun" = "0" ]
-	then
-	rem=$(rm $tmp_covseq/sorted*.bam)
-	fi
+	#if [ "$quickrun" = "0" ]
+	#then
+	#rem=$(rm $tmp_covseq/sorted*.bam)
+	#fi
 	remove=$(rm $tmp_covseq/list-finished.lst)
 fi
 

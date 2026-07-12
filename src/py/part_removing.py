@@ -20,7 +20,7 @@ menu_remove = {}
 def rem_menu():
     print "=="*25
     print "Please choose from the menu:\n"
-    print ycolor("\t1.")+" Clean Trimmomatic/log file(s)."
+    print ycolor("\t1.")+" Clean Trimming/log file(s)."
     print ycolor("\t2.")+" Clean Qc-fastq-report/log file(s)."
     print ycolor("\t3.")+" Clean bismark mapper/log file(s)."
     print ycolor("\t4.")+" Clean qc-bam report Directory log file(s)."
@@ -67,6 +67,17 @@ result_dir = read_config("GENERAL", "result_pipeline")
 def removeRef(str_dir, str_status):
     try:
         directory = result_dir + str_dir
+        removePath(directory, str_status)
+    except Exception as e:
+        logging.error(traceback.format_exc())
+        print(rcolor(e.message))
+        message(2, "something is going wrong... please run again. ")
+        # set 1 to resuming
+        replace_config("STATUS", str_status, "1")
+
+
+def removePath(directory, str_status):
+    try:
         list_files = len([name for name in os.listdir(directory) if os.path.isfile(os.path.join(directory, name))])
         print("\nYou are deleting directory: " + mcolor(directory))
         print("Total files: " + mcolor(list_files))
@@ -95,8 +106,8 @@ def remAllDir():
         message(2, "something is going wrong... please run again. ")
 
 def remTrim():
-    removeRef("/trimmomatic-files/", "st_trim")
-    removeRef("/trimmomatic-logs/", "st_trim")
+    removePath(read_config("Others", "tmp_fq"), "st_trim")
+    removePath(read_config("Others", "tmp_log"), "st_trim")
     exec_menu('')
 
 

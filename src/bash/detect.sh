@@ -55,7 +55,7 @@ then
                                         fi
 
 
-                elif [ "$1" = "Maize" ] || [ "$1" = "Human" ] || [ "$1" = "scBS-Seq" ] ;
+                elif [ "$1" = "Maize" ] || [ "$1" = "Human" ] || [ "$1" = "snmC-Seq" ] ;
                 then 
 
                                         if [ "$2" = "trimm" ]; 
@@ -202,4 +202,3 @@ then
                         sed -i "s/npar=.*/npar=$npar/g" $curr_dir/tmp.conf
                 fi
 fi
-

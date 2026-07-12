@@ -53,7 +53,7 @@ if $parallel_mode; then
 		start=$(date +%s)
 		doit() {
 				. "$1"
-				label=$(echo $(echo "$2" | sed 's/.*\///') | sed -e 's/.bam//g')						
+				label=$(echo $(echo "$2" | sed 's/.*\///') | sed -e 's/.bam//g')
 				# Sleep up to 10 seconds
 				echo "-- Running sort for $label ..." 2>&1 | tee -a $tmp_clog/bismark-sorting.log
 				ded=$($samtools_path sort -@ 4 -m 4G -o $tmp_covseq/sorted-$label.bam "$2")
@@ -63,11 +63,11 @@ if $parallel_mode; then
 					rem=$(rm "$2")
 				fi
 				'
-				echo "$2" >> $tmp_covseq/list-finished.lst;  
-				
+				echo "$2" >> $tmp_covseq/list-finished.lst;
+
 		}
 		export -f doit
-		par=$(echo $curr_dir/tmp.conf) 
+		par=$(echo $curr_dir/tmp.conf)
 		cat  "$input"  | parallel -j $npar --lb doit "$par"
 		runtime=$((($(date +%s)-$start)/60))
 		echo -e "-- Sort finished. Total time $runtime minutes." 2>&1 | tee -a $tmp_clog/bismark-sorting.log
@@ -91,7 +91,7 @@ else
 				'
 				runtime=$((($(date +%s)-$start)/60))
 				echo $bamfile >> $tmp_covseq/list-finished.lst;
-				
+
 				echo "-- Sorting finished, for $label finished in $runtime minutes." 2>&1 | tee -a $tmp_clog/bismark-sorting.log
 				totaltime=$(($runtime + $totaltime))
 				echo -e "-----------------------------------" 
