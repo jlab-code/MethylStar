@@ -1,1 +1,1 @@
-The TEs.RData file came from Arabidopsis, not Beech.
+The TEs.RData file came from Arabidopsis.
