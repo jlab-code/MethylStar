@@ -50,8 +50,8 @@ def run_bimark_meth():
             replace_config("Bismark", "methextractor", "-s")
 
 
-        if (read_config("GENERAL", "genome_type") == "snmC-Seq" or read_config("Bismark", "single_cell") == "true"):
-            replace_config("Bismark", "methextractor", "-s")
+        #if (read_config("GENERAL", "genome_type") == "snmC-Seq" or read_config("Bismark", "single_cell") == "true"):
+        #    replace_config("Bismark", "methextractor", "-p")
 
         if confirm_run():
             print qucolor("\nRunning Bismark Meth Extractor ...")
