@@ -4,6 +4,7 @@ com1=$(awk '/^\[/ { } /=/ { print $0 }' config/pipeline.conf > $curr_dir/tmp.con
 . $curr_dir/tmp.conf
 . $curr_dir/detect.sh $genome_type methimpute $npar
 
+gen=$(ls -1v $tmp_cx_report/*.txt > $tmp_meth_out/list-files.lst)
 file_list="$tmp_meth_out/list-files.lst"
 
 #R CMD BATCH $result_pipeline $genome_name --save output.log
