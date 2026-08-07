@@ -65,7 +65,7 @@ def run_bimark_dedup(status):
             replace_config("Bismark", "deduplicate", "-s")
         
         #if (read_config("GENERAL", "genome_type") == "snmC-Seq" or read_config("Bismark", "single_cell") == "true"):
-        #    replace_config("Bismark", "deduplicate", "-s")
+        #    replace_config("Bismark", "deduplicate", "-p")
         if status:
             run()
 
