@@ -1,1 +1,1 @@
-The TEs.RData file came from Arabidopsis.
+The genes. and TEs.RData files came from Arabidopsis, TAIR10.
